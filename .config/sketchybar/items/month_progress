@@ -1,0 +1,11 @@
+#!/bin/bash
+
+PLUGIN_DIR="${PLUGIN_DIR:-$HOME/.config/sketchybar/plugins}"
+
+sketchybar --add item month_progress right \
+           --set month_progress update_freq=86400 \
+                                icon.drawing=off \
+                                label.padding_left=4 \
+                                label.padding_right=4 \
+                                script="$PLUGIN_DIR/month_progress.sh" \
+           --subscribe month_progress system_woke

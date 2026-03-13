@@ -1,0 +1,27 @@
+"$schema" = "https://starship.rs/config-schema.json"
+
+add_newline = true
+
+# Use a clean multiline TOML string. Each "\" is immediately followed by a newline.
+format = """
+$directory\
+$git_branch\
+$git_status\
+$custom\
+$line_break\
+$character
+"""
+
+[character]
+success_symbol = "[\uf460](red)"
+error_symbol = "[\uf460](bright-red)"
+[git_branch]
+# Nerd Font Octicons git-branch
+symbol = "\uF418 "
+
+# Project environment indicator (only shows when .current-env exists)
+[custom.env]
+command = "cat .current-env 2>/dev/null"
+when = "test -f .current-env"
+format = "[$output](yellow) "
+

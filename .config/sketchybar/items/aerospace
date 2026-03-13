@@ -1,0 +1,73 @@
+#!/usr/bin/env bash
+
+# Add aerospace event
+sketchybar --add event aerospace_workspace_change
+
+# Get list of monitor IDs
+monitor_ids=($(aerospace list-monitors | awk '{print $1}'))
+
+# Build all workspace items into a single batched command for performance
+items_cmd=()
+
+# Loop through each monitor
+for monitor_id in "${monitor_ids[@]}"; do
+    # Get workspaces for this monitor
+    workspaces=($(aerospace list-workspaces --monitor "$monitor_id"))
+
+    # Add each workspace for this monitor
+    for i in "${!workspaces[@]}"; do
+        workspace_id="${workspaces[$i]}"
+        items_cmd+=(
+            --add item "space.$workspace_id" left
+            --subscribe "space.$workspace_id" aerospace_workspace_change
+            --set "space.$workspace_id"
+            background.color=0xffd13539
+            background.corner_radius=10
+            background.height=28
+            background.drawing=off
+            background.border_color=0xff666666
+            background.border_width=1
+            label="$workspace_id"
+            label.font="SF Pro:Medium:13.0"
+            label.padding_left=0
+            label.padding_right=12
+            icon.drawing=off
+            icon.padding_left=12
+            icon.padding_right=12
+            click_script="aerospace workspace $workspace_id"
+            script="$CONFIG_DIR/plugins/aerospace.sh $workspace_id"
+        )
+
+        # Add spacer after each workspace except the last one
+        if [ $i -lt $((${#workspaces[@]} - 1)) ]; then
+            items_cmd+=(
+                --add item "workspace_spacer.$workspace_id" left
+                --set "workspace_spacer.$workspace_id"
+                width=12
+                background.drawing=off
+            )
+        fi
+    done
+
+    # Add spacer after this monitor's workspaces (but not after the last monitor)
+    if [ "$monitor_id" != "${monitor_ids[-1]}" ]; then
+        items_cmd+=(
+            --add item "monitor_spacer.$monitor_id" left
+            --set "monitor_spacer.$monitor_id"
+            width=40
+            background.drawing=off
+        )
+    fi
+done
+
+# Execute all workspace additions in a single batched command
+[ ${#items_cmd[@]} -gt 0 ] && sketchybar "${items_cmd[@]}"
+
+# Add bracket grouping for all workspace items (visual grouping)
+sketchybar --add bracket workspaces '/space\..*/' \
+           --set workspaces \
+           background.color=0x20ffffff \
+           background.corner_radius=12 \
+           background.height=34 \
+           background.border_color=0x30ffffff \
+           background.border_width=1

@@ -1,0 +1,12 @@
+[mgr]
+ratio = [1, 3, 4]
+show_hidden = true
+linemode = "size"
+sort_by = "natural"
+scrolloff = 0
+
+[preview]
+wrap = "yes"
+tab_size = 2
+image_quality = 80
+image_filter = "lanczos3"

@@ -1,0 +1,329 @@
+# AeroSpace Configuration
+# https://nikitabobko.github.io/AeroSpace/guide
+
+# Startup commands
+after-startup-command = [
+	'exec-and-forget borders active_color=0xFFC4262B inactive_color=0xff494d64 width=8.0 hidpi=true style=round blacklist="Sleeve"',
+	'exec-and-forget sketchybar',
+	'mode desktop',
+]
+
+# Notify Sketchybar about workspace change
+exec-on-workspace-change = [
+	'/bin/bash',
+	'-c',
+	'sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE',
+]
+
+# Update border color based on floating state
+on-focus-changed = [
+	'exec-and-forget $HOME/.config/sketchybar/plugins/borders.sh',
+]
+
+# Start AeroSpace at login
+start-at-login = true
+
+# Normalizations
+enable-normalization-flatten-containers = true
+enable-normalization-opposite-orientation-for-nested-containers = true
+
+# Accordion padding (0 to disable)
+accordion-padding = 50
+
+# Default layout: tiles|accordion
+default-root-container-layout = 'tiles'
+
+# Default orientation: horizontal|vertical|auto
+default-root-container-orientation = 'auto'
+
+# Mouse follows focus when monitor changes (uncomment to enable)
+# on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
+
+# Disable macOS "Hide application" (cmd-h) feature
+automatically-unhide-macos-hidden-apps = false
+
+# =============================================================================
+# Window Detection Rules - Floating Apps
+# =============================================================================
+
+# [[on-window-detected]]
+# if.app-id = 'com.apple.finder'
+# check-further-callbacks = true
+# run = 'layout floating'
+
+# [[on-window-detected]]
+# if.app-id = 'com.mitchellh.ghostty'
+# check-further-callbacks = true
+# run = 'layout floating'
+
+[[on-window-detected]]
+if.app-name-regex-substring = 'sleeve'
+check-further-callbacks = true
+run = 'layout floating'
+
+# [[on-window-detected]]
+# if.app-name-regex-substring = 'legcord'
+# check-further-callbacks = true
+# run = 'layout floating'
+
+# [[on-window-detected]]
+# if.app-id = 'com.apple.Music'
+# check-further-callbacks = true
+# run = 'layout floating'
+
+[[on-window-detected]]
+if.app-id = 'com.1password.1password'
+check-further-callbacks = true
+run = 'layout floating'
+
+# [[on-window-detected]]
+# if.app-name-regex-substring = 'whatsapp'
+# check-further-callbacks = true
+# run = 'layout floating'
+
+# [[on-window-detected]]
+# if.app-name-regex-substring = 'latest'
+# check-further-callbacks = true
+# run = 'layout floating'
+
+# [[on-window-detected]]
+# if.app-name-regex-substring = 'Wispr Flow'
+# check-further-callbacks = true
+# run = 'layout floating'
+
+# [[on-window-detected]]
+# if.app-id = 'com.coteditor.CotEditor'
+# check-further-callbacks = true
+# run = 'layout floating'
+
+# =============================================================================
+# Window Detection Rules - Workspace Assignments
+# =============================================================================
+
+# =============================================================================
+# Keyboard Settings
+# =============================================================================
+
+[key-mapping]
+preset = 'qwerty'
+
+# =============================================================================
+# Gaps Configuration
+# =============================================================================
+
+[gaps]
+inner.horizontal = 5 #15
+inner.vertical = 5   #15
+outer.left = 5       #25
+outer.bottom = 40    #45
+outer.top = 5        #10
+outer.right = 5      #25
+
+# =============================================================================
+# Main Mode (startup - immediately switches to desktop)
+# =============================================================================
+
+[mode.main.binding]
+# Main mode is required by aerospace. We immediately switch to desktop mode.
+# All keys here just switch to desktop mode so nothing is "lost" if pressed.
+ctrl-alt-semicolon = 'mode desktop'
+
+# =============================================================================
+# Desktop Mode Bindings (default - includes keypad)
+# =============================================================================
+
+[mode.desktop.binding]
+
+# Layout switching
+ctrl-alt-period = 'layout tiles horizontal vertical'
+ctrl-alt-comma = 'layout accordion horizontal vertical'
+
+# Focus navigation
+ctrl-left = 'focus left'
+ctrl-down = 'focus down'
+ctrl-up = 'focus up'
+ctrl-right = 'focus right'
+
+# Move windows
+alt-ctrl-left = 'move left'
+alt-ctrl-down = 'move down'
+alt-ctrl-up = 'move up'
+alt-ctrl-right = 'move right'
+
+# Resize
+ctrl-alt-minus = 'resize smart -150'
+ctrl-alt-equal = 'resize smart +150'
+
+# Workspace switching (keypad)
+ctrl-keypad1 = 'workspace 1'
+ctrl-keypad2 = 'workspace 2'
+ctrl-keypad3 = 'workspace 3'
+ctrl-keypad4 = 'workspace 4'
+ctrl-keypad5 = 'workspace 5'
+ctrl-keypad6 = 'workspace 6'
+ctrl-keypad7 = 'workspace 7'
+ctrl-keypad8 = 'workspace 8'
+ctrl-keypad9 = 'workspace 9'
+
+# Workspace switching (number row)
+ctrl-1 = 'workspace 1'
+ctrl-2 = 'workspace 2'
+ctrl-3 = 'workspace 3'
+ctrl-4 = 'workspace 4'
+ctrl-5 = 'workspace 5'
+ctrl-6 = 'workspace 6'
+ctrl-7 = 'workspace 7'
+ctrl-8 = 'workspace 8'
+ctrl-9 = 'workspace 9'
+
+# Move to workspace and follow (keypad)
+alt-ctrl-cmd-shift-keypad1 = ['move-node-to-workspace 1', 'workspace 1']
+alt-ctrl-cmd-shift-keypad2 = ['move-node-to-workspace 2', 'workspace 2']
+alt-ctrl-cmd-shift-keypad3 = ['move-node-to-workspace 3', 'workspace 3']
+alt-ctrl-cmd-shift-keypad4 = ['move-node-to-workspace 4', 'workspace 4']
+alt-ctrl-cmd-shift-keypad5 = ['move-node-to-workspace 5', 'workspace 5']
+alt-ctrl-cmd-shift-keypad6 = ['move-node-to-workspace 6', 'workspace 6']
+alt-ctrl-cmd-shift-keypad7 = ['move-node-to-workspace 7', 'workspace 7']
+alt-ctrl-cmd-shift-keypad8 = ['move-node-to-workspace 8', 'workspace 8']
+alt-ctrl-cmd-shift-keypad9 = ['move-node-to-workspace 9', 'workspace 9']
+
+# Move to workspace and follow (number row)
+alt-ctrl-cmd-shift-1 = ['move-node-to-workspace 1', 'workspace 1']
+alt-ctrl-cmd-shift-2 = ['move-node-to-workspace 2', 'workspace 2']
+alt-ctrl-cmd-shift-3 = ['move-node-to-workspace 3', 'workspace 3']
+alt-ctrl-cmd-shift-4 = ['move-node-to-workspace 4', 'workspace 4']
+alt-ctrl-cmd-shift-5 = ['move-node-to-workspace 5', 'workspace 5']
+alt-ctrl-cmd-shift-6 = ['move-node-to-workspace 6', 'workspace 6']
+alt-ctrl-cmd-shift-7 = ['move-node-to-workspace 7', 'workspace 7']
+alt-ctrl-cmd-shift-8 = ['move-node-to-workspace 8', 'workspace 8']
+alt-ctrl-cmd-shift-9 = ['move-node-to-workspace 9', 'workspace 9']
+
+# Workspace navigation
+ctrl-keypad0 = 'workspace-back-and-forth'
+ctrl-0 = 'workspace-back-and-forth'
+ctrl-cmd-right = 'workspace next'
+ctrl-cmd-left = 'workspace prev'
+
+# Move workspace to monitor
+alt-ctrl-cmd-shift-tab = 'move-workspace-to-monitor --wrap-around next'
+
+# Window management
+alt-ctrl-f = 'fullscreen'
+alt-ctrl-t = [
+	'layout floating tiling',
+	'exec-and-forget $HOME/.config/sketchybar/plugins/borders.sh',
+]
+
+# Join with adjacent windows
+cmd-alt-ctrl-left = 'join-with left'
+cmd-alt-ctrl-down = 'join-with down'
+cmd-alt-ctrl-up = 'join-with up'
+cmd-alt-ctrl-right = 'join-with right'
+
+# Enter service mode
+ctrl-alt-semicolon = 'mode service'
+
+# =============================================================================
+# Laptop Mode Bindings (no keypad shortcuts)
+# =============================================================================
+
+[mode.laptop.binding]
+
+# Layout switching
+ctrl-alt-period = 'layout tiles horizontal vertical'
+ctrl-alt-comma = 'layout accordion horizontal vertical'
+
+# Focus navigation
+ctrl-left = 'focus left'
+ctrl-down = 'focus down'
+ctrl-up = 'focus up'
+ctrl-right = 'focus right'
+
+# Move windows
+alt-ctrl-left = 'move left'
+alt-ctrl-down = 'move down'
+alt-ctrl-up = 'move up'
+alt-ctrl-right = 'move right'
+
+# Resize
+ctrl-alt-minus = 'resize smart -150'
+ctrl-alt-equal = 'resize smart +150'
+
+# Workspace switching (number row only)
+ctrl-1 = 'workspace 1'
+ctrl-2 = 'workspace 2'
+ctrl-3 = 'workspace 3'
+ctrl-4 = 'workspace 4'
+ctrl-5 = 'workspace 5'
+ctrl-6 = 'workspace 6'
+ctrl-7 = 'workspace 7'
+ctrl-8 = 'workspace 8'
+ctrl-9 = 'workspace 9'
+
+# Move to workspace and follow (number row only)
+alt-ctrl-cmd-shift-1 = ['move-node-to-workspace 1', 'workspace 1']
+alt-ctrl-cmd-shift-2 = ['move-node-to-workspace 2', 'workspace 2']
+alt-ctrl-cmd-shift-3 = ['move-node-to-workspace 3', 'workspace 3']
+alt-ctrl-cmd-shift-4 = ['move-node-to-workspace 4', 'workspace 4']
+alt-ctrl-cmd-shift-5 = ['move-node-to-workspace 5', 'workspace 5']
+alt-ctrl-cmd-shift-6 = ['move-node-to-workspace 6', 'workspace 6']
+alt-ctrl-cmd-shift-7 = ['move-node-to-workspace 7', 'workspace 7']
+alt-ctrl-cmd-shift-8 = ['move-node-to-workspace 8', 'workspace 8']
+alt-ctrl-cmd-shift-9 = ['move-node-to-workspace 9', 'workspace 9']
+
+# Workspace navigation
+ctrl-0 = 'workspace-back-and-forth'
+ctrl-cmd-right = 'workspace next'
+ctrl-cmd-left = 'workspace prev'
+
+# Move workspace to monitor
+alt-ctrl-cmd-shift-tab = 'move-workspace-to-monitor --wrap-around next'
+
+# Window management
+alt-ctrl-f = 'fullscreen'
+alt-ctrl-t = [
+	'layout floating tiling',
+	'exec-and-forget $HOME/.config/sketchybar/plugins/borders.sh',
+]
+
+# Join with adjacent windows
+cmd-alt-ctrl-left = 'join-with left'
+cmd-alt-ctrl-down = 'join-with down'
+cmd-alt-ctrl-up = 'join-with up'
+cmd-alt-ctrl-right = 'join-with right'
+
+# Enter service mode
+ctrl-alt-semicolon = 'mode service'
+
+# =============================================================================
+# Service Mode Bindings
+# =============================================================================
+
+[mode.service.binding]
+esc = ['reload-config', 'mode desktop']
+d = [
+	'exec-and-forget $HOME/.config/aerospace/scripts/set-gaps.sh desktop',
+	'mode desktop',
+]
+l = [
+	'exec-and-forget $HOME/.config/aerospace/scripts/set-gaps.sh laptop',
+	'mode laptop',
+]
+r = ['flatten-workspace-tree', 'mode desktop']
+f = ['layout floating tiling', 'mode desktop']
+backspace = ['close-all-windows-but-current', 'mode desktop']
+
+# =============================================================================
+# Monitor Assignments
+# =============================================================================
+
+[workspace-to-monitor-force-assignment]
+1 = 'main'
+2 = 'main'
+3 = 'main'
+4 = 'main'
+5 = 'main'
+6 = 'main'
+7 = 'main'
+8 = 'secondary'
+9 = 'secondary'

@@ -1,0 +1,13 @@
+[flavor]
+dark = "catppuccin-mocha"
+light = "catppuccin-latte"
+
+[mgr]
+border_symbol = " "
+border_style = { fg = "#1e1e2e" }
+
+[spot]
+border = { fg = "#1e1e2e" }
+
+[indicator]
+preview = { underline = false }
