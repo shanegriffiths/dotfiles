@@ -1,0 +1,9 @@
+#!/bin/bash
+
+sketchybar --add item spacer.progress_stats right \
+           --set spacer.progress_stats width=24 \
+                                       icon.drawing=off \
+                                       label.drawing=off \
+                                       background.drawing=off \
+                                       padding_left=0 \
+                                       padding_right=0

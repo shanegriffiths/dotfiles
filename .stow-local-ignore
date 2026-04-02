@@ -1,0 +1,9 @@
+\.git
+\.gitignore
+\.stow-local-ignore
+^/README.*
+^/LICENSE.*
+^/bootstrap\.sh
+^/Brewfile
+^/macos\.sh
+\.DS_Store

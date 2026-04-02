@@ -1,0 +1,11 @@
+#!/bin/bash
+
+PLUGIN_DIR="${PLUGIN_DIR:-$HOME/.config/sketchybar/plugins}"
+
+sketchybar --add item year_progress right \
+           --set year_progress update_freq=86400 \
+                               icon.drawing=off \
+                               label.padding_left=4 \
+                               label.padding_right=4 \
+                               script="$PLUGIN_DIR/year_progress.sh" \
+           --subscribe year_progress system_woke

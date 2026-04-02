@@ -1,0 +1,13 @@
+# Global direnv configuration to suppress verbose output
+
+# Redirect all direnv output to /dev/null
+log_status() {
+    printf "" >/dev/null 2>&1
+}
+
+log_error() {
+    # Only show actual errors, not export messages
+    if [[ "$1" != "export" ]]; then
+        printf "direnv: %s\n" "$*" >&2
+    fi
+}

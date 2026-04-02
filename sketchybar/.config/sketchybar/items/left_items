@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+# Batch all left-side items into a single command for faster startup
+sketchybar \
+  --add item front_app left \
+  --set front_app \
+    icon.font="sketchybar-app-font:Regular:13.0" \
+    label.font="SF Pro:Medium:14.0" \
+    icon.color=0xffffffff \
+    icon.padding_left=0 \
+    icon.padding_right=4 \
+    label.padding_left=4 \
+    label.padding_right=0 \
+    script="$PLUGIN_DIR/front_app.sh" \
+  --subscribe front_app front_app_switched

@@ -1,0 +1,47 @@
+[mgr]
+ratio = [1, 3, 4]
+show_hidden = true
+linemode = "size"
+sort_by = "natural"
+scrolloff = 0
+
+[opener]
+markdown = [
+    { run = 'open -a MarkEdit "$@"' }
+]
+pdf = [
+    { run = 'open -a "PDF Expert" "$@"' }
+]
+svg = [
+    { run = 'open -a Gapplin "$@"' }
+]
+images = [
+    { run = 'open -a Preview "$@"' }
+]
+videos = [
+    { run = 'open -a IINA "$@"' }
+]
+code = [
+    { run = '$EDITOR "$@"', block = true, desc = "Editor" },
+    { run = 'open -a "Cursor" "$@"', desc = "Cursor" }
+]
+folder = [
+    { run = 'open -a Bloom "$@"', desc = "Bloom" }
+]
+
+[open]
+prepend_rules = [
+    { url = "*.md", use = "markdown" },
+    { url = "*.pdf", use = "pdf" },
+    { url = "*.svg", use = "svg" },
+    { url = "*/", use = "folder" },
+    { mime = "image/*", use = "images" },
+    { mime = "video/*", use = "videos" },
+    { mime = "text/*", use = "code" },
+]
+
+[preview]
+wrap = "yes"
+tab_size = 2
+image_quality = 80
+image_filter = "lanczos3"
