@@ -242,8 +242,8 @@ alias reload='source ~/.zshrc'
 alias path='echo $PATH | tr ":" "\n"'
 # Directory stack (pairs with auto_pushd)
 alias d='dirs -v | head -10'
-# Dotfiles management (bare git repo)
-alias dot='git --git-dir=$HOME/.dotfiles --work-tree=$HOME'
+# Dotfiles management (GNU Stow)
+alias dot='git -C $HOME/.dotfiles'
 alias o.='open -a Bloom .'
 
 # ---------------------------------------------------------------------------

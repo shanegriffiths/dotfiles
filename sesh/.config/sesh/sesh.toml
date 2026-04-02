@@ -18,4 +18,4 @@ startup_command = "nvim"
 # Dotfiles
 [[session]]
 name = "dotfiles"
-path = "~/.config"
+path = "~/.dotfiles"

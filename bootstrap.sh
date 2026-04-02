@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# ~/.config/dotfiles/bootstrap.sh
+# ~/.dotfiles/bootstrap.sh
 # Provision a fresh Mac from scratch — installs tools, apps, and preferences.
 #
 # What it does (in order):
 #   1.  Xcode Command Line Tools
 #   2.  Homebrew
-#   3.  Clone dotfiles bare repo (backs up any conflicting files)
+#   3.  Clone dotfiles repo and stow configs (backs up any conflicting files)
 #   4.  Brew Bundle (formulae, casks, fonts, MAS apps, VS Code extensions)
 #   5.  Oh My Zsh
 #   6.  Oh My Zsh custom plugins (fzf-tab, autosuggestions, syntax-highlighting)
@@ -16,10 +16,10 @@
 #   11. Post-install checklist
 #
 # Usage — on a fresh Mac (requires SSH key for git clone):
-#   bash <(curl -sL https://raw.githubusercontent.com/shanegriffiths/dotfiles/main/.config/dotfiles/bootstrap.sh)
+#   bash <(curl -sL https://raw.githubusercontent.com/shanegriffiths/dotfiles/main/bootstrap.sh)
 #
 # Or if the repo is already cloned:
-#   bash ~/.config/dotfiles/bootstrap.sh
+#   bash ~/.dotfiles/bootstrap.sh
 #
 # The script is idempotent — each step checks whether it's already done and
 # skips if so. Safe to re-run after a partial failure or to pick up changes.
@@ -75,42 +75,45 @@ fi
 
 brew update
 
-# ============================================================================
-# 3. Clone dotfiles bare repo
-# ============================================================================
-# Uses a bare git repo so $HOME is the work tree without being a normal repo.
-# The `dot` alias (defined in .zshrc) wraps git with the right flags.
-# See: https://www.atlassian.com/git/tutorials/dotfiles
+# Install stow early — needed to symlink dotfiles in step 3
+if ! command -v stow &>/dev/null; then
+    info "Installing GNU Stow..."
+    brew install stow
+else
+    ok "GNU Stow already installed"
+fi
 
-if [ ! -d "$DOTFILES_DIR" ]; then
+# ============================================================================
+# 3. Clone dotfiles and stow configs
+# ============================================================================
+# Uses GNU Stow to symlink config files from ~/.dotfiles into $HOME.
+# Each subdirectory (zsh/, ghostty/, nvim/, etc.) is a "package" that mirrors
+# the home directory structure. `stow */` creates all symlinks at once.
+
+if [ ! -d "$DOTFILES_DIR/.git" ]; then
     info "Cloning dotfiles..."
-    git clone --bare "$DOTFILES_REPO" "$DOTFILES_DIR"
+    git clone "$DOTFILES_REPO" "$DOTFILES_DIR"
 else
     ok "Dotfiles repo already exists"
 fi
 
-# Local function — same as the `dot` alias in .zshrc
-dot() { git --git-dir="$DOTFILES_DIR" --work-tree="$HOME" "$@"; }
+# Back up any conflicting files before stowing
+info "Stowing dotfiles..."
+cd "$DOTFILES_DIR"
 
-# Checkout dotfiles — if files already exist (e.g. default .zshrc on a fresh
-# Mac), back them up to ~/.dotfiles-backup/<timestamp>/ before overwriting.
-info "Checking out dotfiles..."
-if ! dot checkout 2>/dev/null; then
+# Dry run to detect conflicts
+if ! stow -n */ 2>/dev/null; then
     warn "Backing up conflicting files to $BACKUP_DIR"
     mkdir -p "$BACKUP_DIR"
 
-    dot checkout 2>&1 | grep -E "^\s+" | awk '{print $1}' | while read -r file; do
-        mkdir -p "$BACKUP_DIR/$(dirname "$file")"
-        mv "$HOME/$file" "$BACKUP_DIR/$file"
-    done
-
-    dot checkout
+    # Use --adopt to pull conflicting files into the repo, then restore from git
+    stow --adopt */
+    git checkout .
+else
+    stow */
 fi
 
-# Hide untracked files in `dot status` (otherwise it shows your entire $HOME)
-dot config status.showUntrackedFiles no
-
-ok "Dotfiles checked out"
+ok "Dotfiles stowed"
 
 # ============================================================================
 # 4. Brew Bundle
@@ -119,7 +122,7 @@ ok "Dotfiles checked out"
 # VS Code extensions. MAS apps will fail silently if not signed in to the
 # App Store — the post-install checklist reminds you to sign in and re-run.
 
-BREWFILE="$HOME/.config/dotfiles/Brewfile"
+BREWFILE="$DOTFILES_DIR/Brewfile"
 
 if [ -f "$BREWFILE" ]; then
     info "Installing Homebrew packages (this may take a while)..."
@@ -171,7 +174,7 @@ done
 # After installation, open tmux and press `prefix + I` to install plugins
 # defined in .tmux.conf.
 
-TPM_DIR="$HOME/.tmux/plugins/tpm"
+TPM_DIR="$HOME/.config/tmux/plugins/tpm"
 
 if [ ! -d "$TPM_DIR" ]; then
     info "Installing tmux Plugin Manager..."
@@ -224,7 +227,7 @@ fi
 # Applies system preferences (Dock, Finder, keyboard, trackpad, etc.)
 # See macos.sh for full documentation of each setting.
 
-MACOS_SCRIPT="$HOME/.config/dotfiles/macos.sh"
+MACOS_SCRIPT="$DOTFILES_DIR/macos.sh"
 
 if [ -f "$MACOS_SCRIPT" ]; then
     info "Applying macOS defaults..."
@@ -247,7 +250,7 @@ echo ""
 echo "  1. Sign in to 1Password and enable Safari extension"
 echo "  2. Sign in to iCloud and enable services"
 echo "  3. Sign in to Mac App Store, then re-run:"
-echo "     brew bundle --file=~/.config/dotfiles/Brewfile --no-lock"
+echo "     brew bundle --file=~/.dotfiles/Brewfile --no-lock"
 echo "  4. Import Raycast settings (from backup/sync)"
 echo "  5. Open Ghostty — config is already in ~/.config/ghostty/"
 echo "  6. Open neovim — plugins will auto-install on first launch"
