@@ -108,7 +108,7 @@ fi
 
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
     info "Installing Oh My Zsh..."
-    RUNZSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+    RUNZSH=no KEEP_ZSHRC=yes sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 else
     ok "Oh My Zsh already installed"
 fi
@@ -119,22 +119,21 @@ fi
 
 ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
 
-declare -A plugins=(
-    ["fzf-tab"]="https://github.com/Aloxaf/fzf-tab"
-    ["zsh-autosuggestions"]="https://github.com/zsh-users/zsh-autosuggestions"
-    ["zsh-syntax-highlighting"]="https://github.com/zsh-users/zsh-syntax-highlighting"
-    ["zsh-completions"]="https://github.com/zsh-users/zsh-completions"
-)
-
-for plugin in "${!plugins[@]}"; do
-    plugin_dir="$ZSH_CUSTOM/plugins/$plugin"
+clone_plugin() {
+    local name="$1" url="$2"
+    local plugin_dir="$ZSH_CUSTOM/plugins/$name"
     if [ ! -d "$plugin_dir" ]; then
-        info "Cloning $plugin..."
-        git clone "${plugins[$plugin]}" "$plugin_dir"
+        info "Cloning $name..."
+        git clone "$url" "$plugin_dir"
     else
-        ok "$plugin already installed"
+        ok "$name already installed"
     fi
-done
+}
+
+clone_plugin fzf-tab https://github.com/Aloxaf/fzf-tab
+clone_plugin zsh-autosuggestions https://github.com/zsh-users/zsh-autosuggestions
+clone_plugin zsh-syntax-highlighting https://github.com/zsh-users/zsh-syntax-highlighting
+clone_plugin zsh-completions https://github.com/zsh-users/zsh-completions
 
 # ============================================================================
 # 7. tmux Plugin Manager (tpm)
