@@ -1,24 +1,40 @@
 # Minimal Starship config for SSH sessions — fast, no git overhead.
+# Matches the local two-line layout: icon + directory on top, character below.
 "$schema" = "https://starship.rs/config-schema.json"
 
 scan_timeout = 50
 command_timeout = 200
 add_newline = true
 
-format = """$hostname $directory $character"""
+format = """
+$hostname\
+$directory\
+$status\
+$line_break\
+$character"""
 
 [hostname]
 ssh_only = true
-style = "bold yellow"
-format = "[󰟀 $hostname]($style):"
+style = "fg:#bac2de"
+format = "[󰟀 ](fg:#bac2de)"
 
 [directory]
-style = "bold blue"
-truncation_length = 3
+style = "fg:#74c7ec"
+format = "[ $path ]($style)"
+truncation_length = 4
 
 [character]
-success_symbol = "[>](bold green)"
-error_symbol = "[>](bold red)"
+success_symbol = "[\uf105 ](bold fg:green)"
+error_symbol = "[\uf105 ](bold fg:red)"
+
+[status]
+disabled = false
+format = " [$symbol$status]($style)"
+symbol = "\uf06a "
+style = "fg:red"
+
+[line_break]
+disabled = false
 
 # Disable everything else
 [git_branch]

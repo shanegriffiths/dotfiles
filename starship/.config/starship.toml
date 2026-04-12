@@ -44,7 +44,7 @@ disabled = false
 style = "fg:subtext1"
 
 [os.symbols]
-Macos = "󰟀"
+Macos = "\uf179"
 
 # --- Git remote icon ---
 [custom.giturl]
