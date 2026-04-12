@@ -37,6 +37,7 @@ if [[ -n "$IS_SSH_SESSION" ]]; then
   plugins=(
     git
     sudo
+    zsh-syntax-highlighting
   )
 else
   plugins=(
