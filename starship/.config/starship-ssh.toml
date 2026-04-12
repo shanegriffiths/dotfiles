@@ -10,7 +10,7 @@ format = """$hostname $directory $character"""
 [hostname]
 ssh_only = true
 style = "bold yellow"
-format = "[󰣀 $hostname]($style):"
+format = "[󰟀 $hostname]($style):"
 
 [directory]
 style = "bold blue"
