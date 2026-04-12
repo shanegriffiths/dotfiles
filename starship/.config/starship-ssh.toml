@@ -8,6 +8,7 @@ add_newline = true
 
 format = """
 $hostname\
+$username\
 $directory\
 $status\
 $line_break\
@@ -17,6 +18,12 @@ $character"""
 ssh_only = true
 style = "fg:#bac2de"
 format = "[󰟀 ](fg:#bac2de)"
+
+[username]
+show_always = true
+style_user = "fg:#f9e2af"
+style_root = "fg:#f38ba8 bold"
+format = "[$user]($style)"
 
 [directory]
 style = "fg:#74c7ec"
