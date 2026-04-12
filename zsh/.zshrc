@@ -170,8 +170,8 @@ bindkey '^Xl' clear-keep-buffer
 # Fzf
 # ---------------------------------------------------------------------------
 
-# Set up fzf key bindings and fuzzy completion (interactive only, not SSH).
-if [[ $- == *i* && -z "$IS_SSH_SESSION" ]]; then
+# Set up fzf key bindings and fuzzy completion (interactive only).
+if [[ $- == *i* ]]; then
   eval "$(fzf --zsh)"
 fi
 
@@ -181,9 +181,7 @@ eval "$(atuin init zsh)"
 bindkey '^r' atuin-search
 
 # Set up navi cheatsheet widget (Ctrl+G)
-if [[ -z "$IS_SSH_SESSION" ]]; then
-  eval "$(navi widget zsh)"
-fi
+eval "$(navi widget zsh)"
 
 # -- Use fd instead of fzf --
 
