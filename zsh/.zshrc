@@ -177,10 +177,8 @@ fi
 
 # Set up atuin shell history (Ctrl+R for history search)
 export ATUIN_NOBIND=true
-if [[ -z "$IS_SSH_SESSION" ]]; then
-  eval "$(atuin init zsh)"
-  bindkey '^r' atuin-search
-fi
+eval "$(atuin init zsh)"
+bindkey '^r' atuin-search
 
 # Set up navi cheatsheet widget (Ctrl+G)
 if [[ -z "$IS_SSH_SESSION" ]]; then
