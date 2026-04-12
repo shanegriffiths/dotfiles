@@ -1,0 +1,83 @@
+% mole, macos, cleanup
+
+# Open main interactive menu
+mo
+
+# Free up disk space (caches, logs, temp files)
+mo clean
+
+# Preview cleanup without deleting anything
+mo clean --dry-run
+
+# Manage protected caches (whitelist)
+mo clean --whitelist
+
+% mole, macos, uninstall
+
+# Completely remove an app and its leftover files
+mo uninstall
+
+# Preview what would be removed for an app
+mo uninstall --dry-run
+
+% mole, macos, optimize
+
+# Check and maintain system health
+mo optimize
+
+# Preview optimization without making changes
+mo optimize --dry-run
+
+# Manage items protected from optimization
+mo optimize --whitelist
+
+% mole, macos, disk
+
+# Explore disk usage interactively
+mo analyze
+
+# Analyze a specific path (e.g. external drive)
+mo analyze <path>
+
+# Monitor system health (CPU, memory, disk, battery)
+mo status
+
+% mole, macos, purge
+
+# Remove old project build artifacts (node_modules, target, etc.)
+mo purge
+
+# Preview project artifact cleanup
+mo purge --dry-run
+
+# Configure which directories to scan for project artifacts
+mo purge --paths
+
+# Find and remove installer files (.dmg, .pkg)
+mo installer
+
+# Preview installer cleanup
+mo installer --dry-run
+
+% mole, macos, system
+
+# Enable Touch ID for sudo
+mo touchid enable
+
+# Preview Touch ID setup changes
+mo touchid enable --dry-run
+
+# Set up shell tab completion
+mo completion
+
+# Update mole to latest version
+mo update
+
+# Force reinstall latest stable version
+mo update --force
+
+# Install latest nightly build
+mo update --nightly
+
+# Remove mole from system
+mo remove

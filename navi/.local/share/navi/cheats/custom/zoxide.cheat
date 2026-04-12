@@ -1,0 +1,36 @@
+% zoxide, cd, navigation
+
+# Jump to best matching directory (zoxide via cd alias)
+cd <query>
+
+# Interactive directory selection with fzf
+cdi
+
+# Interactive selection filtered by query
+cdi <query>
+
+# Jump using multiple keywords to narrow results
+cd <keyword1> <keyword2>
+
+% zoxide, management
+
+# Add a directory to the zoxide database
+zoxide add <directory>
+
+# Remove a directory from the zoxide database
+zoxide remove <path>
+
+# List all directories in zoxide database (sorted by score)
+zoxide query -l
+
+# List directories matching a query with scores
+zoxide query -l -s <query>
+
+# Interactively select and remove a directory
+zoxide query -i | xargs zoxide remove
+
+# Show the path zoxide would jump to for a query
+zoxide query <query>
+
+$ directory: find ~ -maxdepth 3 -type d 2>/dev/null --- --preview 'eza --tree --level=1 --icons {}'
+$ path: zoxide query -l 2>/dev/null --- --preview 'eza --tree --level=1 --icons {}'

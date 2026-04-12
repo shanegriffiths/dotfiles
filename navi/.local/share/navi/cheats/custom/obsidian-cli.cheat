@@ -1,0 +1,283 @@
+% obsidian, vault
+
+# Show vault info (name, path, size)
+obsidian vault
+
+# List all vaults
+obsidian vaults verbose
+
+# List files in vault
+obsidian files vault=<vault>
+
+# List files in a specific folder
+obsidian files folder=<folder> vault=<vault>
+
+# Count total files in vault
+obsidian files total vault=<vault>
+
+# List folders in vault
+obsidian folders vault=<vault>
+
+# Get folder info (files, size)
+obsidian folder path=<folder> vault=<vault>
+
+# Reload the vault
+obsidian reload vault=<vault>
+
+$ vault: obsidian vaults 2>/dev/null | tr '\t' '\n'
+$ folder: obsidian folders 2>/dev/null | tr '\t' '\n'
+
+% obsidian, file, read-write
+
+# Read a file by name
+obsidian read file="<file>" vault=<vault>
+
+# Read a file by path
+obsidian read path="<path>" vault=<vault>
+
+# Show file info (size, dates, links)
+obsidian file file="<file>" vault=<vault>
+
+# Create a new file
+obsidian create name="<name>" content="<content>" vault=<vault>
+
+# Create a file from a template
+obsidian create name="<name>" template="<template>" vault=<vault>
+
+# Append content to a file
+obsidian append file="<file>" content="<content>" vault=<vault>
+
+# Prepend content to a file
+obsidian prepend file="<file>" content="<content>" vault=<vault>
+
+# Open a file in Obsidian
+obsidian open file="<file>" vault=<vault>
+
+# Open a file in a new tab
+obsidian open file="<file>" newtab vault=<vault>
+
+# Delete a file (to trash)
+obsidian delete file="<file>" vault=<vault>
+
+# Delete a file permanently
+obsidian delete file="<file>" permanent vault=<vault>
+
+# Move/rename a file
+obsidian move file="<file>" to="<destination>" vault=<vault>
+
+# Rename a file
+obsidian rename file="<file>" name="<new_name>" vault=<vault>
+
+$ vault: obsidian vaults 2>/dev/null | tr '\t' '\n'
+
+% obsidian, search, links
+
+# List tags in vault (with counts, sorted by count)
+obsidian tags counts sort=count vault=<vault>
+
+# List tags for a specific file
+obsidian tags file="<file>" vault=<vault>
+
+# Get info about a specific tag
+obsidian tag name=<tag> verbose vault=<vault>
+
+# List outgoing links from a file
+obsidian links file="<file>" vault=<vault>
+
+# List backlinks to a file
+obsidian backlinks file="<file>" vault=<vault>
+
+# List orphan files (no incoming links)
+obsidian orphans vault=<vault>
+
+# List dead-end files (no outgoing links)
+obsidian deadends vault=<vault>
+
+# List unresolved links in vault
+obsidian unresolved counts vault=<vault>
+
+# List aliases in vault
+obsidian aliases verbose vault=<vault>
+
+# List recently opened files
+obsidian recents vault=<vault>
+
+$ vault: obsidian vaults 2>/dev/null | tr '\t' '\n'
+
+% obsidian, properties
+
+# List all properties in vault (with counts)
+obsidian properties counts vault=<vault>
+
+# Show properties for a file
+obsidian properties file="<file>" vault=<vault>
+
+# Read a property value from a file
+obsidian property:read name="<property_name>" file="<file>" vault=<vault>
+
+# Set a property on a file
+obsidian property:set name="<property_name>" value="<value>" file="<file>" vault=<vault>
+
+# Remove a property from a file
+obsidian property:remove name="<property_name>" file="<file>" vault=<vault>
+
+$ vault: obsidian vaults 2>/dev/null | tr '\t' '\n'
+
+% obsidian, tasks
+
+# List all incomplete tasks
+obsidian tasks todo vault=<vault>
+
+# List completed tasks
+obsidian tasks done vault=<vault>
+
+# List tasks in a specific file
+obsidian tasks file="<file>" vault=<vault>
+
+# List tasks from daily note
+obsidian tasks daily vault=<vault>
+
+# Count total tasks
+obsidian tasks total vault=<vault>
+
+# Toggle a task status
+obsidian task file="<file>" line=<line_number> toggle vault=<vault>
+
+# Mark a task as done
+obsidian task file="<file>" line=<line_number> done vault=<vault>
+
+$ vault: obsidian vaults 2>/dev/null | tr '\t' '\n'
+
+% obsidian, bookmarks
+
+# List bookmarks
+obsidian bookmarks vault=<vault>
+
+# Bookmark a file
+obsidian bookmark file="<file>" vault=<vault>
+
+# Bookmark a file with a title
+obsidian bookmark file="<file>" title="<title>" vault=<vault>
+
+# Bookmark a URL
+obsidian bookmark url="<url>" title="<title>" vault=<vault>
+
+# Bookmark a search query
+obsidian bookmark search="<query>" title="<title>" vault=<vault>
+
+$ vault: obsidian vaults 2>/dev/null | tr '\t' '\n'
+
+% obsidian, plugins
+
+# List all installed plugins
+obsidian plugins vault=<vault>
+
+# List enabled plugins
+obsidian plugins:enabled vault=<vault>
+
+# List community plugins with versions
+obsidian plugins filter=community versions vault=<vault>
+
+# Enable a plugin
+obsidian plugin:enable id=<plugin_id> vault=<vault>
+
+# Disable a plugin
+obsidian plugin:disable id=<plugin_id> vault=<vault>
+
+# Install a community plugin
+obsidian plugin:install id=<plugin_id> enable vault=<vault>
+
+# Uninstall a community plugin
+obsidian plugin:uninstall id=<plugin_id> vault=<vault>
+
+# Toggle restricted mode
+obsidian plugins:restrict <restrict_mode> vault=<vault>
+
+$ vault: obsidian vaults 2>/dev/null | tr '\t' '\n'
+$ plugin_id: obsidian plugins 2>/dev/null | awk '{print $1}'
+$ restrict_mode: echo -e "on\noff"
+
+% obsidian, commands
+
+# List all available commands
+obsidian commands vault=<vault>
+
+# Filter commands by prefix
+obsidian commands filter=<prefix> vault=<vault>
+
+# Execute a command by ID
+obsidian command id=<command_id> vault=<vault>
+
+# Show hotkey for a command
+obsidian hotkey id=<command_id> vault=<vault>
+
+# List all hotkeys
+obsidian hotkeys vault=<vault>
+
+$ vault: obsidian vaults 2>/dev/null | tr '\t' '\n'
+
+% obsidian, sync, history
+
+# Show sync status
+obsidian sync:status vault=<vault>
+
+# Pause sync
+obsidian sync off vault=<vault>
+
+# Resume sync
+obsidian sync on vault=<vault>
+
+# List file history versions
+obsidian history file="<file>" vault=<vault>
+
+# Read a specific history version
+obsidian history:read file="<file>" version=<version_number> vault=<vault>
+
+# Restore a history version
+obsidian history:restore file="<file>" version=<version_number> vault=<vault>
+
+# List sync version history for a file
+obsidian sync:history file="<file>" vault=<vault>
+
+$ vault: obsidian vaults 2>/dev/null | tr '\t' '\n'
+
+% obsidian, base
+
+# List all base files
+obsidian bases vault=<vault>
+
+# List views in a base
+obsidian base:views file="<file>" vault=<vault>
+
+# Query a base view (JSON output)
+obsidian base:query file="<file>" view="<view>" vault=<vault>
+
+# Query a base view as markdown
+obsidian base:query file="<file>" view="<view>" format=md vault=<vault>
+
+# Create item in a base
+obsidian base:create file="<file>" name="<name>" vault=<vault>
+
+$ vault: obsidian vaults 2>/dev/null | tr '\t' '\n'
+
+% obsidian, theme, snippets
+
+# Show active theme
+obsidian theme vault=<vault>
+
+# Set theme
+obsidian theme:set name="<theme_name>" vault=<vault>
+
+# Install a community theme
+obsidian theme:install name="<theme_name>" enable vault=<vault>
+
+# List CSS snippets
+obsidian snippets vault=<vault>
+
+# Enable a CSS snippet
+obsidian snippet:enable name="<snippet_name>" vault=<vault>
+
+# Disable a CSS snippet
+obsidian snippet:disable name="<snippet_name>" vault=<vault>
+
+$ vault: obsidian vaults 2>/dev/null | tr '\t' '\n'

@@ -1,0 +1,67 @@
+% stow, dotfiles, symlink
+
+# Stow a package (create symlinks in parent directory)
+stow <package>
+
+# Stow a package to a specific target directory
+stow -t <target> <package>
+
+# Stow from a specific directory (not current)
+stow -d <stow_dir> -t <target> <package>
+
+# Stow multiple packages at once
+stow <package1> <package2>
+
+$ package: ls -d */ 2>/dev/null | sed 's|/$||'
+$ stow_dir: echo -e "$HOME/dotfiles\n$HOME/.dotfiles"
+$ target: echo -e "$HOME"
+
+% stow, dotfiles, unstow
+
+# Remove symlinks for a package (unstow)
+stow -D <package>
+
+# Unstow from a specific target directory
+stow -D -t <target> <package>
+
+# Restow (unstow then stow — useful after reorganising)
+stow -R <package>
+
+# Restow all packages
+stow -R */
+
+$ package: ls -d */ 2>/dev/null | sed 's|/$||'
+$ target: echo -e "$HOME"
+
+% stow, dotfiles, safety
+
+# Simulate stow without making changes (dry run)
+stow -n -v <package>
+
+# Simulate unstow without making changes
+stow -n -v -D <package>
+
+# Stow with verbose output (show what symlinks are created)
+stow -v <package>
+
+# Extra verbose output (show all operations)
+stow -vv <package>
+
+# Adopt existing files into the stow package (move real files into package dir)
+stow --adopt <package>
+
+$ package: ls -d */ 2>/dev/null | sed 's|/$||'
+
+% stow, dotfiles, conflicts
+
+# Ignore specific files when stowing (regex pattern)
+stow --ignore=<pattern> <package>
+
+# Override conflicting files (restow to fix)
+stow -R <package>
+
+# Stow ignoring dotfiles starting with a pattern
+stow --ignore='\.DS_Store' <package>
+
+$ package: ls -d */ 2>/dev/null | sed 's|/$||'
+$ pattern: echo -e "\.DS_Store\nREADME.*\nLICENSE\n\.git"

@@ -1,0 +1,273 @@
+% gh, repo
+
+# Clone a repository
+gh repo clone <repo>
+
+# Create a new repository
+gh repo create <repo_name> --<visibility>
+
+# Fork a repository
+gh repo fork <repo>
+
+# View repo in browser
+gh repo view --web
+
+# View repo details
+gh repo view <repo>
+
+# List your repositories
+gh repo list --limit <limit>
+
+# Archive a repository
+gh repo archive <repo>
+
+$ visibility: echo -e "public\nprivate"
+$ limit: echo -e "10\n30\n50\n100"
+
+% gh, pr, pull-request
+
+# Create a pull request interactively
+gh pr create
+
+# Create a pull request with title and body
+gh pr create --title "<title>" --body "<body>"
+
+# Create a draft pull request
+gh pr create --draft --title "<title>"
+
+# List open pull requests
+gh pr list
+
+# View a pull request
+gh pr view <pr_number>
+
+# View pull request in browser
+gh pr view <pr_number> --web
+
+# Check out a pull request locally
+gh pr checkout <pr_number>
+
+# Approve a pull request
+gh pr review <pr_number> --approve
+
+# Request changes on a pull request
+gh pr review <pr_number> --request-changes --body "<comment>"
+
+# Merge a pull request
+gh pr merge <pr_number> --<merge_method>
+
+# Close a pull request
+gh pr close <pr_number>
+
+# View PR diff
+gh pr diff <pr_number>
+
+# List PR checks/status
+gh pr checks <pr_number>
+
+# Mark draft PR as ready for review
+gh pr ready <pr_number>
+
+$ pr_number: gh pr list --json number,title --jq '.[] | "\(.number)\t\(.title)"' --- --column 1
+$ merge_method: echo -e "merge\nsquash\nrebase"
+
+% gh, issue
+
+# Create an issue
+gh issue create --title "<title>" --body "<body>"
+
+# List open issues
+gh issue list
+
+# View an issue
+gh issue view <issue_number>
+
+# View issue in browser
+gh issue view <issue_number> --web
+
+# Close an issue
+gh issue close <issue_number>
+
+# Reopen an issue
+gh issue reopen <issue_number>
+
+# Add a comment to an issue
+gh issue comment <issue_number> --body "<comment>"
+
+# Assign an issue
+gh issue edit <issue_number> --add-assignee <assignee>
+
+# Add labels to an issue
+gh issue edit <issue_number> --add-label "<label>"
+
+# List issues assigned to you
+gh issue list --assignee @me
+
+# Search issues
+gh issue list --search "<query>"
+
+$ issue_number: gh issue list --json number,title --jq '.[] | "\(.number)\t\(.title)"' --- --column 1
+$ assignee: gh api repos/:owner/:repo/contributors --jq '.[].login'
+$ label: gh label list --json name --jq '.[].name'
+
+% gh, workflow, actions
+
+# List workflows
+gh workflow list
+
+# View a workflow run
+gh run view <run_id>
+
+# Watch a running workflow
+gh run watch <run_id>
+
+# List recent workflow runs
+gh run list --limit <limit>
+
+# Trigger a workflow manually
+gh workflow run <workflow>
+
+# View workflow run logs
+gh run view <run_id> --log
+
+# Re-run a failed workflow
+gh run rerun <run_id> --failed
+
+# Download workflow artifacts
+gh run download <run_id>
+
+# Cancel a running workflow
+gh run cancel <run_id>
+
+$ run_id: gh run list --json databaseId,displayTitle,status --jq '.[] | "\(.databaseId)\t\(.displayTitle) (\(.status))"' --- --column 1
+$ workflow: gh workflow list --json name --jq '.[].name'
+$ limit: echo -e "10\n20\n50"
+
+% gh, release
+
+# Create a release from a tag
+gh release create <tag> --title "<title>" --notes "<notes>"
+
+# Create a release with auto-generated notes
+gh release create <tag> --generate-notes
+
+# List releases
+gh release list
+
+# Download release assets
+gh release download <tag>
+
+# Delete a release
+gh release delete <tag>
+
+# View release details
+gh release view <tag>
+
+# Upload assets to an existing release
+gh release upload <tag> <files>
+
+$ tag: git tag --sort=-v:refname | head -20
+
+% gh, gist
+
+# Create a gist from a file
+gh gist create <file> --<gist_visibility>
+
+# Create a gist from stdin
+echo "<content>" | gh gist create --filename <filename>
+
+# List your gists
+gh gist list --limit <limit>
+
+# View a gist
+gh gist view <gist_id>
+
+# Edit a gist
+gh gist edit <gist_id>
+
+# Clone a gist
+gh gist clone <gist_id>
+
+# Delete a gist
+gh gist delete <gist_id>
+
+$ gist_visibility: echo -e "public\nsecret"
+$ gist_id: gh gist list --json id,description --jq '.[] | "\(.id)\t\(.description)"' --- --column 1
+$ limit: echo -e "10\n20\n50"
+
+% gh, api, advanced
+
+# Make an API request (GET)
+gh api <endpoint>
+
+# Make an API request (POST)
+gh api <endpoint> -X POST -f <field>=<value>
+
+# Query with GraphQL
+gh api graphql -f query='<graphql_query>'
+
+# List repo topics
+gh api repos/:owner/:repo/topics --jq '.names[]'
+
+# View rate limit status
+gh api rate_limit --jq '.rate'
+
+# Star a repository
+gh api user/starred/<owner_repo> -X PUT
+
+# Search repositories
+gh search repos "<query>" --limit <limit>
+
+# Search code
+gh search code "<query>" --limit <limit>
+
+$ limit: echo -e "10\n30\n50"
+
+% gh, auth, config
+
+# Login to GitHub
+gh auth login
+
+# Check auth status
+gh auth status
+
+# Switch between accounts
+gh auth switch
+
+# Refresh auth token with additional scopes
+gh auth refresh --scopes <scope>
+
+# Set default editor
+gh config set editor <editor>
+
+# Set default browser
+gh config set browser <browser>
+
+# Set default git protocol
+gh config set git_protocol <protocol>
+
+$ scope: echo -e "repo\nread:org\nworkflow\ngist\nproject"
+$ editor: echo -e "nvim\nvim\ncode\nnano"
+$ protocol: echo -e "ssh\nhttps"
+
+% gh, codespace
+
+# Create a codespace
+gh codespace create --repo <repo>
+
+# List codespaces
+gh codespace list
+
+# SSH into a codespace
+gh codespace ssh -c <codespace>
+
+# Open codespace in browser
+gh codespace code -c <codespace> --web
+
+# Stop a codespace
+gh codespace stop -c <codespace>
+
+# Delete a codespace
+gh codespace delete -c <codespace>
+
+$ codespace: gh codespace list --json name,displayName --jq '.[] | "\(.name)\t\(.displayName)"' --- --column 1

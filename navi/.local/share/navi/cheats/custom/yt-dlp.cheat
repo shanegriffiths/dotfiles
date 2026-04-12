@@ -1,0 +1,144 @@
+% yt-dlp, video, download
+
+# Download a video (best quality)
+yt-dlp '<url>'
+
+# Download with a specific format/quality
+yt-dlp -f '<format>' '<url>'
+
+# List available formats for a video
+yt-dlp -F '<url>'
+
+# Download best video+audio up to a resolution
+yt-dlp -f 'bv*[height<=<resolution>]+ba/b[height<=<resolution>]' '<url>'
+
+# Download and merge into mp4
+yt-dlp --merge-output-format mp4 '<url>'
+
+# Download with custom output filename
+yt-dlp -o '<output_template>' '<url>'
+
+$ resolution: echo -e "1080\n720\n480\n1440\n2160"
+$ output_template: echo -e "%(title)s.%(ext)s\n%(uploader)s - %(title)s.%(ext)s\n%(upload_date)s - %(title)s.%(ext)s\n%(playlist_index)s - %(title)s.%(ext)s"
+$ format: echo -e "best\nbv*+ba/b\nbv*[height<=1080]+ba/b\nbv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4]"
+
+% yt-dlp, audio
+
+# Extract audio only (best quality)
+yt-dlp -x '<url>'
+
+# Extract audio and convert to mp3
+yt-dlp -x --audio-format mp3 '<url>'
+
+# Extract audio as specific format with quality
+yt-dlp -x --audio-format <audio_format> --audio-quality <audio_quality> '<url>'
+
+# Quick mp3 preset
+yt-dlp -t mp3 '<url>'
+
+$ audio_format: echo -e "mp3\naac\nflac\nopus\nvorbis\nwav\nm4a"
+$ audio_quality: echo -e "0\n2\n5\n8"
+
+% yt-dlp, subtitles
+
+# Download with subtitles embedded
+yt-dlp --write-subs --embed-subs '<url>'
+
+# Download auto-generated subtitles
+yt-dlp --write-auto-subs --sub-langs <sub_lang> '<url>'
+
+# Download subtitles only (no video)
+yt-dlp --write-subs --sub-langs <sub_lang> --skip-download '<url>'
+
+# List available subtitles
+yt-dlp --list-subs '<url>'
+
+$ sub_lang: echo -e "en\nen.*\nja\nde\nfr\nes\nall"
+
+% yt-dlp, playlist
+
+# Download entire playlist
+yt-dlp -o '%(playlist_index)s - %(title)s.%(ext)s' '<url>'
+
+# Download specific items from a playlist
+yt-dlp -I <item_spec> '<url>'
+
+# Download playlist as audio files
+yt-dlp -x --audio-format mp3 -o '%(playlist_index)s - %(title)s.%(ext)s' '<url>'
+
+# Download only videos not already downloaded
+yt-dlp --download-archive <archive_file> '<url>'
+
+$ item_spec: echo -e "1:5\n1:10\n-1\n1:3,7,10"
+$ archive_file: echo -e "archive.txt\n~/.yt-dlp-archive.txt"
+
+% yt-dlp, metadata, thumbnail
+
+# Embed metadata and thumbnail
+yt-dlp --embed-metadata --embed-thumbnail '<url>'
+
+# Embed chapters from video
+yt-dlp --embed-chapters '<url>'
+
+# Write thumbnail to disk
+yt-dlp --write-thumbnail --skip-download '<url>'
+
+# Write video info to JSON
+yt-dlp --write-info-json --skip-download '<url>'
+
+# Convert thumbnail to jpg
+yt-dlp --write-thumbnail --convert-thumbnails jpg --skip-download '<url>'
+
+% yt-dlp, sponsorblock
+
+# Remove sponsor segments from video
+yt-dlp --sponsorblock-remove default '<url>'
+
+# Mark sponsor segments as chapters (keeps them)
+yt-dlp --sponsorblock-mark default '<url>'
+
+# Remove specific sponsor categories
+yt-dlp --sponsorblock-remove <sponsor_category> '<url>'
+
+$ sponsor_category: echo -e "sponsor\nselfpromo\ninteraction\nintro\noutro\npreview\nmusic_offtopic\nfiller\nall\ndefault"
+
+% yt-dlp, chapters
+
+# Split video into separate files by chapters
+yt-dlp --split-chapters '<url>'
+
+# Download only specific chapters/sections
+yt-dlp --download-sections '<section>' '<url>'
+
+$ section: echo -e "*0:00-5:00\n*from-to\nintro\nchapter 1"
+
+% yt-dlp, advanced
+
+# Download using browser cookies (for authenticated content)
+yt-dlp --cookies-from-browser <browser> '<url>'
+
+# Download from a file containing URLs
+yt-dlp -a <batch_file>
+
+# Limit download speed
+yt-dlp -r <rate_limit> '<url>'
+
+# Use concurrent fragment downloads (faster for DASH/HLS)
+yt-dlp -N <fragments> '<url>'
+
+# Simulate download (print info without downloading)
+yt-dlp -s --print filename '<url>'
+
+# Print video title and duration without downloading
+yt-dlp --print '%(title)s (%(duration_string)s)' --skip-download '<url>'
+
+# Download only if not already present
+yt-dlp -w '<url>'
+
+# Sleep between requests to avoid rate limiting
+yt-dlp --sleep-interval <seconds> '<url>'
+
+$ browser: echo -e "safari\nchrome\nfirefox\nbrave\nopera\nedge"
+$ rate_limit: echo -e "1M\n5M\n10M\n500K"
+$ fragments: echo -e "4\n8\n16"
+$ seconds: echo -e "1\n3\n5\n10"

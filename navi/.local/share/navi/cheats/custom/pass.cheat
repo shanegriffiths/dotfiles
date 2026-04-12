@@ -1,0 +1,93 @@
+% pass, password, store
+
+# Initialise the password store with a GPG key
+pass init <gpg_id>
+
+# List all stored passwords
+pass
+
+# Show a stored password
+pass show <entry>
+
+# Copy a password to clipboard (clears after 45s)
+pass show -c <entry>
+
+# Copy a specific line number to clipboard
+pass show -c<line_number> <entry>
+
+$ entry: pass list --flat 2>/dev/null | tail -n +2 | sed 's/^[[:space:]|`─├└]*//' | grep -v '^$'
+$ gpg_id: gpg --list-secret-keys --keyid-format long 2>/dev/null | grep sec | awk '{print $2}' | cut -d/ -f2
+$ line_number: echo -e "1\n2\n3\n4\n5"
+
+% pass, password, manage
+
+# Add a new password (interactive prompt)
+pass insert <new_path>
+
+# Add a multiline entry (username, url, notes)
+pass insert -m <new_path>
+
+# Generate a random password (default 25 chars)
+pass generate <new_path> <length>
+
+# Generate a password with no symbols
+pass generate -n <new_path> <length>
+
+# Generate and copy to clipboard (don't print)
+pass generate -c <new_path> <length>
+
+# Edit an existing entry
+pass edit <entry>
+
+# Remove a password entry
+pass rm <entry>
+
+# Remove a directory of entries
+pass rm -r <folder>
+
+# Move/rename an entry
+pass mv <entry> <new_path>
+
+# Copy an entry
+pass cp <entry> <new_path>
+
+$ entry: pass list --flat 2>/dev/null | tail -n +2 | sed 's/^[[:space:]|`─├└]*//' | grep -v '^$'
+$ length: echo -e "16\n20\n25\n32\n64"
+
+% pass, password, search
+
+# Search entries by name
+pass find <search_term>
+
+# Search entry contents with grep
+pass grep <search_term>
+
+% pass, password, git
+
+# Initialise git tracking for the password store
+pass git init
+
+# View password store git log
+pass git log --oneline
+
+# Push password store changes to remote
+pass git push
+
+# Pull password store changes from remote
+pass git pull
+
+# Add a remote to the password store
+pass git remote add origin <remote_url>
+
+% pass, password, otp
+
+# Add an OTP secret to an entry (pass-otp extension)
+pass otp insert <entry>
+
+# Generate a TOTP code
+pass otp <entry>
+
+# Copy TOTP code to clipboard
+pass otp -c <entry>
+
+$ entry: pass list --flat 2>/dev/null | tail -n +2 | sed 's/^[[:space:]|`─├└]*//' | grep -v '^$'

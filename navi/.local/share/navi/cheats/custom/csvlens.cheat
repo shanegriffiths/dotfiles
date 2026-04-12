@@ -1,0 +1,23 @@
+% csvlens, csv, data
+
+# Open a CSV file in csvlens
+csvlens <csv_file>
+
+# Open a TSV (tab-separated) file
+csvlens --tab-separated <tsv_file>
+
+# Open a file with a custom delimiter
+csvlens --delimiter <delimiter> <file>
+
+# Pipe data into csvlens
+cat <file> | csvlens
+
+# Open a CSV and ignore headers (treat first row as data)
+csvlens --no-headers <csv_file>
+
+# Open a CSV with a specific column filter
+csvlens --filter <column>=<value> <csv_file>
+
+$ csv_file: fd --type f --extension csv 2>/dev/null
+$ tsv_file: fd --type f --extension tsv 2>/dev/null
+$ file: fd --type f --hidden --follow 2>/dev/null

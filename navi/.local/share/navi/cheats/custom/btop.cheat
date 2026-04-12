@@ -1,0 +1,22 @@
+% btop, system, monitor
+
+# Launch btop system monitor
+btop
+
+# Launch btop with a specific theme
+btop --theme <theme>
+
+# Launch btop in TTY-compatible mode (reduced visuals)
+btop --tty_on
+
+# Launch btop with low update rate (less CPU usage)
+btop --update 5000
+
+# Launch btop showing only a preset (0=default, 1=minimal, 2=full)
+btop --preset <preset>
+
+# Show btop version
+btop --version
+
+$ theme: ls "$(brew --prefix)/share/btop/themes/" 2>/dev/null | sed 's/\.theme$//'
+$ preset: echo -e '0\n1\n2'

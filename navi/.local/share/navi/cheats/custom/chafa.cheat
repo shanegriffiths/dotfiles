@@ -1,0 +1,40 @@
+% chafa, image, terminal
+
+# Display an image in the terminal
+chafa <image>
+
+# Display an image at a specific size (columns x rows)
+chafa --size <size> <image>
+
+# Display an image using all available symbols for detail
+chafa --symbols all <image>
+
+# Display an image with a specific colour mode
+chafa --colors <colors> <image>
+
+# Display an image using a specific pixel mode (kitty/sixels/symbols)
+chafa --format <format> <image>
+
+# Display an animated GIF
+chafa --animate on <gif>
+
+# Display an image stretched to fill terminal width
+chafa --stretch <image>
+
+# Display image at a specific aspect ratio
+chafa --size <cols>x<rows> --stretch <image>
+
+# Display image with transparency shown as a specific colour
+chafa --bg <bg_color> <image>
+
+# View image info without displaying
+chafa --info <image>
+
+$ image: fd --type f --extension png --extension jpg --extension jpeg --extension gif --extension webp --extension svg --extension bmp 2>/dev/null
+$ gif: fd --type f --extension gif 2>/dev/null
+$ size: echo -e '40x20\n60x30\n80x40\n120x60'
+$ colors: echo -e '2\n16\n256\nfull\nnone'
+$ format: echo -e 'symbols\nkitty\nsixels\niterm2'
+$ bg_color: echo -e 'black\nwhite\n#000000\n#ffffff'
+$ cols: echo -e '40\n60\n80\n120'
+$ rows: echo -e '20\n30\n40\n60'

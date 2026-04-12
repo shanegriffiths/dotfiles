@@ -1,0 +1,59 @@
+% sd, replace, find
+
+# Replace text in a file (in-place)
+sd '<find>' '<replace>' <file>
+
+# Preview replacements without modifying the file
+sd -p '<find>' '<replace>' <file>
+
+# Replace text from stdin
+echo '<input>' | sd '<find>' '<replace>'
+
+# Replace text using literal strings (no regex)
+sd -F '<find>' '<replace>' <file>
+
+# Replace across multiple files
+sd '<find>' '<replace>' <files>
+
+$ file: fd -t f --max-depth 3 2>/dev/null
+$ files: fd -t f --max-depth 3 2>/dev/null
+
+% sd, replace, regex
+
+# Replace with capture groups
+sd '(<pattern>)' '$1<suffix>' <file>
+
+# Case-insensitive replacement
+sd -f i '<find>' '<replace>' <file>
+
+# Match whole words only
+sd -f w '<find>' '<replace>' <file>
+
+# Make dot match newlines
+sd -f s '<find>' '<replace>' <file>
+
+# Multi-line matching
+sd -f m '<pattern>' '<replace>' <file>
+
+# Limit number of replacements per file
+sd -n <limit> '<find>' '<replace>' <file>
+
+$ file: fd -t f --max-depth 3 2>/dev/null
+$ limit: echo -e "1\n2\n5\n10"
+
+% sd, replace, recipes
+
+# Replace across all files of a type (combine with fd)
+fd -e <extension> -x sd '<find>' '<replace>'
+
+# Replace in all files matching a pattern
+fd '<file_pattern>' -x sd '<find>' '<replace>'
+
+# Preview replacements across many files
+fd -e <extension> -x sd -p '<find>' '<replace>'
+
+# Replace across lines (treat file as whole)
+sd -A '<find>' '<replace>' <file>
+
+$ extension: echo -e "md\njs\nts\ntsx\njsx\npy\ngo\njson\nyaml\ntoml\nhtml\ncss\nsh"
+$ file: fd -t f --max-depth 3 2>/dev/null

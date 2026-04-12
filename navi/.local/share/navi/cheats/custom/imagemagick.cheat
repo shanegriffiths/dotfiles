@@ -1,0 +1,221 @@
+% imagemagick, info
+
+# Show image dimensions, format, and colour info
+magick identify <input_file>
+
+# Show verbose image metadata
+magick identify -verbose <input_file>
+
+# Show just dimensions (WxH)
+magick identify -format "%wx%h" <input_file>
+
+# Show format, dimensions, filesize
+magick identify -format "%m %wx%h %b\n" <input_file>
+
+% imagemagick, convert, format
+
+# Convert image format (auto-detect from extension)
+magick <input_file> <output_file>
+
+# Convert PNG to JPEG with quality setting
+magick <input_file> -quality <jpeg_quality> <output>.jpg
+
+# Convert to WebP
+magick <input_file> -quality <webp_quality> <output>.webp
+
+# Convert to PNG with transparency preserved
+magick <input_file> -background none <output>.png
+
+# Convert PDF page to image
+magick -density <density> "<pdf_file>[<page>]" <output>.png
+
+# Convert all pages of a PDF to images
+magick -density <density> <pdf_file> page_%03d.png
+
+$ jpeg_quality: echo -e "85\n90\n95\n75\n60"
+$ webp_quality: echo -e "80\n85\n90\n75"
+$ density: echo -e "300\n150\n72\n200"
+$ page: echo -e "0\n1\n2\n3"
+
+% imagemagick, resize
+
+# Resize to specific width (maintain aspect ratio)
+magick <input_file> -resize <width>x <output_file>
+
+# Resize to specific height (maintain aspect ratio)
+magick <input_file> -resize x<height> <output_file>
+
+# Resize to exact dimensions (may distort)
+magick <input_file> -resize <width>x<height>! <output_file>
+
+# Resize to fit within bounds (maintain aspect ratio)
+magick <input_file> -resize <width>x<height> <output_file>
+
+# Resize by percentage
+magick <input_file> -resize <percent>% <output_file>
+
+# Resize only if larger than target (shrink only)
+magick <input_file> -resize <width>x<height>\> <output_file>
+
+$ width: echo -e "1920\n1280\n800\n640\n480\n320"
+$ height: echo -e "1080\n720\n600\n480\n320"
+$ percent: echo -e "50\n75\n25\n150\n200"
+
+% imagemagick, crop, trim
+
+# Crop to specific region (WxH+X+Y)
+magick <input_file> -crop <crop_w>x<crop_h>+<crop_x>+<crop_y> <output_file>
+
+# Auto-trim whitespace/border around image
+magick <input_file> -trim +repage <output_file>
+
+# Trim with fuzz tolerance (for near-white borders)
+magick <input_file> -fuzz <fuzz>% -trim +repage <output_file>
+
+# Centre crop to exact dimensions
+magick <input_file> -gravity center -crop <crop_w>x<crop_h>+0+0 +repage <output_file>
+
+$ fuzz: echo -e "5\n10\n15\n20"
+
+% imagemagick, adjust, colour
+
+# Auto-adjust levels (auto-enhance)
+magick <input_file> -auto-level <output_file>
+
+# Increase brightness/contrast
+magick <input_file> -brightness-contrast <brightness>x<contrast> <output_file>
+
+# Convert to grayscale
+magick <input_file> -colorspace Gray <output_file>
+
+# Negate (invert colours)
+magick <input_file> -negate <output_file>
+
+# Adjust gamma
+magick <input_file> -gamma <gamma> <output_file>
+
+# Sharpen image
+magick <input_file> -sharpen 0x<sigma> <output_file>
+
+# Blur image
+magick <input_file> -blur 0x<sigma> <output_file>
+
+# Normalize contrast
+magick <input_file> -normalize <output_file>
+
+$ brightness: echo -e "10\n20\n30\n-10\n-20"
+$ contrast: echo -e "10\n20\n30\n-10\n-20"
+$ gamma: echo -e "1.2\n1.5\n0.8\n0.5\n2.0"
+$ sigma: echo -e "1\n2\n3\n5"
+
+% imagemagick, rotate, flip
+
+# Rotate image by degrees
+magick <input_file> -rotate <degrees> <output_file>
+
+# Auto-orient based on EXIF data
+magick <input_file> -auto-orient <output_file>
+
+# Flip vertically
+magick <input_file> -flip <output_file>
+
+# Flip horizontally (mirror)
+magick <input_file> -flop <output_file>
+
+$ degrees: echo -e "90\n180\n270\n45\n-90"
+
+% imagemagick, text, annotate
+
+# Add text to image
+magick <input_file> -gravity <gravity> -pointsize <pointsize> -fill "<colour>" -annotate +<offset_x>+<offset_y> "<text>" <output_file>
+
+# Add text with background
+magick <input_file> -gravity <gravity> -pointsize <pointsize> -fill white -undercolor "rgba(0,0,0,0.5)" -annotate +<offset_x>+<offset_y> " <text> " <output_file>
+
+$ gravity: echo -e "center\nnorth\nsouth\neast\nwest\nnorthwest\nnortheast\nsouthwest\nsoutheast"
+$ pointsize: echo -e "24\n36\n48\n72\n16\n12"
+$ colour: echo -e "white\nblack\nred\nyellow"
+$ offset_x: echo -e "0\n10\n20"
+$ offset_y: echo -e "0\n10\n20"
+
+% imagemagick, combine, compose
+
+# Append images horizontally
+magick <image1> <image2> +append <output_file>
+
+# Append images vertically
+magick <image1> <image2> -append <output_file>
+
+# Composite/overlay one image on another
+magick <base_image> <overlay_image> -gravity <gravity> -composite <output_file>
+
+# Create a montage (grid of images)
+magick montage <input_glob> -geometry <tile_size>+<gap>+<gap> -tile <columns>x <output_file>
+
+# Add a border around an image
+magick <input_file> -bordercolor "<border_colour>" -border <border_size> <output_file>
+
+$ gravity: echo -e "center\nnorthwest\nnortheast\nsouthwest\nsoutheast"
+$ tile_size: echo -e "200x200\n300x300\n150x150"
+$ gap: echo -e "5\n10\n2\n0"
+$ columns: echo -e "3\n4\n5\n2"
+$ border_colour: echo -e "white\nblack\ngray"
+$ border_size: echo -e "10\n20\n5\n2"
+
+% imagemagick, create
+
+# Create a solid colour image
+magick -size <width>x<height> canvas:<canvas_colour> <output_file>
+
+# Create a transparent image
+magick -size <width>x<height> canvas:none <output>.png
+
+# Create a gradient image
+magick -size <width>x<height> gradient:<colour1>-<colour2> <output_file>
+
+# Create a placeholder image with label
+magick -size <width>x<height> -gravity center -font Helvetica -pointsize 36 label:"<text>" <output_file>
+
+$ canvas_colour: echo -e "white\nblack\nred\nblue\ngray"
+$ colour1: echo -e "white\nblack\nblue\nred"
+$ colour2: echo -e "black\nwhite\nred\nblue"
+
+% imagemagick, batch, mogrify
+
+# Batch resize all images in a directory (overwrites originals)
+magick mogrify -resize <width>x <glob>
+
+# Batch convert format (writes new files to output dir)
+magick mogrify -path <output_dir> -format <format> <glob>
+
+# Batch auto-orient all JPEGs
+magick mogrify -auto-orient <glob>
+
+# Batch add quality setting (compress JPEGs)
+magick mogrify -quality <jpeg_quality> <glob>
+
+# Batch strip EXIF metadata
+magick mogrify -strip <glob>
+
+$ glob: echo -e "*.jpg\n*.png\n*.webp\n*.tiff\n*.JPG"
+$ format: echo -e "png\njpg\nwebp\ntiff\ngif"
+$ jpeg_quality: echo -e "85\n80\n90\n75"
+
+% imagemagick, effects
+
+# Add rounded corners
+magick <input_file> \( +clone -alpha extract -draw "fill black polygon 0,0 0,<radius> <radius>,0 fill white circle <radius>,<radius> <radius>,0" \( +clone -flip \) -compose Multiply -composite \( +clone -flop \) -compose Multiply -composite \) -alpha off -compose CopyOpacity -composite <output>.png
+
+# Add drop shadow
+magick <input_file> \( +clone -background black -shadow 60x5+5+5 \) +swap -background none -layers merge +repage <output>.png
+
+# Apply sepia tone
+magick <input_file> -sepia-tone 80% <output_file>
+
+# Pixelate image
+magick <input_file> -scale 10% -scale 1000% <output_file>
+
+# Strip all metadata (EXIF, etc)
+magick <input_file> -strip <output_file>
+
+$ radius: echo -e "15\n20\n30\n10"

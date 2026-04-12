@@ -1,0 +1,33 @@
+% glow, markdown, viewer
+
+# Render a markdown file in the terminal
+glow <md_file>
+
+# Render markdown with a specific style
+glow --style <style> <md_file>
+
+# Render markdown at a specific width
+glow --width <width> <md_file>
+
+# Render markdown without paging (print straight to stdout)
+glow --pager <md_file>
+
+# Launch glow in stash/browser TUI mode
+glow
+
+# Render markdown from stdin
+echo "# Hello" | glow -
+
+# Render a remote markdown file by URL
+glow <url>
+
+# List all available styles
+glow --style help
+
+# Render markdown with no word wrapping
+glow --width 0 <md_file>
+
+$ md_file: fd --type f --extension md 2>/dev/null
+$ style: echo -e 'dark\nlight\nauto\nnotty\ndracula'
+$ width: echo -e '80\n100\n120\n0'
+$ url: echo "https://raw.githubusercontent.com/charmbracelet/glow/main/README.md"

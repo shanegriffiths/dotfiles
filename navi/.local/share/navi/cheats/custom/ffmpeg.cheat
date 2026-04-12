@@ -1,0 +1,162 @@
+% ffmpeg, info
+
+# Show file info (codecs, duration, bitrate)
+ffprobe -hide_banner <input_file>
+
+# Show stream details as JSON
+ffprobe -v quiet -print_format json -show_streams <input_file>
+
+# Show duration in seconds
+ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 <input_file>
+
+% ffmpeg, convert
+
+# Convert video format (auto-detect from extension)
+ffmpeg -i <input_file> <output_file>
+
+# Convert to MP4 with H.264 and AAC (universal compatibility)
+ffmpeg -i <input_file> -c:v libx264 -crf 23 -preset <preset> -c:a aac -b:a 128k <output>.mp4
+
+# Convert to WebM (VP9)
+ffmpeg -i <input_file> -c:v libvpx-vp9 -crf 30 -b:v 0 -c:a libopus <output>.webm
+
+# Convert to H.265/HEVC (smaller files, slower encode)
+ffmpeg -i <input_file> -c:v libx265 -crf 28 -preset <preset> -c:a aac -b:a 128k <output>.mp4
+
+# Convert video to GIF
+ffmpeg -i <input_file> -vf "fps=15,scale=<width>:-1:flags=lanczos" <output>.gif
+
+$ preset: echo -e "ultrafast\nsuperfast\nveryfast\nfaster\nfast\nmedium\nslow\nslower\nveryslow"
+$ width: echo -e "480\n640\n320"
+
+% ffmpeg, audio
+
+# Extract audio from video
+ffmpeg -i <input_file> -vn -c:a <audio_codec> <output>
+
+# Convert audio format
+ffmpeg -i <input_file> <output>
+
+# Change audio bitrate
+ffmpeg -i <input_file> -c:a aac -b:a <bitrate>k <output>.m4a
+
+# Normalize audio volume
+ffmpeg -i <input_file> -af loudnorm <output>
+
+# Remove audio from video
+ffmpeg -i <input_file> -an -c:v copy <output>
+
+$ audio_codec: echo -e "libmp3lame\naac\nflac\nlibopus\npcm_s16le"
+$ bitrate: echo -e "64\n128\n192\n256\n320"
+
+% ffmpeg, trim, cut
+
+# Trim video (start time to duration)
+ffmpeg -i <input_file> -ss <start_time> -t <duration> -c copy <output>
+
+# Trim video (start to end timestamp)
+ffmpeg -i <input_file> -ss <start_time> -to <end_time> -c copy <output>
+
+# Cut first N seconds
+ffmpeg -i <input_file> -ss <start_time> -c copy <output>
+
+# Take a screenshot at a specific time
+ffmpeg -i <input_file> -ss <timestamp> -frames:v 1 <output>.png
+
+# Extract a frame every N seconds
+ffmpeg -i <input_file> -vf "fps=1/<interval>" frame_%04d.png
+
+$ interval: echo -e "1\n5\n10\n30\n60"
+
+% ffmpeg, resize, scale
+
+# Resize video (maintain aspect ratio)
+ffmpeg -i <input_file> -vf "scale=<width>:-2" -c:a copy <output>
+
+# Resize to specific resolution
+ffmpeg -i <input_file> -vf "scale=<width>:<height>" -c:a copy <output>
+
+# Scale down by half
+ffmpeg -i <input_file> -vf "scale=iw/2:ih/2" -c:a copy <output>
+
+# Crop video (width:height:x:y)
+ffmpeg -i <input_file> -vf "crop=<crop_w>:<crop_h>:<crop_x>:<crop_y>" <output>
+
+$ width: echo -e "1920\n1280\n854\n640\n480"
+$ height: echo -e "1080\n720\n480\n360"
+
+% ffmpeg, combine, merge
+
+# Concatenate videos (same codec) via file list
+ffmpeg -f concat -safe 0 -i <filelist> -c copy <output>
+
+# Add audio track to video
+ffmpeg -i <video_file> -i <audio_file> -c:v copy -c:a aac -shortest <output>
+
+# Overlay image watermark on video
+ffmpeg -i <input_file> -i <watermark> -filter_complex "overlay=10:10" <output>
+
+# Stack two videos side by side
+ffmpeg -i <left_video> -i <right_video> -filter_complex hstack <output>
+
+# Stack two videos vertically
+ffmpeg -i <top_video> -i <bottom_video> -filter_complex vstack <output>
+
+% ffmpeg, speed, effects
+
+# Speed up video (2x)
+ffmpeg -i <input_file> -vf "setpts=0.5*PTS" -af "atempo=2.0" <output>
+
+# Slow down video (0.5x)
+ffmpeg -i <input_file> -vf "setpts=2.0*PTS" -af "atempo=0.5" <output>
+
+# Reverse a video
+ffmpeg -i <input_file> -vf reverse -af areverse <output>
+
+# Add fade in/out (seconds)
+ffmpeg -i <input_file> -vf "fade=in:st=0:d=<fade_duration>,fade=out:st=<fade_out_start>:d=<fade_duration>" <output>
+
+$ fade_duration: echo -e "1\n2\n3"
+
+% ffmpeg, streaming, recording
+
+# Record screen on macOS
+ffmpeg -f avfoundation -i "<screen_device>:none" -c:v libx264 -preset ultrafast <output>.mp4
+
+# Record screen + audio on macOS
+ffmpeg -f avfoundation -i "<screen_device>:<audio_device>" -c:v libx264 -preset ultrafast <output>.mp4
+
+# Stream to RTMP
+ffmpeg -re -i <input_file> -c:v libx264 -preset veryfast -c:a aac -f flv <rtmp_url>
+
+# List available devices on macOS
+ffmpeg -f avfoundation -list_devices true -i ""
+
+$ screen_device: echo -e "0\n1\n2"
+$ audio_device: echo -e "0\n1\n2"
+
+% ffmpeg, subtitles
+
+# Burn subtitles into video (hardcode)
+ffmpeg -i <input_file> -vf "subtitles=<subtitle_file>" <output>
+
+# Add subtitle track (soft subs)
+ffmpeg -i <input_file> -i <subtitle_file> -c copy -c:s mov_text <output>.mp4
+
+# Extract subtitles from video
+ffmpeg -i <input_file> -map 0:s:0 <output>.srt
+
+% ffmpeg, batch, misc
+
+# Compress video (reduce file size)
+ffmpeg -i <input_file> -c:v libx264 -crf <crf_value> -preset <preset> -c:a aac -b:a 128k <output>.mp4
+
+# Convert image sequence to video
+ffmpeg -framerate <fps> -i "frame_%04d.png" -c:v libx264 -pix_fmt yuv420p <output>.mp4
+
+# Create a thumbnail grid (4x4 from video)
+ffmpeg -i <input_file> -frames 1 -vf "select=not(mod(n\,<frame_skip>)),scale=320:-1,tile=4x4" <output>.png
+
+$ crf_value: echo -e "18\n23\n28\n32\n36"
+$ fps: echo -e "24\n25\n30\n60"
+$ frame_skip: echo -e "100\n200\n500\n1000"

@@ -1,0 +1,74 @@
+% dust, disk, usage
+
+# Show disk usage of current directory
+dust
+
+# Show disk usage of a specific directory
+dust <path>
+
+# Limit display depth
+dust -d <depth>
+
+# Show the N largest entries
+dust -n <number>
+
+# Show full paths instead of shortened
+dust -p
+
+# Show apparent file sizes instead of disk usage
+dust -s
+
+# Print tree upside down (biggest at top)
+dust -r
+
+$ path: find . -maxdepth 2 -type d 2>/dev/null
+$ depth: echo -e "1\n2\n3\n4\n5"
+$ number: echo -e "10\n15\n20\n30\n50"
+
+% dust, disk, filtering
+
+# Exclude a specific directory
+dust -X <exclude_path>
+
+# Only show files matching a regex
+dust -e <regex>
+
+# Exclude files matching a regex
+dust -v <regex>
+
+# Ignore hidden files
+dust -i
+
+# Only show files of minimum size
+dust -z <min_size>
+
+# Stay on the same filesystem (don't cross mount points)
+dust -x
+
+# Show file count instead of disk size
+dust -f
+
+$ exclude_path: echo -e "node_modules\n.git\ntarget\ndist\nbuild\nvendor"
+$ min_size: echo -e "1M\n10M\n100M\n1G"
+
+% dust, disk, output
+
+# Show usage without percent bars
+dust -b
+
+# Move percent bars to right side
+dust -B
+
+# Output without colors (for piping/scripting)
+dust -c
+
+# Skip the total row
+dust --skip-total
+
+# Follow symlinks
+dust -L
+
+# Set terminal width for output
+dust -w <width>
+
+$ width: echo -e "80\n100\n120\n160\n200"

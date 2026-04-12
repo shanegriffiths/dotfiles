@@ -1,0 +1,103 @@
+% rsync, local
+
+# Sync directory (archive mode, verbose, progress)
+rsync -avP <source>/ <destination>/
+
+# Sync and delete files in destination that don't exist in source
+rsync -avP --delete <source>/ <destination>/
+
+# Dry run (show what would change without doing it)
+rsync -avPn <source>/ <destination>/
+
+# Copy only specific file types
+rsync -avP --include="*.<extension>" --include="*/" --exclude="*" <source>/ <destination>/
+
+# Sync excluding certain patterns
+rsync -avP --exclude="<pattern>" <source>/ <destination>/
+
+# Sync with multiple excludes from a file
+rsync -avP --exclude-from=<exclude_file> <source>/ <destination>/
+
+# Sync but skip files that are newer on destination
+rsync -avP --update <source>/ <destination>/
+
+$ extension: echo -e "jpg\npng\nmp4\npdf\ntxt\nmd"
+
+% rsync, remote
+
+# Sync local to remote server
+rsync -avPz <source>/ <remote_host>:<remote_path>/
+
+# Sync remote to local
+rsync -avPz <remote_host>:<remote_path>/ <destination>/
+
+# Sync using a specific SSH key
+rsync -avPz -e "ssh -i <ssh_key>" <source>/ <remote_host>:<remote_path>/
+
+# Sync using a specific SSH port
+rsync -avPz -e "ssh -p <port>" <source>/ <remote_host>:<remote_path>/
+
+# Sync with bandwidth limit (KB/s)
+rsync -avPz --bwlimit=<kbps> <source>/ <remote_host>:<remote_path>/
+
+$ ssh_key: ls ~/.ssh/id_* 2>/dev/null | grep -v '.pub$'
+$ kbps: echo -e "500\n1000\n2500\n5000\n10000"
+$ port: echo -e "22\n2222"
+
+% rsync, backup
+
+# Full backup with timestamp
+rsync -avP <source>/ <destination>/backup-$(date +%Y%m%d)/
+
+# Incremental backup using hard links to previous backup
+rsync -avP --link-dest=<previous_backup> <source>/ <destination>/
+
+# Backup with compression
+rsync -avPz <source>/ <destination>/
+
+# Mirror a directory exactly (careful: deletes extras)
+rsync -avP --delete --delete-excluded <source>/ <destination>/
+
+% rsync, filtering
+
+# Exclude hidden files and directories
+rsync -avP --exclude=".*" <source>/ <destination>/
+
+# Exclude node_modules and .git
+rsync -avP --exclude="node_modules" --exclude=".git" <source>/ <destination>/
+
+# Include only files modified in last N days
+rsync -avP --files-from=<(find <source> -mtime -<days> -type f -printf '%P\n') <source>/ <destination>/
+
+# Sync only files smaller than a given size
+rsync -avP --max-size=<max_size> <source>/ <destination>/
+
+# Sync only files larger than a given size
+rsync -avP --min-size=<min_size> <source>/ <destination>/
+
+$ days: echo -e "1\n7\n14\n30"
+$ max_size: echo -e "10m\n50m\n100m\n500m\n1g"
+$ min_size: echo -e "1k\n100k\n1m\n10m"
+
+% rsync, advanced
+
+# Show transfer stats and summary
+rsync -avP --stats <source>/ <destination>/
+
+# Preserve extended attributes and ACLs (macOS)
+rsync -avPX <source>/ <destination>/
+
+# Compare two directories without syncing
+rsync -avPn --itemize-changes <source>/ <destination>/
+
+# Resume a partially transferred file
+rsync -avP --partial --append-verify <source>/ <destination>/
+
+# Checksum-based comparison (slower but more accurate)
+rsync -avPc <source>/ <destination>/
+
+# Limit number of concurrent transfers
+rsync -avP --files-from=<filelist> <source>/ <destination>/
+
+# Log transfer details to a file
+rsync -avP --log-file=<logfile> <source>/ <destination>/

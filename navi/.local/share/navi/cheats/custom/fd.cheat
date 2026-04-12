@@ -1,0 +1,78 @@
+% fd, find
+
+# Find files matching a pattern
+fd <pattern>
+
+# Find files in a specific directory
+fd <pattern> <path>
+
+# Find only directories
+fd -t d <pattern>
+
+# Find only files
+fd -t f <pattern>
+
+# Find only symlinks
+fd -t l <pattern>
+
+$ path: find . -maxdepth 2 -type d 2>/dev/null
+
+% fd, find, filtering
+
+# Find files with a specific extension
+fd -e <extension>
+
+# Find files with extension matching a pattern
+fd -e <extension> <pattern>
+
+# Include hidden files and directories
+fd -H <pattern>
+
+# Include gitignored files
+fd -I <pattern>
+
+# Include both hidden and ignored files
+fd -HI <pattern>
+
+# Case-sensitive search (default is smart case)
+fd -s <pattern>
+
+$ extension: echo -e "md\njs\nts\ntsx\njsx\npy\ngo\njson\nyaml\ntoml\nhtml\ncss\nsh\nsvg\npng\njpg"
+
+% fd, find, actions
+
+# Find and delete matching files (with confirmation)
+fd <pattern> -X rm -i
+
+# Find and open in editor
+fd -e <extension> | fzf | xargs $EDITOR
+
+# Find files modified in the last N minutes
+fd --changed-within <duration>
+
+# Find files older than a duration
+fd --changed-before <duration>
+
+# Find files and run a command on each
+fd <pattern> -x <command> {}
+
+# Find files with max depth
+fd -d <depth> <pattern>
+
+# Exclude a directory from results
+fd -E <exclude_dir> <pattern>
+
+$ duration: echo -e "10min\n1h\n1d\n7d\n30d\n1w" --- --preview 'echo "Files changed within {}"'
+$ depth: echo -e "1\n2\n3\n5\n10"
+$ exclude_dir: echo -e "node_modules\n.git\ndist\nbuild\ntarget\nvendor"
+
+% fd, find, output
+
+# List results with absolute paths
+fd -a <pattern>
+
+# Print results separated by null (for piping to xargs -0)
+fd -0 <pattern>
+
+# Show results with detailed info (like ls -l)
+fd -l <pattern>

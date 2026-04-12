@@ -1,0 +1,77 @@
+% hyperfine, benchmark
+
+# Benchmark a single command
+hyperfine '<command>'
+
+# Benchmark with warmup runs
+hyperfine --warmup <warmup_runs> '<command>'
+
+# Compare two or more commands
+hyperfine '<command_a>' '<command_b>'
+
+# Benchmark with a specific number of runs
+hyperfine --runs <runs> '<command>'
+
+# Benchmark with minimum and maximum runs
+hyperfine --min-runs <min> --max-runs <max> '<command>'
+
+# Give a meaningful name to the benchmark
+hyperfine -n '<name>' '<command>'
+
+$ warmup_runs: echo -e "3\n5\n10"
+$ runs: echo -e "5\n10\n20\n50\n100"
+$ min: echo -e "5\n10\n20"
+$ max: echo -e "20\n50\n100"
+
+% hyperfine, benchmark, advanced
+
+# Run a preparation command before each timing run (e.g. clear cache)
+hyperfine --prepare '<setup_cmd>' '<command>'
+
+# Run a setup command once before all runs
+hyperfine --setup '<setup_cmd>' '<command>'
+
+# Run cleanup after all benchmarking completes
+hyperfine --cleanup '<cleanup_cmd>' '<command>'
+
+# Benchmark with a parameter scan (e.g. thread count)
+hyperfine -P <var> <min_val> <max_val> '<command_with_var>'
+
+# Benchmark with a parameter list
+hyperfine -L <var> '<values>' '<command_with_var>'
+
+# Set a reference command for relative comparison
+hyperfine --reference '<reference_cmd>' '<command>'
+
+# Ignore non-zero exit codes
+hyperfine --ignore-failure '<command>'
+
+# Run command without shell overhead
+hyperfine -N '<command>'
+
+$ var: echo -e "threads\nsize\ncount"
+$ min_val: echo -e "1\n2\n4"
+$ max_val: echo -e "4\n8\n16\n32"
+
+% hyperfine, benchmark, export
+
+# Export results as Markdown table
+hyperfine --export-markdown <output_file> '<command_a>' '<command_b>'
+
+# Export results as JSON
+hyperfine --export-json <output_file> '<command>'
+
+# Export results as CSV
+hyperfine --export-csv <output_file> '<command>'
+
+# Show command stdout/stderr (for debugging)
+hyperfine --show-output '<command>'
+
+# Set time unit for display
+hyperfine --time-unit <unit> '<command>'
+
+# Sort comparison results by mean time
+hyperfine --sort mean-time '<command_a>' '<command_b>'
+
+$ unit: echo -e "millisecond\nsecond\nmicrosecond"
+$ output_file: echo -e "benchmark.md\nbenchmark.json\nbenchmark.csv"

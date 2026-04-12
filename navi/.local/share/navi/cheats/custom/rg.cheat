@@ -1,0 +1,67 @@
+% ripgrep, rg, search
+
+# Search recursively for a pattern
+rg "<pattern>"
+
+# Search in a specific directory
+rg "<pattern>" <path>
+
+# Case-insensitive search
+rg -i "<pattern>"
+
+# List only filenames containing matches
+rg -l "<pattern>"
+
+# Count matches per file
+rg -c "<pattern>"
+
+# Match whole words only
+rg -w "<pattern>"
+
+$ path: find . -maxdepth 2 -type d 2>/dev/null
+
+% ripgrep, rg, file types
+
+# Search only in files of a specific type (js, ts, py, go, md, etc.)
+rg -t <type> "<pattern>"
+
+# Search files matching a glob pattern
+rg -g "<glob>" "<pattern>"
+
+# Exclude files/dirs matching a glob
+rg -g "!<exclude_pattern>" "<pattern>"
+
+# Search including hidden files
+rg --hidden "<pattern>"
+
+# Search ignoring .gitignore rules
+rg --no-ignore "<pattern>"
+
+$ type: echo -e "js\nts\ntsx\njsx\npy\ngo\nmd\njson\nyaml\nhtml\ncss\nrust\nsh" --- --preview 'echo "Search only in .{} files"'
+
+% ripgrep, rg, context
+
+# Show N lines after each match
+rg -A <lines> "<pattern>"
+
+# Show N lines before each match
+rg -B <lines> "<pattern>"
+
+# Show N lines of context (before and after)
+rg -C <lines> "<pattern>"
+
+# Search for multiple patterns (OR)
+rg -e "<pattern1>" -e "<pattern2>"
+
+$ lines: echo -e "1\n2\n3\n5\n10"
+
+% ripgrep, rg, replace
+
+# Preview replacements (doesn't modify files)
+rg "<pattern>" --replace "<replacement>"
+
+# Treat pattern as a literal string, not regex
+rg -F "<literal_string>"
+
+# Search with stats (match count summary)
+rg --stats "<pattern>"

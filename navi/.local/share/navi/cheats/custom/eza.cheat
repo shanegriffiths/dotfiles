@@ -1,0 +1,62 @@
+% eza, ls, listing
+
+# List files with icons
+eza --icons
+
+# Detailed list with icons
+eza -la --icons
+
+# Detailed list with icons and git status
+eza -la --icons --git
+
+# List only directories
+eza -D --icons
+
+# List only files (no directories)
+eza -f --icons
+
+# Sort by modification time (newest first)
+eza -la --icons --sort=modified
+
+# Sort by size (largest first)
+eza -la --icons --sort=size
+
+% eza, ls, tree
+
+# Tree view
+eza --tree --icons
+
+# Tree view limited to N levels deep
+eza --tree --level=<depth> --icons
+
+# Tree view with long listing
+eza --tree --level=<depth> -la --icons
+
+# Tree view of a specific directory
+eza --tree --level=<depth> --icons <directory>
+
+# Tree view showing only directories
+eza --tree --level=<depth> -D --icons
+
+$ depth: echo -e "1\n2\n3\n4\n5"
+$ directory: find . -maxdepth 2 -type d 2>/dev/null --- --preview 'eza --tree --level=1 --icons {}'
+
+% eza, ls, filtering
+
+# Show hidden files
+eza -a --icons
+
+# List files matching a glob (e.g. *.md)
+eza --icons <glob_pattern>
+
+# Group directories first
+eza -la --icons --group-directories-first
+
+# Show file sizes in binary (KiB, MiB)
+eza -la --icons --binary
+
+# Show header row in long listing
+eza -la --icons --header
+
+# Reverse sort order
+eza -la --icons --sort=modified --reverse

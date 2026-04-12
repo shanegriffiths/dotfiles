@@ -1,0 +1,229 @@
+% vercel, deploy
+
+# Deploy to preview
+vercel
+
+# Deploy to production
+vercel --prod
+
+# Deploy a specific directory
+vercel <directory> --prod
+
+# Deploy and skip build step
+vercel --prebuilt
+
+# Redeploy an existing deployment
+vercel redeploy <deployment_url>
+
+# Build locally (for CI/CD)
+vercel build
+
+# Build for production locally
+vercel build --prod
+
+% vercel, dev
+
+# Start local development server
+vercel dev
+
+# Start dev server on a specific port
+vercel dev --port <port>
+
+# Start dev server and listen on all interfaces
+vercel dev --listen 0.0.0.0:<port>
+
+$ port: echo -e "3000\n3001\n4000\n8080"
+
+% vercel, project, link
+
+# Link current directory to a Vercel project
+vercel link
+
+# View current project in browser
+vercel open
+
+# List your projects
+vercel project ls
+
+# Add a new project
+vercel project add
+
+# Inspect a project
+vercel project inspect <project>
+
+# Remove a project
+vercel project rm <project>
+
+# Pull project settings and env vars
+vercel pull
+
+# Pull production env vars
+vercel pull --environment=<environment>
+
+$ environment: echo -e "production\npreview\ndevelopment"
+
+% vercel, env, environment-variables
+
+# List environment variables
+vercel env ls
+
+# List env vars for a specific environment
+vercel env ls <environment>
+
+# Add an environment variable
+vercel env add <name> <environment>
+
+# Update an environment variable
+vercel env update <name> <environment>
+
+# Remove an environment variable
+vercel env rm <name> <environment>
+
+# Pull env vars to local .env file
+vercel env pull
+
+# Pull env vars to a specific file
+vercel env pull <filename>
+
+# Run a command with project env vars loaded
+vercel env run -- <command>
+
+$ environment: echo -e "production\npreview\ndevelopment"
+
+% vercel, domains
+
+# List domains
+vercel domains ls
+
+# Add a domain to a project
+vercel domains add <domain>
+
+# Remove a domain
+vercel domains rm <domain>
+
+# Buy a domain
+vercel domains buy <domain>
+
+# Set up a custom alias for a deployment
+vercel alias set <deployment_url> <custom_domain>
+
+# List aliases
+vercel alias ls
+
+# Remove an alias
+vercel alias rm <custom_domain>
+
+% vercel, deployments, inspect
+
+# List recent deployments
+vercel list
+
+# List deployments for a specific project
+vercel list <project>
+
+# Inspect a deployment
+vercel inspect <deployment_url>
+
+# Inspect a deployment and wait for it to finish
+vercel inspect <deployment_url> --wait
+
+# View runtime logs for a deployment
+vercel logs <deployment_url>
+
+# Follow/tail runtime logs
+vercel logs <deployment_url> --follow
+
+# Remove a deployment
+vercel remove <deployment_url>
+
+# Promote a deployment to production
+vercel promote <deployment_url>
+
+# Rollback to previous production deployment
+vercel rollback
+
+# Rollback to a specific deployment
+vercel rollback <deployment_url>
+
+% vercel, dns
+
+# List DNS records for a domain
+vercel dns ls <domain>
+
+# Add a DNS record
+vercel dns add <domain> <name> <record_type> <value>
+
+# Remove a DNS record
+vercel dns rm <record_id>
+
+$ record_type: echo -e "A\nAAAA\nCNAME\nMX\nTXT\nSRV"
+
+% vercel, certs
+
+# List SSL certificates
+vercel certs ls
+
+# Issue a certificate for a domain
+vercel certs issue <domain>
+
+# Remove a certificate
+vercel certs rm <certificate_id>
+
+% vercel, teams, auth
+
+# Login to Vercel
+vercel login
+
+# Login with GitHub
+vercel login --github
+
+# Login with a specific email
+vercel login <email>
+
+# Logout
+vercel logout
+
+# Show current user
+vercel whoami
+
+# Switch team scope
+vercel switch
+
+# Switch to a specific team
+vercel switch <team>
+
+# List teams
+vercel teams list
+
+# Invite a team member
+vercel teams invite <email>
+
+% vercel, cache
+
+# Purge all caches
+vercel cache purge
+
+# Purge CDN cache only
+vercel cache purge --type cdn
+
+# Purge data cache only
+vercel cache purge --type data
+
+# Invalidate cache by tag
+vercel cache invalidate --tag <tag>
+
+% vercel, git, integration
+
+# Connect to a Git provider
+vercel git connect
+
+# List Git connections
+vercel git ls
+
+# Disconnect a Git provider
+vercel git disconnect <provider>
+
+# Initialize from an example project
+vercel init <example>
+
+$ provider: echo -e "github\ngitlab\nbitbucket"

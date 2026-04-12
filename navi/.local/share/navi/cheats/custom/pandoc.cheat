@@ -1,0 +1,140 @@
+% pandoc, convert, basic
+
+# Convert file (auto-detect formats from extensions)
+pandoc <input_file> -o <output_file>
+
+# Convert Markdown to PDF
+pandoc <input_file> -o <output>.pdf
+
+# Convert Markdown to DOCX
+pandoc <input_file> -o <output>.docx
+
+# Convert Markdown to HTML (standalone with header/footer)
+pandoc <input_file> -s -o <output>.html
+
+# Convert DOCX to Markdown
+pandoc <input_file> -o <output>.md
+
+# Convert HTML to Markdown
+pandoc <input_file> -o <output>.md
+
+# Convert between formats explicitly
+pandoc -f <from_format> -t <to_format> <input_file> -o <output_file>
+
+$ from_format: echo -e "markdown\ngfm\nhtml\nlatex\ndocx\nrst\norg\nepub\njson\ncsv\nbibtex"
+$ to_format: echo -e "html\npdf\ndocx\nlatex\nepub\nrst\norg\nbeamer\npptx\nplain\ngfm\njson\nrevealjs"
+
+% pandoc, pdf
+
+# Markdown to PDF with custom margins
+pandoc <input_file> -o <output>.pdf -V geometry:margin=<margin>
+
+# Markdown to PDF with table of contents
+pandoc <input_file> -o <output>.pdf --toc
+
+# Markdown to PDF with numbered sections
+pandoc <input_file> -o <output>.pdf --number-sections
+
+# Markdown to PDF with custom font
+pandoc <input_file> -o <output>.pdf --pdf-engine=xelatex -V mainfont="<font_name>"
+
+# Markdown to PDF using a LaTeX template
+pandoc <input_file> -o <output>.pdf --template=<template_file>
+
+# Markdown to PDF with syntax highlighting style
+pandoc <input_file> -o <output>.pdf --highlight-style=<highlight_style>
+
+$ margin: echo -e "1in\n2cm\n0.75in\n1.5cm"
+$ highlight_style: echo -e "pygments\ntango\nespresso\nzenburn\nkate\nmonochrome\nbreezedark\nhaddock"
+
+% pandoc, html
+
+# Markdown to self-contained HTML (embeds images/css)
+pandoc <input_file> -s --embed-resources --standalone -o <output>.html
+
+# Markdown to HTML with custom CSS
+pandoc <input_file> -s --css=<css_file> -o <output>.html
+
+# Markdown to HTML with table of contents
+pandoc <input_file> -s --toc -o <output>.html
+
+# Markdown to HTML with syntax highlighting
+pandoc <input_file> -s --highlight-style=<highlight_style> -o <output>.html
+
+# Markdown to HTML with math rendering (MathJax)
+pandoc <input_file> -s --mathjax -o <output>.html
+
+$ highlight_style: echo -e "pygments\ntango\nespresso\nzenburn\nkate\nmonochrome\nbreezedark\nhaddock"
+
+% pandoc, presentations
+
+# Markdown to Reveal.js slides
+pandoc <input_file> -t revealjs -s -o <output>.html -V theme=<reveal_theme>
+
+# Markdown to PowerPoint
+pandoc <input_file> -o <output>.pptx
+
+# Markdown to Beamer PDF slides
+pandoc <input_file> -t beamer -o <output>.pdf -V theme=<beamer_theme>
+
+$ reveal_theme: echo -e "black\nwhite\nleague\nbeige\nsky\nnight\nserif\nsimple\nsolarized\nmoon"
+$ beamer_theme: echo -e "default\nMadrid\nBerlin\nSingapore\nCopenhagen\nWarsaw"
+
+% pandoc, epub
+
+# Markdown to EPUB
+pandoc <input_file> -o <output>.epub
+
+# Markdown to EPUB with cover image
+pandoc <input_file> -o <output>.epub --epub-cover-image=<cover_image>
+
+# Markdown to EPUB with metadata
+pandoc <input_file> -o <output>.epub --epub-metadata=<metadata_file>
+
+# EPUB to Markdown
+pandoc <input_file> -o <output>.md
+
+# EPUB to HTML
+pandoc <input_file> -s -o <output>.html
+
+% pandoc, options, metadata
+
+# Add title, author, date via command line
+pandoc <input_file> -o <output_file> -V title="<title>" -V author="<author>" -V date="<date>"
+
+# Use a YAML metadata file
+pandoc <input_file> -o <output_file> --metadata-file=<yaml_file>
+
+# Convert multiple input files into one output
+pandoc <file1> <file2> <file3> -o <output_file>
+
+# List supported input formats
+pandoc --list-input-formats
+
+# List supported output formats
+pandoc --list-output-formats
+
+# Extract media from DOCX while converting
+pandoc <input_file> -o <output>.md --extract-media=<media_dir>
+
+$ media_dir: echo -e "./media\n./images\n./assets"
+
+% pandoc, filters, advanced
+
+# Apply a Lua filter
+pandoc <input_file> -o <output_file> --lua-filter=<lua_filter>
+
+# Use citeproc for bibliography
+pandoc <input_file> -o <output_file> --citeproc --bibliography=<bib_file>
+
+# Shift heading levels (e.g. h1 becomes h2)
+pandoc <input_file> -o <output_file> --shift-heading-level-by=<shift>
+
+# Wrap lines at specific column width
+pandoc <input_file> -o <output_file> --columns=<columns>
+
+# Set default image extension for LaTeX/PDF
+pandoc <input_file> -o <output>.pdf --default-image-extension=pdf
+
+$ shift: echo -e "1\n-1\n2"
+$ columns: echo -e "72\n80\n100\n120"

@@ -1,0 +1,77 @@
+% delta, git, diff
+
+# View git diff with delta (default pager if configured)
+git diff
+
+# View staged changes with delta
+git diff --staged
+
+# Compare two files with delta directly
+delta <file_a> <file_b>
+
+# View a file's git blame with delta formatting
+git blame <file>
+
+# Show git log with patches through delta
+git log -p
+
+# Show a specific commit's diff
+git show <commit>
+
+$ file_a: fd -t f --max-depth 3 2>/dev/null
+$ file_b: fd -t f --max-depth 3 2>/dev/null
+$ file: fd -t f --max-depth 3 2>/dev/null
+$ commit: git log --oneline -20 --- --column 1 --delimiter ' '
+
+% delta, git, config
+
+# Set delta as the default git pager
+git config --global core.pager delta
+
+# Set delta as the default diff tool for git
+git config --global interactive.diffFilter 'delta --color-only'
+
+# Enable line numbers in delta output
+git config --global delta.line-numbers true
+
+# Enable side-by-side diff view
+git config --global delta.side-by-side true
+
+# Set delta syntax theme
+git config --global delta.syntax-theme <theme>
+
+# Set delta to use dark mode defaults
+git config --global delta.dark true
+
+# Show current delta-related git config
+git config --global --get-regexp delta
+
+$ theme: delta --list-syntax-themes 2>/dev/null
+
+% delta, standalone
+
+# Pipe any diff through delta
+diff -u <file_a> <file_b> | delta
+
+# Use delta with side-by-side view
+delta --side-by-side <file_a> <file_b>
+
+# Use delta with line numbers
+delta --line-numbers <file_a> <file_b>
+
+# View diff with a specific syntax theme
+delta --syntax-theme <theme> <file_a> <file_b>
+
+# List available syntax themes
+delta --list-syntax-themes
+
+# Show example output for all syntax themes
+delta --show-syntax-themes
+
+# Pipe a diff and force color output (for piping to less)
+delta --color-only < <diff_file>
+
+$ theme: delta --list-syntax-themes 2>/dev/null
+$ file_a: fd -t f --max-depth 3 2>/dev/null
+$ file_b: fd -t f --max-depth 3 2>/dev/null
+$ diff_file: fd -e diff -e patch --max-depth 3 2>/dev/null

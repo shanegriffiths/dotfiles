@@ -1,0 +1,96 @@
+% tesseract, ocr, basic
+
+# OCR an image to stdout
+tesseract <input_file> stdout
+
+# OCR an image to a text file (creates output.txt)
+tesseract <input_file> <output_base>
+
+# OCR with a specific language
+tesseract <input_file> stdout -l <language>
+
+# OCR with multiple languages
+tesseract <input_file> stdout -l <language>+<language2>
+
+# List available languages
+tesseract --list-langs
+
+$ language: tesseract --list-langs 2>/dev/null | tail -n +2
+$ language2: tesseract --list-langs 2>/dev/null | tail -n +2
+
+% tesseract, output, format
+
+# OCR to plain text file
+tesseract <input_file> <output_base> txt
+
+# OCR to hOCR (HTML with word positions)
+tesseract <input_file> <output_base> hocr
+
+# OCR to searchable PDF
+tesseract <input_file> <output_base> pdf
+
+# OCR to TSV (tab-separated with confidence scores)
+tesseract <input_file> <output_base> tsv
+
+# OCR to multiple output formats at once
+tesseract <input_file> <output_base> txt pdf hocr
+
+# OCR to ALTO XML
+tesseract <input_file> <output_base> alto
+
+% tesseract, psm, segmentation
+
+# OCR treating image as a single block of text
+tesseract <input_file> stdout --psm <psm_mode>
+
+# OCR a single line of text
+tesseract <input_file> stdout --psm 7
+
+# OCR a single word
+tesseract <input_file> stdout --psm 8
+
+# OCR a single character
+tesseract <input_file> stdout --psm 10
+
+# Auto-detect orientation and script
+tesseract <input_file> stdout --psm 0
+
+$ psm_mode: echo -e "3 --- Fully automatic (default)\n4 --- Single column of variable sizes\n6 --- Single uniform block of text\n7 --- Single text line\n8 --- Single word\n10 --- Single character\n11 --- Sparse text, no order\n12 --- Sparse text with OSD\n13 --- Raw line" --- --column 1
+
+% tesseract, preprocess, advanced
+
+# OCR with DPI hint for low-res images
+tesseract <input_file> stdout --dpi <dpi>
+
+# OCR digits only
+tesseract <input_file> stdout -c tessedit_char_whitelist=0123456789
+
+# OCR with character whitelist (only allow specific chars)
+tesseract <input_file> stdout -c tessedit_char_whitelist="<allowed_chars>"
+
+# OCR with character blacklist (exclude specific chars)
+tesseract <input_file> stdout -c tessedit_char_blacklist="<blocked_chars>"
+
+$ dpi: echo -e "300\n150\n72\n200\n600"
+
+% tesseract, pipeline, recipes
+
+# OCR a screenshot directly from clipboard (macOS)
+pngpaste - | tesseract stdin stdout
+
+# Preprocess with ImageMagick then OCR (sharpen + threshold)
+magick <input_file> -sharpen 0x1 -threshold 50% /tmp/ocr_prep.png && tesseract /tmp/ocr_prep.png stdout
+
+# OCR all images in current directory to text files
+for f in *.{png,jpg,jpeg,tiff}; do [ -f "$f" ] && tesseract "$f" "${f%.*}"; done
+
+# OCR a PDF page (convert to image first, then OCR)
+magick -density 300 "<pdf_file>[<page>]" /tmp/ocr_page.png && tesseract /tmp/ocr_page.png stdout
+
+# OCR and copy result to clipboard (macOS)
+tesseract <input_file> stdout | pbcopy
+
+# OCR with preprocessing: grayscale, upscale, sharpen
+magick <input_file> -colorspace Gray -resize 200% -sharpen 0x1 /tmp/ocr_prep.png && tesseract /tmp/ocr_prep.png stdout
+
+$ page: echo -e "0\n1\n2\n3"

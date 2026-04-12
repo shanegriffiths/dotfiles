@@ -1,0 +1,53 @@
+% yazi, file manager
+
+# Open yazi in current directory
+yazi
+
+# Open yazi in a specific directory
+yazi <directory>
+
+# Open yazi and cd to its last directory on exit (shell wrapper)
+y
+
+$ directory: find ~ -maxdepth 3 -type d 2>/dev/null --- --preview 'eza --tree --level=1 --icons {}'
+
+% yazi, keybindings, navigation
+
+# Yazi navigation keys
+; h/l = parent/enter dir | j/k = down/up | Enter = open file
+
+# Create file (end with / for folder)
+; a
+
+# Rename current file
+; r
+
+# Copy (yank) selected files
+; y
+
+# Cut selected files
+; x
+
+# Paste files
+; p
+
+# Trash / permanent delete
+; d = trash | D = permanent delete
+
+# Toggle selection / visual select / select all
+; Space = toggle | v = visual | Ctrl+a = all
+
+# Toggle hidden files
+; .
+
+# Search in current directory
+; /
+
+# Jump with fzf
+; Z
+
+# Run shell command in current dir
+; ;
+
+# Open with (choose app)
+; O

@@ -1,0 +1,65 @@
+% duf, disk, free
+
+# Show disk usage overview
+duf
+
+# Show all filesystems including pseudo and duplicates
+duf -all
+
+# Show only local devices
+duf -only local
+
+# Show only network devices
+duf -only network
+
+# Show inode usage instead of block usage
+duf -inodes
+
+# Output as JSON
+duf -json
+
+% duf, disk, filtering
+
+# Hide specific device types
+duf -hide <device_type>
+
+# Show only specific device types
+duf -only <device_type>
+
+# Hide specific filesystems
+duf -hide-fs <filesystem>
+
+# Show only specific filesystems
+duf -only-fs <filesystem>
+
+# Hide specific mount points (supports wildcards)
+duf -hide-mp <mountpoint>
+
+# Show only specific mount points
+duf -only-mp <mountpoint>
+
+$ device_type: echo -e "local\nnetwork\nfuse\nspecial\nloops\nbinds"
+$ filesystem: echo -e "tmpfs\nsquashfs\noverlay\ndevtmpfs\napfs\next4\nntfs"
+$ mountpoint: echo -e "/tmp\n/boot\n/home\n/var"
+
+% duf, disk, display
+
+# Sort output by a specific field
+duf -sort <sort_field>
+
+# Show only specific output columns
+duf -output <columns>
+
+# Use ASCII style instead of unicode
+duf -style ascii
+
+# Set color theme
+duf -theme <theme>
+
+# Limit output width
+duf -width <width>
+
+$ sort_field: echo -e "mountpoint\nsize\nused\navail\nusage\ntype\nfilesystem"
+$ columns: echo -e "mountpoint,size,used,avail,usage\nmountpoint,size,used,avail,usage,type\nmountpoint,size,used,avail,usage,inodes,inodes_usage,type"
+$ theme: echo -e "dark\nlight\nansi"
+$ width: echo -e "80\n100\n120\n160"

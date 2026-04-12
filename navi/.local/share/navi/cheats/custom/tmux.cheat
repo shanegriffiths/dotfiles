@@ -1,0 +1,224 @@
+% tmux, sessions
+
+# Start a new named session
+tmux new-session -s <session_name>
+
+# Attach to a session
+tmux attach-session -t <session>
+
+# Attach to last session
+tmux attach
+
+# Detach from current session (inside tmux)
+tmux detach
+
+# Kill a session
+tmux kill-session -t <session>
+
+# List all sessions
+tmux list-sessions
+
+# Switch to another session (inside tmux)
+tmux switch-client -t <session>
+
+# Rename current session (Ctrl+a, $)
+tmux rename-session <new_name>
+
+# Next session (Ctrl+a, ↓)
+tmux switch-client -n
+
+# Previous session (Ctrl+a, ↑)
+tmux switch-client -p
+
+# Kill the tmux server entirely (all sessions)
+tmux kill-server
+
+$ session: tmux list-sessions -F '#S'
+
+% tmux, windows
+
+# Create a new window (Ctrl+a, c)
+tmux new-window -c "#{pane_current_path}"
+
+# Rename current window (Ctrl+a, ,)
+tmux rename-window <name>
+
+# Kill current window
+tmux kill-window
+
+# Go to window by number (Ctrl+a, <number>)
+tmux select-window -t <window_number>
+
+# Next window (Ctrl+a, n or Ctrl+a, →)
+tmux next-window
+
+# Previous window (Ctrl+a, p or Ctrl+a, ←)
+tmux previous-window
+
+# List windows
+tmux list-windows
+
+$ window_number: tmux list-windows -F '#I: #W' --- --column 1 --delimiter ':'
+
+% tmux, panes
+
+# Split pane horizontally (Ctrl+a, |)
+tmux split-window -h -c "#{pane_current_path}"
+
+# Split pane vertically (Ctrl+a, -)
+tmux split-window -v -c "#{pane_current_path}"
+
+# Close current pane (Ctrl+a, x — no confirmation)
+tmux kill-pane
+
+# Maximize/restore pane (Ctrl+a, m)
+tmux resize-pane -Z
+
+# Navigate panes (Ctrl+h/j/k/l — no prefix, works across nvim splits)
+tmux select-pane -<direction>
+
+# Swap pane with previous
+tmux swap-pane -U
+
+# Swap pane with next
+tmux swap-pane -D
+
+# Show pane numbers (Ctrl+a, q)
+tmux display-panes
+
+# Break pane into its own window (Ctrl+a, !)
+tmux break-pane
+
+# Join a pane from another window into current
+tmux join-pane -s <source_window>
+
+$ direction: echo -e "L\nD\nU\nR"
+$ source_window: tmux list-windows -F '#I: #W' --- --column 1 --delimiter ':'
+
+% tmux, copy-mode
+
+# Enter copy mode (Ctrl+a, v)
+tmux copy-mode
+
+# Search backward in copy mode
+tmux copy-mode \; send-keys ?
+
+# Search forward in copy mode
+tmux copy-mode \; send-keys /
+
+# Paste buffer (Ctrl+a, ])
+tmux paste-buffer
+
+# List paste buffers
+tmux list-buffers
+
+# Save buffer to file
+tmux save-buffer <filename>
+
+% tmux, popups
+
+# Open yazi file manager popup (Ctrl+a, Ctrl+y)
+tmux display-popup -d "#{pane_current_path}" -w 90% -h 90% -E "yazi"
+
+# Open floating terminal (Ctrl+a, Ctrl+t)
+tmux display-popup -d "#{pane_current_path}" -w 80% -h 80% -E "zsh"
+
+# Open lazygit popup (Ctrl+a, Ctrl+l)
+tmux display-popup -d "#{pane_current_path}" -w 90% -h 90% -E "lazygit"
+
+% tmux, sesh, sessions
+
+# List all sesh sessions
+sesh list
+
+# List tmux sessions only
+sesh list -t
+
+# List zoxide directories
+sesh list -z
+
+# List config sessions
+sesh list -c
+
+# Connect to a session by name
+sesh connect <sesh_session>
+
+$ sesh_session: sesh list
+
+% tmux, resurrect, persistence
+
+# Save all sessions manually (Ctrl+a, Ctrl+s)
+# (tmux-resurrect keybinding — use inside tmux)
+
+# Restore sessions manually (Ctrl+a, Ctrl+r)
+# (tmux-resurrect keybinding — use inside tmux)
+
+# Continuum auto-saves every 15 min (manual restore only)
+# Check last save time
+cat ~/.local/share/tmux/resurrect/last
+
+% tmux, config, management
+
+# Reload tmux config (Ctrl+a, r)
+tmux source-file ~/.config/tmux/tmux.conf
+
+# Install new plugins (Ctrl+a, I)
+~/.config/tmux/plugins/tpm/bin/install_plugins
+
+# Update plugins (Ctrl+a, U)
+~/.config/tmux/plugins/tpm/bin/update_plugins all
+
+# Remove plugins not in config (Ctrl+a, Alt+u)
+~/.config/tmux/plugins/tpm/bin/clean_plugins
+
+# Show all keybindings
+tmux list-keys
+
+# Show all options
+tmux show-options -g
+
+# Show a specific option value
+tmux show-option -gv <option>
+
+# Set a global option
+tmux set-option -g <option> <value>
+
+# Open tmux command prompt (Ctrl+a, :)
+# (use the keybinding inside tmux)
+
+% tmux, layouts
+
+# Even horizontal layout
+tmux select-layout even-horizontal
+
+# Even vertical layout
+tmux select-layout even-vertical
+
+# Main horizontal layout
+tmux select-layout main-horizontal
+
+# Main vertical layout
+tmux select-layout main-vertical
+
+# Tiled layout
+tmux select-layout tiled
+
+# Cycle through layouts (Ctrl+a, Space)
+tmux next-layout
+
+% tmux, advanced
+
+# Send keys to a specific pane
+tmux send-keys -t <target_pane> "<keys>" Enter
+
+# Capture pane contents to a file
+tmux capture-pane -pS - > <filename>
+
+# Pipe pane output to a log file
+tmux pipe-pane -o 'cat >> ~/tmux-<session_name>.log'
+
+# Move window to a different index
+tmux move-window -t <index>
+
+# Link a window from another session
+tmux link-window -s <session>:<window> -t <index>

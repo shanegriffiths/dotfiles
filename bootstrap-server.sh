@@ -18,7 +18,7 @@ DOTFILES_DIR="$HOME/.dotfiles"
 BACKUP_DIR="$HOME/.dotfiles-backup/$(date +%Y%m%d_%H%M%S)"
 
 # Stow packages to deploy on the server (no GUI packages)
-STOW_PACKAGES=(zsh git nvim tmux starship direnv atuin sesh yazi ghostty)
+STOW_PACKAGES=(zsh git nvim tmux starship direnv atuin sesh yazi ghostty navi)
 
 # ---------------------------------------------------------------------------
 # Helper functions

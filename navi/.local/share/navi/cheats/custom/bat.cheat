@@ -1,0 +1,49 @@
+% bat, file-viewer, cat
+
+# View a file with syntax highlighting
+bat <file>
+
+# View a file with a specific language syntax
+bat --language <lang> <file>
+
+# View a file with no decorations (plain output, good for piping)
+bat --plain <file>
+
+# View a file showing only line numbers (no header/grid)
+bat --style=numbers <file>
+
+# View a file with a specific theme
+bat --theme <theme> <file>
+
+# Show all available themes with previews
+bat --list-themes
+
+# Show all supported languages
+bat --list-languages
+
+# View a specific range of lines
+bat --line-range <start>:<end> <file>
+
+# Diff two files side by side with syntax highlighting
+bat --diff <file_a> <file_b>
+
+# Use bat as a pager for man pages
+MANPAGER="sh -c 'col -bx | bat -l man -p'" man <command>
+
+# View multiple files concatenated
+bat <file1> <file2>
+
+# Show non-printable characters (tabs, newlines, etc.)
+bat --show-all <file>
+
+# Preview file with header but no line numbers
+bat --style=header,grid <file>
+
+$ file: fd --type f --hidden --follow 2>/dev/null
+$ file_a: fd --type f --hidden --follow 2>/dev/null
+$ file_b: fd --type f --hidden --follow 2>/dev/null
+$ file1: fd --type f --hidden --follow 2>/dev/null
+$ file2: fd --type f --hidden --follow 2>/dev/null
+$ lang: bat --list-languages | awk -F: '{print $1}'
+$ theme: bat --list-themes | grep '^Theme:' | sed 's/Theme: //'
+$ command: compgen -c | sort -u
