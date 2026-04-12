@@ -3,6 +3,18 @@
 	name = Shane Griffiths
 [core]
 	excludesfile = /Users/shane/.gitignore_global
+	pager = delta
+[interactive]
+	diffFilter = delta --color-only
+[delta]
+	syntax-theme = "Catppuccin Mocha"
+	navigate = true
+	side-by-side = true
+	line-numbers = true
+	hyperlinks = true
+	dark = true
+[merge]
+	conflictstyle = zdiff3
 [difftool "Kaleidoscope"]
 	cmd = ksdiff --partial-changeset --relative-path \"$MERGED\" -- \"$LOCAL\" \"$REMOTE\"
 [mergetool "Kaleidoscope"]

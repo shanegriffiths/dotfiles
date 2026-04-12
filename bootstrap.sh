@@ -156,6 +156,7 @@ declare -A plugins=(
     ["fzf-tab"]="https://github.com/Aloxaf/fzf-tab"
     ["zsh-autosuggestions"]="https://github.com/zsh-users/zsh-autosuggestions"
     ["zsh-syntax-highlighting"]="https://github.com/zsh-users/zsh-syntax-highlighting"
+    ["zsh-completions"]="https://github.com/zsh-users/zsh-completions"
 )
 
 for plugin in "${!plugins[@]}"; do

@@ -14,6 +14,15 @@ fi
 export PATH="$HOME/.local/bin:$PATH"
 
 # ---------------------------------------------------------------------------
+# SSH SESSION DETECTION
+# ---------------------------------------------------------------------------
+
+# Detect if we're in an SSH session (lighter config to avoid input lag).
+if [[ -n "$SSH_CLIENT" || -n "$SSH_TTY" || -n "$SSH_CONNECTION" ]]; then
+  IS_SSH_SESSION=true
+fi
+
+# ---------------------------------------------------------------------------
 # OH MY ZSH CONFIGURATION
 # ---------------------------------------------------------------------------
 
@@ -23,16 +32,23 @@ export ZSH="$HOME/.oh-my-zsh"
 # Disable Oh My Zsh's theme engine to use Starship.
 ZSH_THEME=""
 
-# Oh My Zsh plugins. zsh-syntax-highlighting should be last.
-plugins=(
-  git
-  sudo
-  command-not-found
-  zsh-completions
-  fzf-tab
-  zsh-autosuggestions
-  zsh-syntax-highlighting
-)
+# Oh My Zsh plugins. Use a lighter set over SSH to prevent input lag.
+if [[ -n "$IS_SSH_SESSION" ]]; then
+  plugins=(
+    git
+    sudo
+  )
+else
+  plugins=(
+    git
+    sudo
+    command-not-found
+    zsh-completions
+    fzf-tab
+    zsh-autosuggestions
+    zsh-syntax-highlighting
+  )
+fi
 
 # Load Oh My Zsh (interactive only — plugins are for terminal use).
 if [[ $- == *i* ]]; then
@@ -60,28 +76,38 @@ zstyle ':completion:*:descriptions' format '%F{yellow}-- %d --%f'
 # Set the default editor.
 export EDITOR='nvim'
 
-# Environment switching for local development
+# Environment switching for local development (via direnv + pass)
 # Usage: useenv [dev|prev|prod]
-# Creates .env.local from .env.[env] and sets .current-env for status line
+# Sources the matching .envrc file and allows direnv
 useenv() {
   local env="${1:-dev}"
-  local envfile=".env.${env}"
+  local envfile
+
+  case "$env" in
+    dev|local) envfile=".envrc" ;;
+    prev|preview) envfile=".envrc.preview" ;;
+    prod|production) envfile=".envrc.production" ;;
+    *)
+      echo "Error: unknown environment '$env'"
+      echo "Available: dev, prev, prod"
+      return 1
+      ;;
+  esac
 
   if [[ ! -f "$envfile" ]]; then
     echo "Error: $envfile not found"
-    local available=$(ls -1 .env.* 2>/dev/null | grep -v '.env.local' | sed 's/.env.//' | tr '\n' ' ')
-    [[ -n "$available" ]] && echo "Available: $available"
     return 1
   fi
 
-  cp "$envfile" .env.local
-  echo "$env" > .current-env
+  source "$envfile"
+  direnv allow
   echo "✓ Now using: $env"
 }
 
 clearenv() {
-  rm -f .current-env
-  echo "✓ Environment indicator cleared"
+  direnv deny 2>/dev/null
+  unset STARSHIP_ENV_NAME
+  echo "✓ Environment cleared"
 }
 
 # History settings: Increase size and set options for a better experience.
@@ -142,18 +168,22 @@ bindkey '^Xl' clear-keep-buffer
 # Fzf
 # ---------------------------------------------------------------------------
 
-# Set up fzf key bindings and fuzzy completion (interactive only).
-if [[ $- == *i* ]]; then
+# Set up fzf key bindings and fuzzy completion (interactive only, not SSH).
+if [[ $- == *i* && -z "$IS_SSH_SESSION" ]]; then
   eval "$(fzf --zsh)"
 fi
 
 # Set up atuin shell history (Ctrl+R for history search)
 export ATUIN_NOBIND=true
-eval "$(atuin init zsh)"
-bindkey '^r' atuin-search
+if [[ -z "$IS_SSH_SESSION" ]]; then
+  eval "$(atuin init zsh)"
+  bindkey '^r' atuin-search
+fi
 
 # Set up navi cheatsheet widget (Ctrl+G)
-eval "$(navi widget zsh)"
+if [[ -z "$IS_SSH_SESSION" ]]; then
+  eval "$(navi widget zsh)"
+fi
 
 # -- Use fd instead of fzf --
 
@@ -259,8 +289,18 @@ alias o.='open -a Bloom .'
 # System info on new shell (disabled — run `fastfetch` manually when needed)
 # fastfetch
 
+# Direnv — auto-load .envrc per-directory (must be before starship)
+export DIRENV_LOG_FORMAT=""
+if command -v direnv &>/dev/null; then
+  eval "$(direnv hook zsh)"
+fi
+
 # Load Starship - a fast, cross-shell prompt (interactive only).
+# Use a minimal config over SSH to avoid prompt lag.
 if [[ $- == *i* ]]; then
+  if [[ -n "$IS_SSH_SESSION" ]]; then
+    export STARSHIP_CONFIG="$HOME/.config/starship-ssh.toml"
+  fi
   eval "$(starship init zsh)"
 fi
 

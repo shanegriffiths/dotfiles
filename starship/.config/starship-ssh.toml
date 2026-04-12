@@ -1,0 +1,40 @@
+# Minimal Starship config for SSH sessions — fast, no git overhead.
+"$schema" = "https://starship.rs/config-schema.json"
+
+scan_timeout = 50
+command_timeout = 200
+add_newline = true
+
+format = """$hostname $directory $character"""
+
+[hostname]
+ssh_only = true
+style = "bold yellow"
+format = "[$hostname]($style):"
+
+[directory]
+style = "bold blue"
+truncation_length = 3
+
+[character]
+success_symbol = "[>](bold green)"
+error_symbol = "[>](bold red)"
+
+# Disable everything else
+[git_branch]
+disabled = true
+
+[git_status]
+disabled = true
+
+[git_commit]
+disabled = true
+
+[nodejs]
+disabled = true
+
+[python]
+disabled = true
+
+[package]
+disabled = true

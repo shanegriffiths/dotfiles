@@ -14,6 +14,7 @@ sep="#6c7086"
 icon=$(printf '\xee\xaf\x88')
 first=1
 tmux list-sessions -F '#{session_name}' | while read -r s; do
+  [ "$s" = "scratch" ] && continue
   if [ "$first" != "1" ]; then
     printf '#[fg=%s,none] │ ' "$sep"
   fi
