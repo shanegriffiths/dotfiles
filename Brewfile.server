@@ -51,6 +51,7 @@ brew "tmux"                         # terminal multiplexer
 brew "atuin"                        # shell history (skipped over SSH)
 brew "navi"                         # cheatsheets (skipped over SSH)
 brew "sesh"                         # tmux session manager
+brew "yazi"                         # terminal file manager
 
 # ============================================================================
 # Languages & Runtimes
