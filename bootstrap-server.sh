@@ -97,7 +97,7 @@ BREWFILE="$DOTFILES_DIR/Brewfile.server"
 
 if [ -f "$BREWFILE" ]; then
     info "Installing Homebrew packages..."
-    brew bundle --file="$BREWFILE" --no-lock
+    brew bundle --file="$BREWFILE" --no-upgrade
 else
     warn "Brewfile.server not found at $BREWFILE — skipping"
 fi
