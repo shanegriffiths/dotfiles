@@ -40,7 +40,6 @@ sketchybar --default "${default[@]}"
 
 source "$ITEM_DIR/aerospace"
 source "$ITEM_DIR/left_items"
-source "$ITEM_DIR/media"
 
 ##### Adding Right Items #####
 # In the same way as the left items we can add items to the right side.
@@ -60,3 +59,11 @@ source "$ITEM_DIR/month_progress"
 
 #### Initialize focused workspace
 sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$(aerospace list-workspaces --focused)
+
+#### Force initial render for items whose update_freq is too long to wait for.
+#### `sketchybar --update` should do this but is unreliable in practice; calling
+#### the plugin scripts directly with NAME set is deterministic.
+NAME=year_progress "$PLUGIN_DIR/year_progress.sh" &
+NAME=month_progress "$PLUGIN_DIR/month_progress.sh" &
+NAME=cpu_graph "$PLUGIN_DIR/cpu.sh" &
+wait

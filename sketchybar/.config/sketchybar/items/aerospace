@@ -68,14 +68,13 @@ for i in "${!SECONDARY_WORKSPACES[@]}"; do
     fi
 done
 
+# Trailing spacer separating workspaces from front_app
+items_cmd+=(
+    --add item "workspaces_end_spacer" left
+    --set "workspaces_end_spacer"
+    width=24
+    background.drawing=off
+)
+
 # Execute all workspace additions in a single batched command
 sketchybar "${items_cmd[@]}"
-
-# Add bracket grouping for all workspace items (visual grouping)
-sketchybar --add bracket workspaces '/space\..*/' \
-           --set workspaces \
-           background.color=0x20ffffff \
-           background.corner_radius=12 \
-           background.height=34 \
-           background.border_color=0x30ffffff \
-           background.border_width=1
