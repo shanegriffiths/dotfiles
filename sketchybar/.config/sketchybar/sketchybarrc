@@ -39,7 +39,6 @@ sketchybar --default "${default[@]}"
 # only the properties deviating from the current defaults need to be set
 
 source "$ITEM_DIR/aerospace"
-source "$ITEM_DIR/mode_indicator"
 source "$ITEM_DIR/left_items"
 source "$ITEM_DIR/media"
 
