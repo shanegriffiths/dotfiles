@@ -4,8 +4,8 @@
 sketchybar \
   --add item front_app left \
   --set front_app \
-    icon.font="sketchybar-app-font:Regular:13.0" \
-    label.font="SF Pro:Medium:14.0" \
+    icon.font="sketchybar-app-font:Regular:11.0" \
+    label.font="SF Pro:Medium:11.0" \
     icon.color=0xffffffff \
     icon.padding_left=0 \
     icon.padding_right=4 \

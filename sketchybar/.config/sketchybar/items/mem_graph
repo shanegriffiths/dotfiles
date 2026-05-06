@@ -2,8 +2,8 @@
 
 PLUGIN_DIR="${PLUGIN_DIR:-$HOME/.config/sketchybar/plugins}"
 
-sketchybar --add graph cpu_graph right 50 \
-           --set cpu_graph graph.color=0xffd13539 \
+sketchybar --add graph mem_graph right 50 \
+           --set mem_graph graph.color=0xffd13539 \
                           graph.fill_color=0x40d13539 \
                           graph.line_width=2.0 \
                           background.drawing=off \
@@ -12,4 +12,4 @@ sketchybar --add graph cpu_graph right 50 \
                           label.padding_right=4 \
                           label.font="SF Pro:Medium:11.0" \
                           icon.drawing=off \
-                          script="$PLUGIN_DIR/cpu.sh"
+                          script="$PLUGIN_DIR/mem.sh"

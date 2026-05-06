@@ -53,17 +53,15 @@ source "$ITEM_DIR/left_items"
 # https://felixkratz.github.io/SketchyBar/config/events
 
 source "$ITEM_DIR/spacer_progress_stats"
+source "$ITEM_DIR/gpu_graph"
+source "$ITEM_DIR/mem_graph"
 source "$ITEM_DIR/cpu_graph"
-source "$ITEM_DIR/year_progress"
-source "$ITEM_DIR/month_progress"
 
 #### Initialize focused workspace
 sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$(aerospace list-workspaces --focused)
 
 #### Force initial render for items whose update_freq is too long to wait for.
-#### `sketchybar --update` should do this but is unreliable in practice; calling
-#### the plugin scripts directly with NAME set is deterministic.
-NAME=year_progress "$PLUGIN_DIR/year_progress.sh" &
-NAME=month_progress "$PLUGIN_DIR/month_progress.sh" &
 NAME=cpu_graph "$PLUGIN_DIR/cpu.sh" &
+NAME=mem_graph "$PLUGIN_DIR/mem.sh" &
+NAME=gpu_graph "$PLUGIN_DIR/gpu.sh" &
 wait

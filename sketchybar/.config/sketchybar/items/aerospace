@@ -23,7 +23,7 @@ add_workspace() {
         background.border_color=0xff666666
         background.border_width=1
         label="$id"
-        label.font="SF Pro:Medium:13.0"
+        label.font="SF Pro:Medium:11.0"
         label.padding_left=0
         label.padding_right=12
         icon.drawing=off
