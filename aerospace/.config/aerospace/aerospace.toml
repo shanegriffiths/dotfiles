@@ -20,13 +20,6 @@ on-focus-changed = [
 	'exec-and-forget $HOME/.config/sketchybar/plugins/borders.sh',
 ]
 
-# Notify Sketchybar when the binding mode changes
-on-mode-changed = [
-	'/bin/bash',
-	'-c',
-	'sketchybar --trigger aerospace_mode_change MODE=$AEROSPACE_NEW_MODE',
-]
-
 # Start AeroSpace at login
 start-at-login = true
 
