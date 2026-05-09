@@ -229,7 +229,7 @@ _fzf_comprun() {
 
 # Eza Aliases (a modern replacement for ls)
 function ls() {
-  eza --color=always --icons=always --grid --group-directories-first --width=$(( COLUMNS / 3 )) "$@"
+  eza --color=always --icons=always --all --grid --group-directories-first --width=$(( COLUMNS / 3 )) "$@"
 }
 
 # Suffix Aliases — type a filename to open it with the right tool
