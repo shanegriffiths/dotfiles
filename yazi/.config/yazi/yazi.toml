@@ -7,7 +7,7 @@ scrolloff = 0
 
 [opener]
 markdown = [
-    { run = 'open -a MarkEdit "$@"' }
+    { run = 'open -a "Markdown Preview" "$@"' }
 ]
 pdf = [
     { run = 'open -a "PDF Expert" "$@"' }
