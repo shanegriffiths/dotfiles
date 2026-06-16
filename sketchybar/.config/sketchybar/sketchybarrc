@@ -52,16 +52,5 @@ source "$ITEM_DIR/left_items"
 # volume is registered. More info about the event system can be found here:
 # https://felixkratz.github.io/SketchyBar/config/events
 
-source "$ITEM_DIR/spacer_progress_stats"
-source "$ITEM_DIR/gpu_graph"
-source "$ITEM_DIR/mem_graph"
-source "$ITEM_DIR/cpu_graph"
-
 #### Initialize focused workspace
 sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$(aerospace list-workspaces --focused)
-
-#### Force initial render for items whose update_freq is too long to wait for.
-NAME=cpu_graph "$PLUGIN_DIR/cpu.sh" &
-NAME=mem_graph "$PLUGIN_DIR/mem.sh" &
-NAME=gpu_graph "$PLUGIN_DIR/gpu.sh" &
-wait
