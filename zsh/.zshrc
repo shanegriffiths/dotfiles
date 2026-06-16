@@ -186,7 +186,7 @@ eval "$(navi widget zsh)"
 
 # -- Use fd instead of fzf --
 
-export FZF_DEFAULT_OPTS="--height 50% --layout=default --border --color=hl:#2dd4bf,bg:#262626,preview-bg:#262626"
+export FZF_DEFAULT_OPTS="--height 50% --layout=default --border --color=hl:#c4262b,hl+:#c4262b,bg:-1,preview-bg:-1"
 export FZF_TMUX_OPTS="-p90%,70%"
 export FZF_DEFAULT_COMMAND="fd --hidden --strip-cwd-prefix --exclude .git"
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
