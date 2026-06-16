@@ -96,14 +96,18 @@ run = ['move-node-to-workspace 7', 'layout floating']
 # check-further-callbacks = true
 # run = 'layout floating'
 
-# [[on-window-detected]]
-# if.app-id = 'com.coteditor.CotEditor'
-# check-further-callbacks = true
-# run = 'layout floating'
+[[on-window-detected]]
+if.app-id = 'com.coteditor.CotEditor'
+check-further-callbacks = true
+run = 'layout floating'
 
 # =============================================================================
 # Window Detection Rules - Workspace Assignments
 # =============================================================================
+
+[[on-window-detected]]
+if.app-id = "com.microsoft.VSCode"
+run = "move-node-to-workspace 2"
 
 # =============================================================================
 # Keyboard Settings
