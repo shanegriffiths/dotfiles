@@ -62,7 +62,8 @@ fi
 # ---------------------------------------------------------------------------
 
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
-zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+# Folders red in the completion menu too (override LS_COLORS' cyan di for completion only)
+zstyle ':completion:*' list-colors "${(s.:.)${LS_COLORS/di=1;36/di=1;31}}"
 zstyle ':completion:*' menu no
 zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza --tree --color=always $realpath | head -200'
 zstyle ':completion:*' special-dirs true
@@ -228,6 +229,9 @@ _fzf_comprun() {
 # ---------------------------------------------------------------------------
 
 # Eza Aliases (a modern replacement for ls)
+# Directories in red (ANSI 1;31) instead of the default cyan — overrides LS_COLORS
+# di for eza only. ANSI red adapts per theme: dark-red in light, Catppuccin red in dark.
+export EZA_COLORS="di=1;31"
 function ls() {
   eza --color=always --icons=always --all --grid --group-directories-first --width=$(( COLUMNS / 3 )) "$@"
 }
@@ -347,3 +351,14 @@ branchlet() {
   fi
 }
 # End Branchlet setup
+
+# Added by Claude: put ~/bin on PATH for personal scripts (gen-image, etc.)
+export PATH="$HOME/bin:$PATH"
+
+# pnpm
+export PNPM_HOME="/Users/shane/Library/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME/bin:"*) ;;
+  *) export PATH="$PNPM_HOME/bin:$PATH" ;;
+esac
+# pnpm end

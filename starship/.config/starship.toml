@@ -16,7 +16,8 @@ $status\
 $line_break\
 $character"""
 
-palette = "catppuccin_mocha"
+# Colors resolve to the terminal's live ANSI palette, so the prompt follows
+# whatever Ghostty theme is active (dark Mocha / light GitHub High Contrast).
 
 # --- Prompt character ---
 [character]
@@ -27,7 +28,7 @@ vimcmd_symbol = "[\uf105 ](bold fg:yellow)"
 
 # --- Directory ---
 [directory]
-style = "sapphire"
+style = "red"
 format = "[ $path ]($style)"
 truncation_length = 4
 
@@ -41,7 +42,7 @@ truncation_length = 4
 # --- OS icon ---
 [os]
 disabled = false
-style = "fg:subtext1"
+style = "fg:bright-black"
 
 [os.symbols]
 Macos = "\uf179"
@@ -75,23 +76,23 @@ symbol = " "
 # --- Git branch (with worktree indicator) ---
 # Worktree detection is handled by custom.git_branch_pill which renders the full pill
 [custom.git_branch_pill]
-description = "Git branch pill with optional worktree icon"
-command = """
+description = "Git branch pill with per-mode colors (light grey in light mode, Catppuccin grey in dark). Colors emitted directly via ANSI so they follow the active appearance; detection via macOS AppleInterfaceStyle. Glyphs are octal UTF-8: caps E0B6/E0B4, branch F418, worktree F0531. Outer spacing lives in `format` (command output is whitespace-trimmed by Starship)."
+command = '''
 branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
-common_dir=$(git rev-parse --path-format=absolute --git-common-dir 2>/dev/null)
-git_dir=$(git rev-parse --path-format=absolute --git-dir 2>/dev/null)
-if [ "$common_dir" != "$git_dir" ]; then
-    echo "󰔱 \uf418 $branch"
+cd=$(git rev-parse --path-format=absolute --git-common-dir 2>/dev/null)
+gd=$(git rev-parse --path-format=absolute --git-dir 2>/dev/null)
+[ "$cd" != "$gd" ] && wt=$(printf '\363\260\224\261 ') || wt=''
+if [ "$(defaults read -g AppleInterfaceStyle 2>/dev/null)" = "Dark" ]; then
+  cap="38;2;88;91;112"; body="48;2;88;91;112;38;2;116;168;252"
 else
-    echo "\uf418 $branch"
+  cap="38;2;208;215;222"; body="48;2;208;215;222;38;2;36;41;47"
 fi
-"""
+printf '\033[%sm\356\202\266\033[0m\033[%sm %s\357\220\230 %s \033[0m\033[%sm\356\202\264\033[0m' "$cap" "$body" "$wt" "$branch" "$cap"
+'''
 when = "git rev-parse --is-inside-work-tree >/dev/null 2>&1"
-format = " [\ue0b6](fg:surface0)[$output](fg:lavender bg:surface0)[\ue0b4](fg:surface0) "
-style = "fg:lavender bg:surface0"
+format = " $output "
 require_repo = true
 ignore_timeout = true
-
 [git_branch]
 disabled = true
 
@@ -102,12 +103,12 @@ staged     = "[+${count} ](green)"
 modified   = "[!${count} ](yellow)"
 renamed    = "[»${count} ](blue)"
 deleted    = "[-${count} ](red)"
-untracked  = "[?${count} ](sapphire)"
-stashed    = "[≡${count} ](lavender)"
+untracked  = "[?${count} ](cyan)"
+stashed    = "[≡${count} ](purple)"
 conflicted = "[✖${count} ](red bold)"
-ahead      = "[⇡${count} ](teal)"
-behind     = "[⇣${count} ](peach)"
-diverged   = "[⇕⇡${ahead_count}⇣${behind_count} ](mauve)"
+ahead      = "[⇡${count} ](bright-cyan)"
+behind     = "[⇣${count} ](bright-red)"
+diverged   = "[⇕⇡${ahead_count}⇣${behind_count} ](bright-purple)"
 
 # --- Project environment indicator ---
 [env_var.STARSHIP_ENV_NAME]
@@ -155,32 +156,3 @@ disabled = true
 
 [line_break]
 disabled = false
-
-# --- Catppuccin Mocha palette ---
-[palettes.catppuccin_mocha]
-crust = "#11111b"
-mantle = "#181825"
-base = "#262626"
-overlay2 = "#9399b2"
-overlay1 = "#7f849c"
-overlay0 = "#6c7086"
-surface2 = "#585b70"
-surface1 = "#45475a"
-surface0 = "#313244"
-text = "#cdd6f4"
-subtext1 = "#bac2de"
-subtext0 = "#a6adc8"
-rosewater = "#f5e0dc"
-flamingo = "#f2cdcd"
-pink = "#f5c2e7"
-mauve = "#cba6f7"
-red = "#f38ba8"
-maroon = "#eba0ac"
-peach = "#fab387"
-yellow = "#f9e2af"
-green = "#a6e3a1"
-teal = "#94e2d5"
-sky = "#89dceb"
-sapphire = "#74c7ec"
-blue = "#89b4fa"
-lavender = "#b4befe"
