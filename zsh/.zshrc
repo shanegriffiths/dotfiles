@@ -186,7 +186,7 @@ eval "$(navi widget zsh)"
 
 # -- Use fd instead of fzf --
 
-export FZF_DEFAULT_OPTS="--height 50% --layout=default --border --color=hl:#c4262b,hl+:#c4262b,bg:-1,preview-bg:-1"
+export FZF_DEFAULT_OPTS="--height 50% --layout=default --border --color=hl:1,hl+:1,bg:-1,preview-bg:-1"
 export FZF_TMUX_OPTS="-p90%,70%"
 export FZF_DEFAULT_COMMAND="fd --hidden --strip-cwd-prefix --exclude .git"
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
@@ -234,6 +234,15 @@ _fzf_comprun() {
 export EZA_COLORS="di=1;31"
 function ls() {
   eza --color=always --icons=always --all --grid --group-directories-first --width=$(( COLUMNS / 3 )) "$@"
+}
+
+# Claude Code follows macOS appearance at launch (it has no built-in light/dark auto).
+# Layers the matching custom theme via --settings, so ~/.claude/settings.json is
+# never rewritten. Dark picks studio-brio-dark, light picks studio-brio.
+function claude() {
+  local t="custom:studio-brio"
+  [ "$(defaults read -g AppleInterfaceStyle 2>/dev/null)" = "Dark" ] && t="custom:studio-brio-dark"
+  command claude --settings "{\"theme\":\"$t\"}" "$@"
 }
 
 # Suffix Aliases — type a filename to open it with the right tool

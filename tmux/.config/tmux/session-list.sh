@@ -5,13 +5,12 @@
 current="$1"
 prefix="$2"
 
+active_prefix="red"         # ANSI red — follows the Ghostty palette (both modes)
 if [ "$(defaults read -g AppleInterfaceStyle 2>/dev/null)" = "Dark" ]; then
-  active_prefix="#f38ba8"   # red    (prefix held)
   active_norm="#f5c2e7"     # pink   (current session)
   muted="#6c7086"           # catppuccin overlay_0
   sep="#6c7086"
 else
-  active_prefix="#c4262b"   # red    (prefix held)
   active_norm="#0e1116"     # near-black (current session, matches Ghostty fg)
   muted="#6e7781"           # GitHub muted grey
   sep="#d0d7de"             # GitHub border grey

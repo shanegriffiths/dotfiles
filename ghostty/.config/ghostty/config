@@ -14,7 +14,7 @@ adjust-cell-height = 2
 # Auto-switches with macOS appearance: GitHub Light (high contrast) / custom Mocha
 theme = light:GitHub Light HC Red,dark:Catppuccin Mocha Custom
 # Floor on text-vs-background contrast so no color renders near-invisible (both modes)
-minimum-contrast = 1.1
+minimum-contrast = 1.2
 
 # --- Window and Appearance ---
 background-opacity = 1
