@@ -77,6 +77,11 @@ check-further-callbacks = true
 run = 'layout floating'
 
 [[on-window-detected]]
+if.app-id = 'com.raycast-x.macos'
+check-further-callbacks = true
+run = 'layout floating'
+
+[[on-window-detected]]
 if.app-id = 'com.edovia.screens.5'
 check-further-callbacks = true
 run = ['move-node-to-workspace 7', 'layout floating']
