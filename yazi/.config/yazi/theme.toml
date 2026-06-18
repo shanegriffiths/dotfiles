@@ -3,6 +3,7 @@ dark = "catppuccin-mocha"
 light = "catppuccin-latte"
 
 [mgr]
+cwd = { fg = "red" }
 border_symbol = " "
 border_style = { fg = "#262626" }
 
@@ -11,3 +12,29 @@ border = { fg = "#262626" }
 
 [indicator]
 preview = { underline = false }
+
+# --- Red accent (follows the live Ghostty palette) ---
+# Colors use ANSI names, so they resolve against whatever theme is active:
+# dark red in light mode (GitHub Light HC Red), Catppuccin red in dark.
+# Matches Starship and eza.
+#
+# [filetype] has no prepend/append (it replaces the flavor's list), so the
+# flavor's rules are restated here with ANSI names + directories as red.
+[filetype]
+rules = [
+  { mime = "image/*", fg = "cyan" },
+  { mime = "{audio,video}/*", fg = "yellow" },
+  { mime = "application/{zip,rar,7z*,tar,gzip,xz,zstd,bzip*,lzma,compress,archive,cpio,arj,xar,ms-cab*}", fg = "magenta" },
+  { mime = "application/{pdf,doc,rtf}", fg = "green" },
+  { mime = "vfs/{absent,stale}", fg = "darkgray" },
+  { url = "*/", fg = "red" },
+]
+
+# Folder icons -> red. prepend_conds are checked before the flavor's conds
+# (first match wins), so generic folders go red while named dirs (.git,
+# Documents, ...) keep their flavor icons. Open/closed glyphs preserved.
+[icon]
+prepend_conds = [
+  { if = "dir & hovered", text = "", fg = "red" },
+  { if = "dir", text = "", fg = "red" },
+]
