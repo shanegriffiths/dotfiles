@@ -109,7 +109,22 @@ here and the whole terminal stack follows.
 - Two custom themes in `~/.claude/themes/`: `studio-brio.json` (base `light-ansi`)
   and `studio-brio-dark.json` (base `dark-ansi`). Both use `ansi:red` /
   `ansi:redBright` for the accent (so red follows the palette) plus a per-mode
-  `userMessageBackground` tint.
+  `userMessageBackground` (neutral grey in dark, faint warm tint in light).
+- **Backgrounds are explicit hex, not ANSI.** The `-ansi` bases ride the palette
+  for *foreground/accent* colours (which is the point — adaptive red), but they
+  flatten anything that's meant to be a subtle RGB *background* blend, because ANSI
+  has 16 fixed slots and no notion of "tint the surface 8%". So every background key
+  is set by hand, per mode:
+  - **Diffs:** `diffAdded` / `diffRemoved` (line wash) + `diffAddedWord` /
+    `diffRemovedWord` (intra-line highlight) — Mocha-toned greens/reds in dark,
+    canonical GitHub-light diff colours in light. (Left at the `-ansi` default,
+    added/removed lines get no wash and a diff reads as one block of dim grey.)
+  - **Surfaces:** `userMessageBackground`(+`Hover`), `messageActionsBackground`,
+    `bashMessageBackgroundColor` (`!` entries), `memoryBackgroundColor` (`#`
+    entries), `selectionBg` — neutral greys in dark, faint warm/neutral tints in
+    light.
+  - **Rule of thumb:** any *foreground* colour → leave it (ANSI cascade handles it);
+    any *background* colour → set it explicitly in both theme files.
 - **Auto-switch:** Claude Code has no built-in light/dark follow, so the `claude`
   shell function in `.zshrc` picks the matching theme by `AppleInterfaceStyle` at
   launch and layers it with `claude --settings '{"theme":"…"}'` — settings.json is
