@@ -30,9 +30,14 @@ tmux list-sessions -F '#{session_name}' | while read -r s; do
     printf '#[fg=%s,none] │ ' "$sep"
   fi
   first=0
+  # Wrap each name in a user range so it's clickable in the status bar.
+  # The range string IS the session name; the MouseDown1Status handler in
+  # tmux.conf reads #{mouse_status_range} and switches to it. (Session names
+  # can't contain ':' or '.', so they never collide with the built-in
+  # window/pane/left/right/session range keywords.)
   if [ "$s" = "$current" ]; then
-    printf '#[fg=%s,bold]%s %s' "$active_fg" "$icon" "$s"
+    printf '#[range=user|%s,fg=%s,bold]%s %s#[norange]' "$s" "$active_fg" "$icon" "$s"
   else
-    printf '#[fg=%s,none]%s %s' "$muted" "$icon" "$s"
+    printf '#[range=user|%s,fg=%s,none]%s %s#[norange]' "$s" "$muted" "$icon" "$s"
   fi
 done
