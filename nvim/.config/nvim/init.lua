@@ -210,10 +210,9 @@ vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' }
 --  Use CTRL+<hjkl> to switch between windows
 --
 --  See `:help wincmd` for a list of all window commands
-vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
-vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
-vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
-vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
+-- NOTE: <C-hjkl> window navigation is provided by the vim-tmux-navigator plugin
+-- (configured in the plugin list below). The same keys move between Neovim splits
+-- AND cross seamlessly into adjacent tmux panes at the edges.
 
 -- NOTE: Some terminals have colliding keymaps or are not able to send distinct keycodes
 -- vim.keymap.set("n", "<C-S-h>", "<C-w>H", { desc = "Move window to the left" })
@@ -917,6 +916,19 @@ require('lazy').setup({
 
   -- Toggle comments with gcc (line) or gc (selection)
   { 'numToStr/Comment.nvim', opts = {} },
+
+  { -- Seamless <C-hjkl> navigation between Neovim splits and tmux panes
+    -- Pairs with the christoomey/vim-tmux-navigator tmux plugin (already in tmux.conf).
+    'christoomey/vim-tmux-navigator',
+    cmd = { 'TmuxNavigateLeft', 'TmuxNavigateDown', 'TmuxNavigateUp', 'TmuxNavigateRight', 'TmuxNavigatePrevious' },
+    keys = {
+      { '<C-h>', '<cmd>TmuxNavigateLeft<cr>', desc = 'Navigate left (split / tmux pane)' },
+      { '<C-j>', '<cmd>TmuxNavigateDown<cr>', desc = 'Navigate down (split / tmux pane)' },
+      { '<C-k>', '<cmd>TmuxNavigateUp<cr>', desc = 'Navigate up (split / tmux pane)' },
+      { '<C-l>', '<cmd>TmuxNavigateRight<cr>', desc = 'Navigate right (split / tmux pane)' },
+      { '<C-\\>', '<cmd>TmuxNavigatePrevious<cr>', desc = 'Navigate to previous (split / tmux pane)' },
+    },
+  },
 
   -- Yazi file manager integration
   {
