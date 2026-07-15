@@ -214,6 +214,23 @@ defaults write com.apple.Safari SendDoNotTrackHTTPHeader -bool true
 defaults write com.apple.Safari ShowFullURLInSmartSearchField -bool true
 
 # ============================================================================
+# Default file handlers (duti)
+# ============================================================================
+# Sets which app opens each file type, keyed by UTI or extension — the
+# scriptable version of Finder's "Open with → Change All…". Requires the
+# `duti` formula (Brewfile), installed by bootstrap.sh before this runs.
+
+if command -v duti &>/dev/null; then
+    # Markdown → Markdown Preview.app
+    duti -s doc.md-preview net.daringfireball.markdown all
+    duti -s doc.md-preview public.markdown all
+    duti -s doc.md-preview .md all
+    duti -s doc.md-preview .markdown all
+else
+    echo "duti not installed — skipping default file handlers (brew install duti)"
+fi
+
+# ============================================================================
 # Apply changes
 # ============================================================================
 

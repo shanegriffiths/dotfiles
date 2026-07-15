@@ -64,6 +64,7 @@ brew "zsh-autocomplete"             # real-time type-ahead completion
 # ============================================================================
 
 brew "btop"                         # resource monitor
+brew "duti"                         # set default apps for file types
 brew "gh"                           # GitHub CLI
 brew "glow"                         # render markdown in terminal
 brew "jq"                           # JSON processor

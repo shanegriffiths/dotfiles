@@ -286,6 +286,7 @@ alias d='dirs -v | head -10'
 # Dotfiles management (GNU Stow)
 alias dot='git -C $HOME/.dotfiles'
 alias o.='open -a Bloom .'
+alias mdp='open -a "Markdown Preview"'
 
 # ---------------------------------------------------------------------------
 # LOCAL OVERRIDES (secrets, machine-specific config)
