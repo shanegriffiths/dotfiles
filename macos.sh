@@ -203,15 +203,21 @@ defaults write com.apple.screencapture disable-shadow -bool true
 # ============================================================================
 # Safari
 # ============================================================================
+# Safari's preferences are sandboxed — writing them requires the terminal to
+# have Full Disk Access (System Settings → Privacy & Security). Skip with a
+# warning rather than aborting the whole script.
 
-# Enable the Develop menu (Web Inspector, JS console, etc.)
-defaults write com.apple.Safari IncludeDevelopMenu -bool true
+if defaults write com.apple.Safari IncludeDevelopMenu -bool true 2>/dev/null; then
+    # Enable the Develop menu (Web Inspector, JS console, etc.) — done above
 
-# Send "Do Not Track" HTTP header
-defaults write com.apple.Safari SendDoNotTrackHTTPHeader -bool true
+    # Send "Do Not Track" HTTP header
+    defaults write com.apple.Safari SendDoNotTrackHTTPHeader -bool true
 
-# Show the full URL in the address bar (not just the domain)
-defaults write com.apple.Safari ShowFullURLInSmartSearchField -bool true
+    # Show the full URL in the address bar (not just the domain)
+    defaults write com.apple.Safari ShowFullURLInSmartSearchField -bool true
+else
+    echo "Skipping Safari settings — grant your terminal Full Disk Access to apply them."
+fi
 
 # ============================================================================
 # Default file handlers (duti)
