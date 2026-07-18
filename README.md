@@ -34,7 +34,7 @@ bash ~/.dotfiles/bootstrap-server.sh
 
 | Package | Tool | Config location |
 |---------|------|-----------------|
-| `zsh` | Zsh, Oh My Zsh, aliases, PATH | `~/.zshrc` |
+| `zsh` | Zsh, Oh My Zsh, aliases, PATH | `~/.zshrc`, `~/.zshenv` |
 | `git` | Git, delta pager, global ignores | `~/.gitconfig`, `~/.gitignore_global` |
 | `starship` | Starship prompt (+ minimal SSH variant) | `~/.config/starship.toml` |
 | `ghostty` | Ghostty terminal + custom themes | `~/.config/ghostty/` |
@@ -48,6 +48,7 @@ bash ~/.dotfiles/bootstrap-server.sh
 | `navi` | CLI cheatsheets | `~/.local/share/navi/` |
 | `direnv` | Per-directory environments | `~/.direnvrc` |
 | `gnupg` | GPG agent | `~/.gnupg/gpg-agent.conf` |
+| `claude` | Claude Code custom themes | `~/.claude/themes/` |
 
 The whole terminal stack shares one coordinated light/dark theme with a red
 accent, switching automatically with macOS appearance — see [THEME.md](THEME.md)
@@ -64,9 +65,9 @@ for how that works.
 | Databases | PostgreSQL 17, Supabase CLI, Neon CLI |
 | Media | ffmpeg, ImageMagick, ocrmypdf, resvg, typst |
 | Window Management | AeroSpace, borders, sketchybar |
-| GUI Apps | 16 active Homebrew casks + 47 Mac App Store apps (see Brewfile) |
-| Fonts | Hack, JetBrains Mono, SF Mono (all Nerd Font patched), SF Pro |
-| VS Code Extensions | 80+ extensions (themes, linters, language support) |
+| GUI Apps | 18 active Homebrew casks + 46 Mac App Store apps (see Brewfile) |
+| Fonts | Hack, JetBrains Mono, SF Mono (all Nerd Font patched), Geist, SF Pro |
+| VS Code Extensions | 75+ extensions (themes, linters, language support) |
 
 ### Apps available but commented out
 
@@ -129,6 +130,7 @@ dot push
 ├── THEME.md                # How the coordinated light/dark theming works
 ├── aerospace/              # Stow package: AeroSpace window manager
 ├── atuin/                  #   ... shell history
+├── claude/                 #   ... Claude Code themes
 ├── direnv/                 #   ... per-directory environments
 ├── ghostty/                #   ... Ghostty terminal + themes
 ├── git/                    #   ... git config + global ignores
@@ -155,7 +157,7 @@ complete:
 | 3 | Clone + stow dotfiles | Symlinks configs into `$HOME`, backs up conflicts |
 | 4 | Brew Bundle | Installs everything in the Brewfile |
 | 5 | Oh My Zsh | Zsh framework (`RUNZSH=no` to stay in script) |
-| 6 | Zsh plugins | fzf-tab, autosuggestions, syntax-highlighting |
+| 6 | Zsh plugins | fzf-tab, autosuggestions, syntax-highlighting, completions |
 | 7 | tpm | tmux plugin manager — press `prefix + I` after |
 | 8 | Node + pnpm | LTS via nvm, pnpm via corepack |
 | 9 | Bun | Installed via its own script |
@@ -194,6 +196,7 @@ manually:
 | Focusrite Control 2 | focusrite.com | Audio hardware |
 | Insta360 Link Controller | insta360.com | Camera hardware |
 | Logitech Options+ | logitech.com | Peripheral drivers |
+| Markdown Preview | — | Markdown viewer (system `.md` handler, `mdp` alias) |
 | Mockuuups Studio | mockuuups.studio | Design mockups |
 | Port Menu | — | Network utility |
 | Rize | rize.io | Time tracking |
