@@ -1,15 +1,15 @@
-# ~/.config/dotfiles/Brewfile
+# ~/.dotfiles/Brewfile
 # Homebrew Bundle — Shane's Mac setup
 # Captured from MacBook Pro running macOS Sequoia 15.x on 2026-03-20
 #
 # Usage:
-#   brew bundle --file=~/.config/dotfiles/Brewfile --no-lock
+#   brew bundle --file=~/.dotfiles/Brewfile
 #
 # To check what would be installed without installing:
-#   brew bundle check --file=~/.config/dotfiles/Brewfile --verbose
+#   brew bundle check --file=~/.dotfiles/Brewfile --verbose
 #
 # To clean up formulae/casks not listed here:
-#   brew bundle cleanup --file=~/.config/dotfiles/Brewfile --force
+#   brew bundle cleanup --file=~/.dotfiles/Brewfile --force
 #
 # Convention:
 #   - Active entries will be installed automatically by bootstrap.sh
@@ -165,7 +165,7 @@ cask "warp"                         # Warp terminal
 # install and keep updated on the new machine.
 #
 # Tip: after uncommenting, run:
-#   brew bundle --file=~/.config/dotfiles/Brewfile --no-lock
+#   brew bundle --file=~/.dotfiles/Brewfile
 
 # --- Core apps ---
 # cask "1password"                  # 1Password password manager
@@ -248,7 +248,7 @@ cask "font-symbols-only-nerd-font"
 # ============================================================================
 # Requires App Store sign-in. If running bootstrap.sh on a fresh Mac, these
 # will be skipped on the first pass. Sign in to the App Store, then re-run:
-#   brew bundle --file=~/.config/dotfiles/Brewfile --no-lock
+#   brew bundle --file=~/.dotfiles/Brewfile
 
 mas "1Password for Safari", id: 1569813296
 mas "Actions For Obsidian", id: 1659667937

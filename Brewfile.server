@@ -3,7 +3,7 @@
 # Headless server for OpenClaw, Claude Code, and background tasks.
 #
 # Usage:
-#   brew bundle --file=~/.dotfiles/Brewfile.server --no-lock
+#   brew bundle --file=~/.dotfiles/Brewfile.server --no-upgrade
 
 # ============================================================================
 # Taps

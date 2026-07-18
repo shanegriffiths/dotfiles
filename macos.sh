@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# ~/.config/dotfiles/macos.sh
+# ~/.dotfiles/macos.sh
 # macOS system preferences — Shane's actual settings
 #
 # Captured from: MacBook Pro, macOS Sequoia 15.x (Darwin 25.3.0)
 # Last updated:  2026-03-20
 #
 # Usage:
-#   bash ~/.config/dotfiles/macos.sh
+#   bash ~/.dotfiles/macos.sh
 #
 # This script writes to macOS preference domains using `defaults write`.
 # Most changes take effect after restarting the affected app. Some (keyboard,

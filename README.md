@@ -1,35 +1,57 @@
 # Shane's Dotfiles
 
-Bare git repo dotfiles with bootstrap automation for macOS. One script to go from a fresh Mac to a fully configured development environment.
+GNU Stow-managed dotfiles with bootstrap automation for macOS. One script to go
+from a fresh Mac to a fully configured development environment.
 
 ## Quick Start
 
-On a fresh Mac (requires SSH key for github.com):
+On a fresh Mac (requires an SSH key for github.com):
 
 ```bash
-bash <(curl -sL https://raw.githubusercontent.com/shanegriffiths/dotfiles/main/.config/dotfiles/bootstrap.sh)
+bash <(curl -sL https://raw.githubusercontent.com/shanegriffiths/dotfiles/main/bootstrap.sh)
 ```
 
 Or if the repo is already cloned:
 
 ```bash
-bash ~/.config/dotfiles/bootstrap.sh
+bash ~/.dotfiles/bootstrap.sh
 ```
 
-The script is idempotent — safe to re-run after a partial failure or to pick up changes.
+The script is idempotent — safe to re-run after a partial failure or to pick up
+changes. Any existing config files that would conflict are backed up to
+`~/.dotfiles-backup/<timestamp>/` before being replaced.
+
+There's also a headless variant for provisioning a server (CLI-only stow
+packages, `Brewfile.server`, no GUI apps):
+
+```bash
+bash ~/.dotfiles/bootstrap-server.sh
+```
 
 ## What's Included
 
-### Configs tracked by the dotfiles repo
+### Configs tracked by this repo (Stow packages)
 
-| Category | Tools | Config location |
-|----------|-------|-----------------|
-| Shell | zsh, Oh My Zsh, starship prompt | `~/.zshrc`, `~/.config/starship.toml` |
-| Terminal | Ghostty, tmux | `~/.config/ghostty/`, `~/.tmux.conf` |
-| Editor | Neovim | `~/.config/nvim/` |
-| Window Management | AeroSpace (tiling), borders | `~/.config/aerospace/`, `~/.config/borders/` |
-| Status Bar | sketchybar | `~/.config/sketchybar/` |
-| File Manager | yazi | `~/.config/yazi/` |
+| Package | Tool | Config location |
+|---------|------|-----------------|
+| `zsh` | Zsh, Oh My Zsh, aliases, PATH | `~/.zshrc` |
+| `git` | Git, delta pager, global ignores | `~/.gitconfig`, `~/.gitignore_global` |
+| `starship` | Starship prompt (+ minimal SSH variant) | `~/.config/starship.toml` |
+| `ghostty` | Ghostty terminal + custom themes | `~/.config/ghostty/` |
+| `tmux` | tmux, status-bar and session scripts | `~/.config/tmux/` |
+| `nvim` | Neovim (kickstart.nvim base, lazy.nvim) | `~/.config/nvim/` |
+| `aerospace` | AeroSpace tiling window manager | `~/.config/aerospace/` |
+| `sketchybar` | Custom macOS menu bar | `~/.config/sketchybar/` |
+| `yazi` | Terminal file manager | `~/.config/yazi/` |
+| `atuin` | Shell history | `~/.config/atuin/` |
+| `sesh` | tmux session manager | `~/.config/sesh/` |
+| `navi` | CLI cheatsheets | `~/.local/share/navi/` |
+| `direnv` | Per-directory environments | `~/.direnvrc` |
+| `gnupg` | GPG agent | `~/.gnupg/gpg-agent.conf` |
+
+The whole terminal stack shares one coordinated light/dark theme with a red
+accent, switching automatically with macOS appearance — see [THEME.md](THEME.md)
+for how that works.
 
 ### Tools installed by bootstrap
 
@@ -42,28 +64,35 @@ The script is idempotent — safe to re-run after a partial failure or to pick u
 | Databases | PostgreSQL 17, Supabase CLI, Neon CLI |
 | Media | ffmpeg, ImageMagick, ocrmypdf, resvg, typst |
 | Window Management | AeroSpace, borders, sketchybar |
-| GUI Apps | 15 active Homebrew casks + 47 Mac App Store apps (see Brewfile) |
+| GUI Apps | 16 active Homebrew casks + 47 Mac App Store apps (see Brewfile) |
 | Fonts | Hack, JetBrains Mono, SF Mono (all Nerd Font patched), SF Pro |
 | VS Code Extensions | 80+ extensions (themes, linters, language support) |
 
 ### Apps available but commented out
 
-The Brewfile contains ~50 additional cask entries that are commented out. These are apps found on the source machine that weren't originally managed by Homebrew. Review and uncomment the ones you want:
+The Brewfile contains ~50 additional cask entries that are commented out. These
+are apps found on the source machine that weren't originally managed by
+Homebrew. Review and uncomment the ones you want:
 
 ```bash
 # Open the Brewfile and uncomment what you need
-vim ~/.config/dotfiles/Brewfile
+vim ~/.dotfiles/Brewfile
 
 # Then install
-brew bundle --file=~/.config/dotfiles/Brewfile --no-lock
+brew bundle --file=~/.dotfiles/Brewfile
 ```
 
 ## Managing Dotfiles
 
-The bare repo uses a `dot` alias (defined in `.zshrc`):
+Configs are symlinked into `$HOME` with
+[GNU Stow](https://www.gnu.org/software/stow/). Each top-level directory is a
+Stow "package" that mirrors the home directory structure; `stow */` from
+`~/.dotfiles` links everything at once.
+
+The `dot` alias (defined in `.zshrc`) runs git against the repo from anywhere:
 
 ```bash
-alias dot='git --git-dir=$HOME/.dotfiles --work-tree=$HOME'
+alias dot='git -C $HOME/.dotfiles'
 ```
 
 Common operations:
@@ -72,54 +101,58 @@ Common operations:
 # Check what's changed
 dot status
 
-# Track a new config file
-dot add ~/.config/ghostty/config
+# Track a new config file: move it into the matching package, then stow
+mv ~/.config/foo/config ~/.dotfiles/foo/.config/foo/config
+cd ~/.dotfiles && stow foo
 
 # Commit changes
-dot commit -m "Update ghostty config"
+dot add -A
+dot commit -m "Add foo config"
 
 # Push to remote
 dot push
-
-# See what's tracked
-dot ls-files
-
-# Diff changes
-dot diff
 ```
 
-> **Why a bare repo?** It avoids nesting a `.git` directory in `$HOME`, which would make every subdirectory look like a git repo. The bare repo at `~/.dotfiles` stores git data, while `$HOME` is the work tree. `status.showUntrackedFiles no` keeps `dot status` clean.
+> **Editing note:** the `~/.config/...` paths are symlinks into `~/.dotfiles`.
+> Edit the real file under `~/.dotfiles` — some tools refuse to write through
+> symlinks.
 
 ## File Structure
 
 ```
-~/.config/
-├── dotfiles/               # Bootstrap toolkit (this directory)
-│   ├── Brewfile            # Homebrew packages, casks, MAS apps, VS Code extensions
-│   ├── bootstrap.sh        # Full Mac provisioning script
-│   ├── macos.sh            # macOS system preferences (Dock, Finder, keyboard, etc.)
-│   └── README.md           # This file
-├── aerospace/              # AeroSpace tiling window manager
-├── borders/                # Window border styling
-├── ghostty/                # Ghostty terminal emulator
-├── nvim/                   # Neovim config (lazy.nvim)
-├── sketchybar/             # Custom menu bar
-├── starship.toml           # Cross-shell prompt theme
-└── yazi/                   # Terminal file manager
-~/.zshrc                    # Zsh config (Oh My Zsh, aliases, PATH, plugins)
-~/.tmux.conf                # tmux config
-~/.dotfiles/                # Bare git repo (data only, not a working directory)
+~/.dotfiles/
+├── bootstrap.sh            # Full Mac provisioning script
+├── bootstrap-server.sh     # Headless server variant
+├── Brewfile                # Homebrew packages, casks, MAS apps, VS Code extensions
+├── Brewfile.server         # Server subset (CLI tools only)
+├── macos.sh                # macOS system preferences (Dock, Finder, keyboard, etc.)
+├── THEME.md                # How the coordinated light/dark theming works
+├── aerospace/              # Stow package: AeroSpace window manager
+├── atuin/                  #   ... shell history
+├── direnv/                 #   ... per-directory environments
+├── ghostty/                #   ... Ghostty terminal + themes
+├── git/                    #   ... git config + global ignores
+├── gnupg/                  #   ... GPG agent
+├── navi/                   #   ... CLI cheatsheets
+├── nvim/                   #   ... Neovim
+├── sesh/                   #   ... tmux session manager
+├── sketchybar/             #   ... menu bar
+├── starship/               #   ... prompt
+├── tmux/                   #   ... tmux + scripts
+├── yazi/                   #   ... file manager
+└── zsh/                    #   ... shell
 ```
 
 ## Bootstrap Steps
 
-`bootstrap.sh` runs these steps in order. Each step is skipped if already complete:
+`bootstrap.sh` runs these steps in order. Each step is skipped if already
+complete:
 
 | Step | What | Notes |
 |------|------|-------|
 | 1 | Xcode Command Line Tools | Required for git and compilers |
 | 2 | Homebrew | Package manager, installs to `/opt/homebrew` |
-| 3 | Clone dotfiles | Bare repo to `~/.dotfiles`, backs up conflicts |
+| 3 | Clone + stow dotfiles | Symlinks configs into `$HOME`, backs up conflicts |
 | 4 | Brew Bundle | Installs everything in the Brewfile |
 | 5 | Oh My Zsh | Zsh framework (`RUNZSH=no` to stay in script) |
 | 6 | Zsh plugins | fzf-tab, autosuggestions, syntax-highlighting |
@@ -142,11 +175,12 @@ dot diff
 - **Safari**: Develop menu, Do Not Track, full URL in address bar
 - **Mission Control**: don't rearrange Spaces by recent use
 
-Tested on macOS Sequoia 15.x. Run standalone with `bash ~/.config/dotfiles/macos.sh`.
+Tested on macOS Sequoia 15.x. Run standalone with `bash ~/.dotfiles/macos.sh`.
 
 ## Manual Install Apps
 
-These aren't available via Homebrew or the Mac App Store — download and install manually:
+These aren't available via Homebrew or the Mac App Store — download and install
+manually:
 
 | App | Source | Category |
 |-----|--------|----------|
@@ -180,7 +214,7 @@ After running `bootstrap.sh`:
 
 - [ ] Sign in to **1Password** and enable Safari extension
 - [ ] Sign in to **iCloud** and enable services
-- [ ] Sign in to **Mac App Store**, then re-run `brew bundle --file=~/.config/dotfiles/Brewfile --no-lock`
+- [ ] Sign in to **Mac App Store**, then re-run `brew bundle --file=~/.dotfiles/Brewfile`
 - [ ] Import **Raycast** settings from backup/sync
 - [ ] Set up **SSH keys** (or restore from 1Password SSH agent)
 - [ ] Open **Ghostty** — config loads from `~/.config/ghostty/`
@@ -195,13 +229,13 @@ After running `bootstrap.sh`:
 To capture new Homebrew packages after installing them:
 
 ```bash
-brew bundle dump --file=~/.config/dotfiles/Brewfile --describe --force
+brew bundle dump --file=~/.dotfiles/Brewfile --describe --force
 ```
 
 To track changes:
 
 ```bash
-dot add ~/.config/dotfiles/Brewfile
+dot add Brewfile
 dot commit -m "Update Brewfile"
 dot push
 ```
@@ -209,5 +243,9 @@ dot push
 To re-apply macOS defaults after changing `macos.sh`:
 
 ```bash
-bash ~/.config/dotfiles/macos.sh
+bash ~/.dotfiles/macos.sh
 ```
+
+## License
+
+[MIT](LICENSE)
