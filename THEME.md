@@ -105,8 +105,9 @@ here and the whole terminal stack follows.
 - **Gotcha:** tmux can't reliably read appearance at launch, so the first paint may
   be dark until you hit `prefix r`.
 
-### Claude Code — `~/.claude/` *(outside this repo)*
-- Two custom themes in `~/.claude/themes/`: `studio-brio.json` (base `light-ansi`)
+### Claude Code — `claude/.claude/themes/`
+- Two custom themes in `~/.claude/themes/` (stowed from the `claude` package):
+  `studio-brio.json` (base `light-ansi`)
   and `studio-brio-dark.json` (base `dark-ansi`). Both use `ansi:red` /
   `ansi:redBright` for the accent (so red follows the palette) plus a per-mode
   `userMessageBackground` (neutral grey in dark, faint warm tint in light).

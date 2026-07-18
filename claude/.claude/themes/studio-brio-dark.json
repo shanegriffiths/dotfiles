@@ -1,0 +1,22 @@
+{
+  "name": "Studio Brio Dark",
+  "base": "dark-ansi",
+  "overrides": {
+    "claude": "ansi:red",
+    "claudeShimmer": "ansi:redBright",
+    "permission": "ansi:red",
+    "permissionShimmer": "ansi:redBright",
+    "promptBorder": "ansi:red",
+    "promptBorderShimmer": "ansi:redBright",
+    "userMessageBackground": "#303030",
+    "userMessageBackgroundHover": "#3a3a3a",
+    "diffAdded": "#26352a",
+    "diffAddedWord": "#3f5d44",
+    "diffRemoved": "#3a2529",
+    "diffRemovedWord": "#5e3036",
+    "messageActionsBackground": "#3a3a3a",
+    "bashMessageBackgroundColor": "#2c2c2c",
+    "memoryBackgroundColor": "#2c2c2c",
+    "selectionBg": "#3d4250"
+  }
+}
