@@ -317,7 +317,7 @@ if [[ $- == *i* ]]; then
 fi
 
 # bun completions
-[ -s "/Users/shane/.bun/_bun" ] && source "/Users/shane/.bun/_bun"
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
 
 # bun
 export BUN_INSTALL="$HOME/.bun"
@@ -362,11 +362,11 @@ branchlet() {
 }
 # End Branchlet setup
 
-# Added by Claude: put ~/bin on PATH for personal scripts (gen-image, etc.)
+# Personal scripts
 export PATH="$HOME/bin:$PATH"
 
 # pnpm
-export PNPM_HOME="/Users/shane/Library/pnpm"
+export PNPM_HOME="$HOME/Library/pnpm"
 case ":$PATH:" in
   *":$PNPM_HOME/bin:"*) ;;
   *) export PATH="$PNPM_HOME/bin:$PATH" ;;
