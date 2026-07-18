@@ -50,7 +50,9 @@ quick-terminal-autohide = false
 quick-terminal-animation-duration = 0.12
 
 # --- Security & Clipboard ---
-clipboard-read = allow
+# Prompt before apps read the clipboard via OSC 52; writes stay allowed so
+# tmux/nvim yanks reach the system clipboard without prompts.
+clipboard-read = ask
 clipboard-write = allow
 clipboard-paste-protection = true
 clipboard-paste-bracketed-safe = true

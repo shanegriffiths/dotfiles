@@ -3,7 +3,10 @@
 \.stow-local-ignore
 ^/README.*
 ^/LICENSE.*
+^/THEME\.md
 ^/bootstrap\.sh
+^/bootstrap-server\.sh
 ^/Brewfile
+^/Brewfile\.server
 ^/macos\.sh
 \.DS_Store

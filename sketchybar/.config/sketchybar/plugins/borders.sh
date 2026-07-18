@@ -13,7 +13,7 @@ STYLE="round"
 HIDPI="on"
 BLACKLIST="Sleeve"
 
-CACHE_FILE="/tmp/.borders-layout"
+CACHE_FILE="${TMPDIR:-/tmp}/.borders-layout"
 
 layout=$(aerospace list-windows --focused --format '%{window-parent-container-layout}' 2>/dev/null)
 [ -z "$layout" ] && layout="tiles"
