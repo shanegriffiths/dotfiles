@@ -103,11 +103,16 @@ cd "$DOTFILES_DIR"
 
 # Dry run to detect conflicts
 if ! stow -n */ 2>/dev/null; then
-    warn "Backing up conflicting files to $BACKUP_DIR"
-    mkdir -p "$BACKUP_DIR"
+    warn "Conflicts detected — backing up originals to $BACKUP_DIR"
 
-    # Use --adopt to pull conflicting files into the repo, then restore from git
+    # --adopt moves each conflicting $HOME file into the repo working tree,
+    # where it shows up as a modification. Copy those originals into the
+    # backup dir, then restore the repo's versions.
     stow --adopt */
+    git diff --name-only | while IFS= read -r f; do
+        mkdir -p "$BACKUP_DIR/$(dirname "$f")"
+        cp -a "$f" "$BACKUP_DIR/$f"
+    done
     git checkout .
 else
     stow */
@@ -126,7 +131,7 @@ BREWFILE="$DOTFILES_DIR/Brewfile"
 
 if [ -f "$BREWFILE" ]; then
     info "Installing Homebrew packages (this may take a while)..."
-    brew bundle --file="$BREWFILE" --no-lock
+    brew bundle --file="$BREWFILE"
 else
     warn "Brewfile not found at $BREWFILE — skipping"
 fi
@@ -251,7 +256,7 @@ echo ""
 echo "  1. Sign in to 1Password and enable Safari extension"
 echo "  2. Sign in to iCloud and enable services"
 echo "  3. Sign in to Mac App Store, then re-run:"
-echo "     brew bundle --file=~/.dotfiles/Brewfile --no-lock"
+echo "     brew bundle --file=~/.dotfiles/Brewfile"
 echo "  4. Import Raycast settings (from backup/sync)"
 echo "  5. Open Ghostty — config is already in ~/.config/ghostty/"
 echo "  6. Open neovim — plugins will auto-install on first launch"

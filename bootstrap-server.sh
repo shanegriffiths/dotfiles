@@ -79,9 +79,16 @@ cd "$DOTFILES_DIR"
 
 # Dry run to detect conflicts
 if ! stow -n "${STOW_PACKAGES[@]}" 2>/dev/null; then
-    warn "Backing up conflicting files to $BACKUP_DIR"
-    mkdir -p "$BACKUP_DIR"
+    warn "Conflicts detected — backing up originals to $BACKUP_DIR"
+
+    # --adopt moves each conflicting $HOME file into the repo working tree,
+    # where it shows up as a modification. Copy those originals into the
+    # backup dir, then restore the repo's versions.
     stow --adopt "${STOW_PACKAGES[@]}"
+    git diff --name-only | while IFS= read -r f; do
+        mkdir -p "$BACKUP_DIR/$(dirname "$f")"
+        cp -a "$f" "$BACKUP_DIR/$f"
+    done
     git checkout .
 else
     stow "${STOW_PACKAGES[@]}"
