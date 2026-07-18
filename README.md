@@ -1,4 +1,4 @@
-# Shane's Dotfiles
+# My Dotfiles
 
 GNU Stow-managed dotfiles with bootstrap automation for macOS. One script to go
 from a fresh Mac to a fully configured development environment.
