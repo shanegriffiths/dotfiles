@@ -315,14 +315,8 @@ ctrl-alt-semicolon = 'mode service'
 
 [mode.service.binding]
 esc = ['reload-config', 'mode desktop']
-d = [
-	'exec-and-forget $HOME/.config/aerospace/scripts/set-gaps.sh desktop',
-	'mode desktop',
-]
-l = [
-	'exec-and-forget $HOME/.config/aerospace/scripts/set-gaps.sh laptop',
-	'mode laptop',
-]
+d = 'mode desktop'
+l = 'mode laptop'
 r = ['flatten-workspace-tree', 'mode desktop']
 f = ['layout floating tiling', 'mode desktop']
 backspace = ['close-all-windows-but-current', 'mode desktop']
