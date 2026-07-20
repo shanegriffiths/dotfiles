@@ -1,0 +1,41 @@
+# herdr configuration
+# Symlinked from ~/.dotfiles/herdr/.config/herdr/config.toml via stow.
+#
+# Only non-default values live here. Everything else is an implicit default —
+# run `herdr --default-config` to see the full annotated set, and
+# `herdr config check` to validate this file.
+#
+# Apply changes with `prefix+shift+r` or `herdr server reload-config`.
+
+# Past first run; don't show the notification setup prompt on startup.
+onboarding = false
+
+[theme]
+# "terminal" draws from the host terminal's ANSI palette rather than shipping
+# its own colours. Ghostty is the source of truth for the palette and swaps
+# light/dark with macOS appearance, so Herdr follows for free — same approach
+# as tmux, yazi, eza, and fzf. See THEME.md.
+name = "terminal"
+
+[keys]
+# Matches the tmux prefix so there's one muscle memory across both.
+# Press it twice (ctrl+a ctrl+a) to send a literal ctrl+a to the shell,
+# which keeps readline's beginning-of-line working inside a pane.
+prefix = "ctrl+a"
+
+[ui]
+# Red accent, consistent with the rest of the stack. Named colours resolve
+# through the terminal's ANSI palette, so this tracks light/dark automatically.
+accent = "red"
+
+# Order the agents panel by attention queue rather than grouping by space —
+# the agent that needs input surfaces first.
+agent_panel_sort = "priority"
+
+[ui.toast]
+# Herdr ships with notifications off, which hides the thing that makes an agent
+# multiplexer useful: knowing when a background agent finished or is blocked.
+# "system" asks the macOS notification service directly, so agent state changes
+# surface even when Ghostty isn't focused. Alternatives: "herdr" for in-app
+# toasts, "terminal" to ask Ghostty to raise them, "off" to disable.
+delivery = "system"
