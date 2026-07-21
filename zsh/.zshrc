@@ -184,6 +184,9 @@ bindkey '^r' atuin-search
 # Up arrow -> atuin search (still navigates lines when editing a multi-line command)
 bindkey '^[[A' atuin-up-search   # up arrow
 bindkey '^[OA' atuin-up-search   # up arrow (application/cursor-key mode)
+# AI mode: bind '?' on an empty prompt. Needs its own init because ATUIN_NOBIND
+# suppresses the '?' binding that atuin init would otherwise set up.
+eval "$(atuin ai init zsh)"
 
 # Set up navi cheatsheet widget (Ctrl+G)
 eval "$(navi widget zsh)"
