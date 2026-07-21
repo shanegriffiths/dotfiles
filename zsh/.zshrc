@@ -176,10 +176,14 @@ if [[ $- == *i* ]]; then
   eval "$(fzf --zsh)"
 fi
 
-# Set up atuin shell history (Ctrl+R for history search)
+# Set up atuin shell history (Ctrl+R search + up-arrow history)
+# ATUIN_NOBIND stops atuin auto-binding keys, so we bind them explicitly below.
 export ATUIN_NOBIND=true
 eval "$(atuin init zsh)"
 bindkey '^r' atuin-search
+# Up arrow -> atuin search (still navigates lines when editing a multi-line command)
+bindkey '^[[A' atuin-up-search   # up arrow
+bindkey '^[OA' atuin-up-search   # up arrow (application/cursor-key mode)
 
 # Set up navi cheatsheet widget (Ctrl+G)
 eval "$(navi widget zsh)"
