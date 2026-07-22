@@ -11,13 +11,28 @@
 onboarding = false
 
 [theme]
-# "terminal" draws from the host terminal's ANSI palette rather than shipping
-# its own colours. Ghostty is the source of truth for the palette and swaps
-# light/dark with macOS appearance, so Herdr follows for free — same approach
-# as tmux, yazi, eza, and fzf. See THEME.md.
+# Dark mode: "terminal" draws from the host terminal's ANSI palette rather
+# than shipping its own colours, so Herdr rides Ghostty's Mocha for free —
+# same approach as tmux, yazi, eza, and fzf. See THEME.md.
+#
+# Light mode: the terminal theme's SURFACE tokens are hardcoded dark-first —
+# surface_dim = ANSI "bright black", a dark slate #4b535d in GitHub Light HC,
+# rendered as a dark bar behind the selected sidebar row (herdr 0.7.4
+# src/ui/sidebar.rs:784-791). GitHub Light HC has no pale ANSI slot (it's a
+# high-contrast palette: all 16 indices are dark), so NO single adaptive
+# override can fix a surface for both modes. Until upstream derives surfaces
+# from the reported background, light mode swaps the BASE to catppuccin-latte
+# (neutral pale surfaces, close to the GitHub Light greys) while the custom
+# resets below keep text and panel background on the real terminal palette.
 name = "terminal"
+auto_switch = true
+dark_name = "terminal"
+light_name = "catppuccin-latte"
 
 [theme.custom]
+# Custom overrides apply on top of WHICHEVER base auto_switch picked — every
+# value here must therefore work on both light and dark backgrounds
+# (named-ANSI or "reset" only; a hex would break one of the two modes).
 # The built-in "terminal" theme (herdr 0.7.4 src/app/state.rs Palette::terminal())
 # maps most secondary-text tokens to ANSI "white" (index 7), but singles out
 # `overlay1` for ANSI "bright white" (index 15) instead — the token used for
@@ -34,6 +49,13 @@ name = "terminal"
 # tracking Ghostty's live palette in both appearances automatically.
 overlay1 = "gray"
 
+# Body text and panel background: pin to the terminal's real defaults in both
+# modes ("reset" = the OSC 10/11 colours). Light mode gets #0e1116-on-white
+# instead of latte's blue-tinted ink on off-white; dark mode is unchanged
+# (the terminal base already used reset for both).
+text = "reset"
+panel_bg = "reset"
+
 [keys]
 # Matches the tmux prefix so there's one muscle memory across both.
 # Press it twice (ctrl+a ctrl+a) to send a literal ctrl+a to the shell,
@@ -49,6 +71,7 @@ accent = "red"
 # the agent that needs input surfaces first.
 agent_panel_sort = "priority"
 
+show_agent_labels_on_pane_borders = true
 [ui.toast]
 # Herdr ships with notifications off, which hides the thing that makes an agent
 # multiplexer useful: knowing when a background agent finished or is blocked.

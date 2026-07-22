@@ -281,17 +281,30 @@ involved.
   `-c`/`+cmd` flags in a headless test harness, not a real-usage bug.
 
 ### herdr — `herdr/.config/herdr/config.toml`
-- `theme.name = "terminal"` (`:18`) — herdr's built-in mode that draws from the
-  host ANSI palette instead of shipping its own colours, the same "ride
-  Ghostty" approach as tmux/yazi/eza/fzf. `ui.accent = "red"` (`:46`) for the
+- **Split base themes per appearance** (`:27-30`): `auto_switch = true` with
+  `dark_name = "terminal"` / `light_name = "catppuccin-latte"`. Dark mode
+  rides the host ANSI palette (the same "ride Ghostty" approach as
+  tmux/yazi/eza/fzf); light mode can't — the terminal theme's *surface*
+  tokens are hardcoded dark-first (`surface_dim` = ANSI bright black, a dark
+  slate `#4b535d` in GitHub Light HC, drawn as a dark bar behind the selected
+  sidebar row), and GitHub Light HC has no pale ANSI slot at all, so no
+  single adaptive override can fix a surface for both modes. Latte's neutral
+  pale surfaces stand in until upstream fixes the terminal theme
+  (filed: `github.com/ogulcancelik/herdr/issues/1731`).
+- `text = "reset"` + `panel_bg = "reset"` (`:56-57`) pin body text and panel
+  background to the real terminal colours in both modes, so the latte base
+  only contributes surfaces, not ink. `ui.accent = "red"` (`:68`) for the
   shared accent.
+- **Gotcha:** `[theme.custom]` values apply on top of *whichever* base
+  `auto_switch` picked — every custom value must work on both backgrounds
+  (named-ANSI or `reset` only; a hex would break one of the two modes).
 - herdr 0.7.4 ships as a single closed-file Rust binary with no on-disk theme
   assets. The canonical `[theme.custom]` token list (16 keys — `accent,
   panel_bg, surface0, surface1, surface_dim, overlay0, overlay1, text,
   subtext0, mauve, green, yellow, red, blue, teal, peach`) came from
   `https://herdr.dev/docs/config-reference/`, cross-checked directly against
   herdr's own (AGPL-3.0, public) source at `github.com/ogulcancelik/herdr`.
-- **The fix (`:20-35`):** `overlay1 = "gray"`. herdr's built-in `terminal`
+- **The overlay1 fix (`:50`):** `overlay1 = "gray"`. herdr's built-in `terminal`
   palette (`src/app/state.rs::terminal()`) maps most secondary-text tokens to
   `Color::Gray` (ANSI 7), but singled out `overlay1` for `Color::White` (ANSI
   15) instead — the token behind the selected-workspace-number badge in the
@@ -314,9 +327,12 @@ involved.
   is conventionally an intensity/blend reduction toward the background, which
   can push an already-AA-passing colour below Ghostty's own
   `minimum-contrast` floor with no `theme.custom` token able to prevent it —
-  style modifiers aren't configurable, only colours are. Drafted (not filed —
-  Shane's call) as an upstream issue asking herdr to drop the hardcoded `DIM`
-  on secondary sidebar text, or expose a per-token style flag.
+  style modifiers aren't configurable, only colours are. **Filed upstream** as
+  `github.com/ogulcancelik/herdr/issues/1729` (observed-behaviour bug report,
+  per their contribution policy); a built-and-tested 3-file patch waits on
+  the `shanegriffiths/herdr` fork branch `fix/terminal-theme-dim-contrast`
+  should a maintainer approve the PR path (first attempt, PR #1727, was
+  auto-closed by their new-contributor policy bot — process, not rejection).
 - See "Adding a new tool (the Herdr lesson)" below for the general checklist
   this produced.
 
