@@ -248,6 +248,9 @@ if [ "$(defaults read -g AppleInterfaceStyle 2>/dev/null)" = "Dark" ]; then
   export BAT_THEME="Monokai Extended"
 else
   export BAT_THEME="GitHub"
+  # delta (git pager): activate the GitHub-light feature block
+  # ([delta "github-light"] in git/.gitconfig); dark keeps pinned Mocha.
+  export DELTA_FEATURES="+github-light"
 fi
 
 function ls() {

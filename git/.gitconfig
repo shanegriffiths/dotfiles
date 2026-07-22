@@ -7,12 +7,17 @@
 [interactive]
 	diffFilter = delta --color-only
 [delta]
-	# dark/light auto-detected from the terminal background (delta >= 0.18)
+	# Dark mode: pinned Catppuccin Mocha. Light mode: the "github-light"
+	# feature below, activated via DELTA_FEATURES exported per-appearance
+	# in zsh/.zshrc (delta does NOT auto-detect through a pager pipe).
 	syntax-theme = "Catppuccin Mocha"
 	navigate = true
 	side-by-side = true
 	line-numbers = true
 	hyperlinks = true
+[delta "github-light"]
+	light = true
+	syntax-theme = GitHub
 [merge]
 	conflictstyle = zdiff3
 [difftool "Kaleidoscope"]

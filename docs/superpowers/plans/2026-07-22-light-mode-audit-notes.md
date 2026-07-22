@@ -206,3 +206,17 @@ Everything below is config-verified and/or rendered-in-a-scratch-pane, but only 
 4. **yazi** — a live look, since the rendered capture only proves the ANSI codes were emitted correctly, not the actual terminal glyph/box-drawing rendering (nerd-font glyphs, icon legibility).
 5. **sesh picker** (`prefix t`) and **navi** (`prefix Ctrl+N`) — the *tmux-bound* entry points specifically (this audit verified the underlying fzf/navi invocations directly, not the prefix key-chord launch path, since tmux prefix-chord dispatch couldn't be scripted reliably — see method note above).
 6. **GUI chrome** (sketchybar bar + JankyBorders window border) — config confirms `#c4262b` is untouched; a glance confirms it still reads correctly against both light desktop wallpaper and light-mode window chrome.
+
+## delta (fix)
+
+**Implementation:** Option 2 (feature-fork pattern, matching bat/starship per-mode precedent).
+
+`git/.gitconfig`: replaced the false "auto-detected" comment with clarification that `syntax-theme = "Catppuccin Mocha"` is pinned for dark mode only. Added a `[delta "github-light"]` feature block with `light = true` and `syntax-theme = GitHub`.
+
+`zsh/.zshrc`: extended the BAT_THEME appearance conditional to export `DELTA_FEATURES="+github-light"` in the light branch. Dark mode leaves `DELTA_FEATURES` unset, so delta uses the base `[delta]` config (pinned Mocha, no feature overlay).
+
+**Verification (light mode):**
+- `zsh -ic 'echo $DELTA_FEATURES'` → `+github-light` ✓
+- `delta --show-syntax-themes | grep GitHub` → lists `GitHub` theme ✓
+- `git log -p` renders with light syntax colours (no dark background fills `48;2;0;40;0` / `48;2;63;0;1`), added lines green, removed lines red ✓
+- Dark mode test deferred (not in dark mode during audit); dark branch produces no `DELTA_FEATURES` export, ergo config stays pinned to Mocha ✓ (confirmed by code inspection)
