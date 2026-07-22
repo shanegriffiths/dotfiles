@@ -802,6 +802,12 @@ require('lazy').setup({
     },
   },
 
+  { -- GitHub Light theme (light mode only — dark stays Catppuccin Mocha)
+    'projekt0n/github-nvim-theme',
+    name = 'github-theme',
+    priority = 1000,
+  },
+
   { -- Catppuccin theme (matches Ghostty)
     'catppuccin/nvim',
     name = 'catppuccin',
@@ -820,7 +826,22 @@ require('lazy').setup({
           },
         },
       }
-      vim.cmd.colorscheme 'catppuccin'
+      -- Pick by background: GitHub Light HC in light mode (matches the
+      -- terminal stack — THEME.md), Catppuccin Mocha in dark. 'background'
+      -- arrives asynchronously from the terminal's OSC 11 reply, so re-pick
+      -- whenever it changes (also covers mid-session appearance flips).
+      local function pick_colorscheme()
+        if vim.o.background == 'light' then
+          vim.cmd.colorscheme 'github_light_high_contrast'
+        else
+          vim.cmd.colorscheme 'catppuccin'
+        end
+      end
+      pick_colorscheme()
+      vim.api.nvim_create_autocmd('OptionSet', {
+        pattern = 'background',
+        callback = pick_colorscheme,
+      })
     end,
   },
 
