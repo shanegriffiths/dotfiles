@@ -13,8 +13,10 @@ adjust-cell-height = 2
 # --- Theme and Colors ---
 # Auto-switches with macOS appearance: GitHub Light (high contrast) / custom Mocha
 theme = light:GitHub Light HC Red,dark:Catppuccin Mocha Custom
-# Floor on text-vs-background contrast so no color renders near-invisible (both modes)
-minimum-contrast = 1.2
+# Robustness floor: rewrites any text colour below this contrast ratio against
+# its background, in every app. 2.0 keeps our palettes visually intact but
+# rescues dark-first tools (grey-on-white) in light mode. See THEME.md.
+minimum-contrast = 2
 
 # --- Window and Appearance ---
 background-opacity = 1
