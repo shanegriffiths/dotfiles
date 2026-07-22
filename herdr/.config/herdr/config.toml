@@ -17,6 +17,23 @@ onboarding = false
 # as tmux, yazi, eza, and fzf. See THEME.md.
 name = "terminal"
 
+[theme.custom]
+# The built-in "terminal" theme (herdr 0.7.4 src/app/state.rs Palette::terminal())
+# maps most secondary-text tokens to ANSI "white" (index 7), but singles out
+# `overlay1` for ANSI "bright white" (index 15) instead — the token used for
+# the selected-workspace-number badge in the collapsed sidebar (fg=overlay1 on
+# a "reset"/transparent bg, i.e. the terminal's real background) and for body
+# text in the settings/help/onboarding/release-notes overlays. Ghostty's
+# GitHub Light HC palette deliberately makes index 15 (#88929d) fainter than
+# index 7 (#66707b) — matching GitHub's own "placeholder" grey — so on this
+# palette overlay1 renders at 3.16:1 contrast on white (fails WCAG AA text),
+# well below overlay0/subtext0/mauve's 5.04:1 (already ANSI 7 by default).
+# Re-pointing overlay1 at the same ANSI index those tokens already use closes
+# the gap: 5.04:1 in light mode, still an ample 6.80:1 in dark mode (down from
+# 8.55:1 — no functional loss). Named ANSI colour, not hex, so it keeps
+# tracking Ghostty's live palette in both appearances automatically.
+overlay1 = "gray"
+
 [keys]
 # Matches the tmux prefix so there's one muscle memory across both.
 # Press it twice (ctrl+a ctrl+a) to send a literal ctrl+a to the shell,

@@ -244,3 +244,142 @@ Task 5b (follow-up to Task 5's GitHub-light decision). Last non-GitHub-light sur
 - **Conclusion:** in the one context that matters (a real, attached Ghostty terminal, OSC 11 arriving asynchronously after nvim has finished starting — the normal case), background-driven colorscheme selection works exactly as intended. The Step 3 headless mismatch is a `:set`-during-startup artefact of the *test harness*, not a defect a real session hits — Nvim's own docs draw this exact "not triggered on startup" boundary. Flagging it anyway since it's a genuine (if narrow) race: if a terminal's OSC 11 reply were ever to land while nvim is still technically "starting" (very fast local ptys, unusual multiplexer chains), light mode could silently stay on `catppuccin-latte` instead of switching to `github_light_high_contrast`. Not patched ad hoc per the brief's instruction — noting for Shane's awareness rather than reaching for a fix (e.g. a `VimEnter`-deferred re-check) that isn't in the brief's exact code.
 
 **Verdict:** DONE_WITH_CONCERNS — implementation matches the brief exactly, dark mode is provably unchanged (still Mocha + `#262626`), and the live/real-world check (the one that reflects Shane's actual daily usage) passed cleanly. The concern is confined to a documented, narrow headless/startup-timing edge case that did not reproduce in the real attached-terminal test.
+
+## herdr
+
+Task 6. herdr 0.7.4 (`/opt/homebrew/opt/herdr`), config at `~/.dotfiles/herdr/.config/herdr/config.toml`, already `theme = "terminal"` + `ui.accent = "red"`.
+
+### Research (Step 1–2)
+
+herdr ships as a single closed-file Rust binary — no on-disk theme/asset files (`Cellar/herdr/0.7.4` has only the binary, README, CHANGELOG, licence, shell completions). `herdr --default-config` documents `[theme.custom]` with only 4 example keys (`panel_bg`, `accent`, `red`, `green`) — not the full list. The full canonical list came from https://herdr.dev/docs/config-reference/ (148 keys, `theme.custom.*` section):
+
+```
+accent, panel_bg, surface0, surface1, surface_dim, overlay0, overlay1,
+text, subtext0, mauve, green, yellow, red, blue, teal, peach
+```
+
+No `fg`/`foreground` token exists — the body-text token is named `text`. Values accept hex, `rgb(r,g,b)`, a fixed set of named ANSI colours, or reset aliases (`reset`/`default`/`none`/`transparent`, all equivalent to ratatui `Color::Reset`).
+
+herdr is AGPL-3.0 and public (`github.com/ogulcancelik/herdr`, confirmed via `gh api repos/ogulcancelik/herdr`), so the exact "terminal" theme mapping is readable, not guessed. Pulled via `gh api .../contents/<path> -H "Accept: application/vnd.github.raw"`:
+
+- `src/config/theme.rs` — confirms the 16-token `CustomThemeColors` struct matches the docs exactly, and that `parse_color()` maps `"reset"/"default"/"none"/"transparent"` → `Color::Reset`, hex/`rgb()`, and a fixed named set (`black red green yellow blue magenta/purple cyan white gray/grey darkgray/darkgrey lightred lightgreen lightyellow lightblue lightmagenta lightcyan`) — anything else falls back to `Color::Cyan` with a warning.
+- `src/app/state.rs` — the actual built-in palettes, including:
+
+```rust
+/// Terminal 16-color theme.
+pub fn terminal() -> Self {
+    Self {
+        accent: Color::Blue,
+        panel_bg: Color::Reset,
+        surface0: Color::Reset,
+        surface1: Color::DarkGray,
+        surface_dim: Color::DarkGray,
+        overlay0: Color::Gray,
+        overlay1: Color::White,     // ← the outlier
+        text: Color::Reset,
+        subtext0: Color::Gray,
+        mauve: Color::Gray,
+        green: Color::Green,
+        yellow: Color::Yellow,
+        red: Color::LightRed,
+        blue: Color::Blue,
+        teal: Color::Cyan,
+        peach: Color::Yellow,
+    }
+}
+```
+
+Ratatui/crossterm semantics: `Color::Gray` = ANSI index 7 ("white"), `Color::White` = ANSI index 15 ("bright white"), `Color::DarkGray` = ANSI index 8 ("bright black").
+
+### Diagnosis (Step 3) — revises the brief's working hypothesis
+
+**The brief's hypothesis was half right, for the wrong token.** `text` — the actual body/foreground token — is already `Color::Reset`. That resolves through OSC 10 to Ghostty's *real* reported default foreground (`#0e1116` in `GitHub Light HC Red`, `#cdd6f4` in `Catppuccin Mocha Custom` — confirmed by reading both theme files directly), i.e. it was **already correct and already adaptive** before this task touched anything. Body/prompt text inside herdr's own chrome was never mapped to ANSI white.
+
+The actual defect is `overlay1`, pinned to literal `Color::White` (ANSI 15) while its siblings `overlay0`/`subtext0`/`mauve` all use `Color::Gray` (ANSI 7) instead. Ghostty's `GitHub Light HC Red` palette (`ghostty/.config/ghostty/themes/GitHub Light HC Red`) sets:
+
+```
+palette = 7  = #66707b   (ANSI "white")
+palette = 8  = #4b535d   (ANSI "bright black" / DarkGray)
+palette = 15 = #88929d   (ANSI "bright white")
+```
+
+— GitHub's HC palette deliberately makes index 15 the *faintest* grey (matching GitHub's own UI "placeholder" text), inverting the usual "bright white is brighter" assumption most terminal-driven TUI themes rely on. Contrast against `#ffffff` (computed via WCAG relative-luminance, not herdr's own simplified `299/587/114` formula which is only used for its own dark/light OSC-appearance inference):
+
+| token (terminal theme) | ANSI idx | light hex | light contrast | dark hex (Mocha Custom) | dark contrast |
+|---|---|---|---|---|---|
+| `overlay0`/`subtext0`/`mauve` (Gray) | 7 | `#66707b` | **5.04:1** (passes AA) | `#a6adc8` | 6.80:1 |
+| `overlay1` (White) — **broken** | 15 | `#88929d` | **3.16:1** (fails AA) | `#bac2de` | 8.55:1 |
+| `surface1`/`surface_dim` (DarkGray) | 8 | `#4b535d` | 7.79:1 | `#585b70` | **2.27:1** (fails, out of scope — dark-only, not today's symptom) |
+
+Confirmed via GitHub code search (`gh api search/code`) exactly where `overlay1` renders in the compiled 0.7.4 source:
+
+- `src/ui/sidebar.rs:789` — `Style::default().fg(p.overlay1).bg(p.surface0)` — the **selected workspace-number badge in the collapsed sidebar rail**. `surface0` is `Color::Reset` in the terminal theme (transparent, no fill), so this combination is the *entire* visual signal that a workspace is selected in collapsed mode: an `#88929d`-on-white digit with no background highlight at all. This is almost certainly the exact "washed-out sidebar chrome" Shane's screenshot caught.
+- `src/ui/keybind_help.rs`, `src/ui/onboarding.rs`, `src/ui/release_notes.rs` — `overlay1` is the subtitle/body-text colour for the help panel (`prefix+?`), onboarding, and release notes overlays.
+- `src/ui/scrollbar.rs:178` — scrollbar thumb colour.
+
+Separately, `overlay0` (already the *better* ANSI-7 mapping, 5.04:1 raw) is applied with `Modifier::DIM` in several places (`sidebar.rs:1027` token separators, `:1137` "spaces" header is BOLD not DIM, `:1198-1200` agent state-text label is *always* DIM regardless of colour). SGR "faint" (`ESC[2m`) is conventionally implemented by terminal emulators as an intensity/blend reduction toward the background — if Ghostty does this, `overlay0`'s raw 5.04:1 could be pushed towards or below the `minimum-contrast = 2` floor Task 1 raised earlier today, which would then explain the "partial rescue" the brief anticipated. This is a **residual, not-config-fixable concern** — `theme.custom` only overrides colour tokens, not style modifiers (`Modifier::DIM`/`BOLD` are hardcoded per-callsite in the Rust source, confirmed by reading the call sites directly), so there's no token to hand-tune this away. The only available lever (swapping `overlay0`'s colour to `DarkGray`/ANSI 8) was rejected: `DarkGray` is the *good* choice in light mode (7.79:1) but is the palette's worst performer in dark mode (2.27:1, already below AA even before any DIM-blending) — repointing `overlay0` there would fix today's light-mode symptom by very possibly breaking dark mode instead, which fails the "must track both modes automatically, don't invent a value that only works one way" instruction.
+
+### Fix applied (Step 3/4)
+
+`herdr/.config/herdr/config.toml`:
+
+```toml
+[theme.custom]
+overlay1 = "gray"
+```
+
+One line. `"gray"` is a named-ANSI-colour override (not hex), so — like `overlay0`/`subtext0`/`mauve` already do — it keeps tracking whatever Ghostty reports for ANSI index 7 in both appearances, automatically, with no per-mode fork needed. Net effect: `overlay1` moves from 3.16:1 (light, fails AA) → 5.04:1 (light, passes AA), and from 8.55:1 → 6.80:1 in dark mode (comfortably still passes AA; no functional loss — dark mode was never the reported symptom).
+
+`text` (body foreground) was left untouched — it was already `Color::Reset` and already correct; overriding it wasn't needed and the config still has no `[theme.custom].text` entry.
+
+### Validation (Step 4 — non-interactive only, per verification limits)
+
+```
+$ herdr config check
+config: ok
+```
+(clean before and after the edit — no warnings, no fallback-to-default diagnostics)
+
+```
+$ herdr status
+server:
+  status: running
+  version: 0.7.4
+```
+A herdr server was already running for Shane's own work (`herdr api snapshot` showed a live workspace `animation` under Antimony Resources, pane attached) — did **not** attach or start any interactive session, per the task's constraint.
+
+```
+$ herdr server reload-config
+{"id":"cli:server:reload-config","result":{"diagnostics":[],"status":"applied","type":"config_reload"}}
+```
+Reload applied cleanly against the running server with zero diagnostics — confirms the new `[theme.custom]` block parses and applies, not just that the file is syntactically valid TOML.
+
+`herdr api snapshot`/`herdr api schema` expose session/pane/workspace state only — no theme or resolved-colour introspection exists, so there is no non-interactive way to confirm the *rendered* pixel colour actually changed. This is the ceiling of what's verifiable without opening the UI.
+
+**Shane must eyeball (added to the existing checkpoint list):**
+1. **Collapsed sidebar rail** (`prefix+b` to toggle, or narrow the sidebar) — the selected workspace's number badge should now read as a legible mid-grey digit, not a near-invisible pale one, against the plain (unfilled) background.
+2. **`prefix+?` keybind help panel**, **Settings** (`prefix+s`), and **release notes** — subtitle/description text (previously the washed `#88929d`) should read clearly darker.
+3. **General sidebar chrome look** (token separators, "spaces" header, agent state labels) — these use `overlay0`, untouched by this fix; per the DIM-modifier finding above there may be a *residual* faint/washed quality here that config cannot address. If it still looks off, that's the concern flagged below, not a sign this fix was incomplete.
+4. Side-by-side against plain tmux, per the brief's original acceptance framing.
+
+### Step 5 — upstream, not filed
+
+Config fully resolved the reported symptom (`overlay1`/selected-workspace badge), so the brief's "no token combination fixes it" trigger for filing an issue doesn't strictly apply. There is a genuine secondary gap with no config lever, though — drafted here per the brief's instruction, **not filed**, pending Shane's go-ahead:
+
+> **Title:** `terminal` theme: `Modifier::DIM` on secondary sidebar text has no config escape hatch, and can undermine a manually-tuned `theme.custom.overlay0`
+>
+> **herdr version:** 0.7.4
+>
+> **Repro:** `theme.name = "terminal"`, host terminal ANSI palette with a legible-but-not-bright "white" (index 7) and a much fainter "bright white" (index 15) — e.g. Ghostty's bundled GitHub Light High Contrast theme (`palette 7 = #66707b`, `palette 15 = #88929d`, background `#ffffff`).
+>
+> **Expected:** sidebar secondary text (token separators, "spaces" header via `Modifier::DIM`/`BOLD`, per-agent state-text label) reads with the contrast implied by the configured/default `overlay0` token.
+>
+> **Actual:** `overlay0`-coloured spans are frequently rendered with `Modifier::DIM` (`src/ui/sidebar.rs`, e.g. token separators and the always-DIM agent state-text label) hardcoded per call site. SGR "faint" is conventionally implemented by terminals as an intensity/blend reduction toward the background, which can erode an otherwise-AA-passing `overlay0` contrast ratio below the terminal's own contrast floor (e.g. Ghostty's `minimum-contrast`) with no way to prevent it from `config.toml` — `theme.custom` only exposes colour tokens, not per-token style modifiers.
+>
+> **Workaround:** none identified that doesn't risk the opposite appearance (see `DarkGray`'s 7.79:1 light / 2.27:1 dark split found during this investigation — no single named ANSI colour in this palette is safely brighter than `overlay0`'s current `Gray` in *both* appearances). Relying on the host terminal's own minimum-contrast floor (already in place here) is the only current mitigation.
+>
+> **Ask:** either drop `Modifier::DIM` from the `terminal` theme's secondary-text call sites (letting the configured/ANSI colour alone carry the "muted" weight, as `overlay0`'s colour choice already does), or expose per-token style modifiers (e.g. `theme.custom.overlay0_dim = false`) alongside the existing colour overrides.
+
+### Verdict
+
+**DONE_WITH_CONCERNS.** The specific, evidenced defect (`overlay1` pinned to a fainter ANSI index than its sibling tokens, breaking the one visual signal for "selected" in the collapsed sidebar and the body text of several overlay panels) is fixed with a single adaptive, `config check`-clean, live-reloaded config line, and disproves the brief's original "`text`/body-foreground is ANSI white" hypothesis with direct source evidence rather than assumption. The concern is a second, real but config-unfixable residual (`Modifier::DIM` stacked on `overlay0`) that Shane's checkpoint eyeball needs to settle — if it still looks washed after this fix, that's what's left, not a sign this token wasn't the right one.
