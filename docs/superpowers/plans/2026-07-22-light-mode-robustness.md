@@ -279,6 +279,116 @@ Claude-Session: https://claude.ai/code/session_01682qqcEjBhgUyfJ12XotLn"
 
 ---
 
+### Task 4b: delta — GitHub-light feature fork (from Task 4's FINDING; Shane chose DELTA_FEATURES)
+
+**Files:**
+- Modify: `~/.dotfiles/git/.gitconfig` (the `[delta]` block)
+- Modify: `~/.dotfiles/zsh/.zshrc` (the BAT_THEME block added in Task 3)
+
+**Interfaces:**
+- Consumes: Task 3's BAT_THEME conditional (extended, not duplicated).
+- Produces: audit-notes `## delta (fix)` section; dark mode diffs pixel-identical.
+
+- [ ] **Step 1: Fix the .gitconfig** — replace the wrong comment and add the feature block:
+
+```gitconfig
+[delta]
+	# Dark mode: pinned Catppuccin Mocha. Light mode: the "github-light"
+	# feature below, activated via DELTA_FEATURES exported per-appearance
+	# in zsh/.zshrc (delta does NOT auto-detect through a pager pipe).
+	syntax-theme = "Catppuccin Mocha"
+	navigate = true
+	side-by-side = true
+[delta "github-light"]
+	light = true
+	syntax-theme = GitHub
+```
+
+(Keep any other existing `[delta]` keys unchanged.)
+
+- [ ] **Step 2: Extend the zshrc appearance conditional** — inside Task 3's existing `if/else`, light branch only:
+
+```zsh
+  # delta (git pager): activate the GitHub-light feature block
+  # ([delta "github-light"] in git/.gitconfig); dark keeps pinned Mocha.
+  export DELTA_FEATURES="+github-light"
+```
+
+- [ ] **Step 3: Verify** — `zsh -ic 'echo $DELTA_FEATURES'` → `+github-light`; `zsh -ic 'cd ~/.dotfiles && git log -p -1 --color=always | head -40' | cat -v` → no dark background fills (`48;2;0;40;0` / `48;2;63;0;1` gone), light syntax colours. Confirm `delta --show-syntax-themes | grep GitHub` lists the theme. Dark path: unset var → unchanged Mocha (config untouched when DELTA_FEATURES absent).
+
+- [ ] **Step 4: Append audit-notes `## delta (fix)` section; commit**
+
+```bash
+cd ~/.dotfiles && git add git/.gitconfig zsh/.zshrc docs/superpowers/plans/2026-07-22-light-mode-audit-notes.md && git commit -m "git/zsh: delta GitHub-light feature fork per appearance
+
+delta never auto-detected (syntax-theme was pinned); light mode now
+activates [delta \"github-light\"] via DELTA_FEATURES. Dark unchanged.
+
+Claude-Session: https://claude.ai/code/session_01682qqcEjBhgUyfJ12XotLn"
+```
+
+---
+
+### Task 5b: nvim — GitHub Light HC in light mode (Shane chose switch; dark stays Mocha)
+
+**Files:**
+- Modify: `~/.dotfiles/nvim/.config/nvim/init.lua` (catppuccin spec at ~line 805; add github-theme spec beside it)
+
+**Interfaces:**
+- Consumes: Shane's Task-5 decision (GitHub light).
+- Produces: audit-notes `## nvim` section; light nvim = `github_light_high_contrast`, dark = catppuccin mocha (custom `#262626` base preserved).
+
+- [ ] **Step 1: Add the plugin spec** next to the catppuccin spec (same lazy.nvim list):
+
+```lua
+  { -- GitHub Light theme (light mode only — dark stays Catppuccin Mocha)
+    'projekt0n/github-nvim-theme',
+    name = 'github-theme',
+    priority = 1000,
+  },
+```
+
+- [ ] **Step 2: Replace `vim.cmd.colorscheme 'catppuccin'`** (inside catppuccin's `config`) with background-driven selection:
+
+```lua
+      -- Pick by background: GitHub Light HC in light mode (matches the
+      -- terminal stack — THEME.md), Catppuccin Mocha in dark. 'background'
+      -- arrives asynchronously from the terminal's OSC 11 reply, so re-pick
+      -- whenever it changes (also covers mid-session appearance flips).
+      local function pick_colorscheme()
+        if vim.o.background == 'light' then
+          vim.cmd.colorscheme 'github_light_high_contrast'
+        else
+          vim.cmd.colorscheme 'catppuccin'
+        end
+      end
+      pick_colorscheme()
+      vim.api.nvim_create_autocmd('OptionSet', {
+        pattern = 'background',
+        callback = pick_colorscheme,
+      })
+```
+
+- [ ] **Step 3: Install and verify headless** — `nvim --headless "+Lazy! sync" +qa`, then:
+  - `nvim --headless "+set background=light" "+lua print(vim.g.colors_name)" +qa` → `github_light_high_contrast`
+  - `nvim --headless "+lua print(vim.g.colors_name)" +qa` (default dark) → `catppuccin`
+  Expected: no startup errors either way.
+
+- [ ] **Step 4: Live check** — scratch tmux window (Task 4's method: `tmux new-window` → open nvim → `capture-pane -e` → `kill-window` on YOUR window only): background detection through tmux yields light rendering (white bg escape codes). If detection fails through tmux, record the symptom in audit notes and report — do not patch ad hoc.
+
+- [ ] **Step 5: Append audit-notes `## nvim` section; commit**
+
+```bash
+cd ~/.dotfiles && git add nvim/.config/nvim/init.lua docs/superpowers/plans/2026-07-22-light-mode-audit-notes.md && git commit -m "nvim: GitHub Light HC in light mode, Mocha in dark
+
+Last non-GitHub light surface in the stack (was catppuccin latte).
+Background-driven pick with OptionSet re-pick for async OSC 11 detection.
+
+Claude-Session: https://claude.ai/code/session_01682qqcEjBhgUyfJ12XotLn"
+```
+
+---
+
 ### Task 5: nvim — verify switching, decide latte question
 
 **Files:**
