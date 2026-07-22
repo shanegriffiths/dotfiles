@@ -7,7 +7,11 @@ scrolloff = 0
 
 [opener]
 markdown = [
-    { run = 'open -a "Markdown Preview" "$@"' }
+    { run = 'open -a "Markdown Preview" "$@"', desc = "Markdown Preview" },
+    { run = 'open -a "Visual Studio Code" "$@"', desc = "VS Code" },
+]
+chrome = [
+    { run = 'open -a "Google Chrome" "$@"', desc = "Chrome" }
 ]
 pdf = [
     { run = 'open -a "PDF Expert" "$@"' }
@@ -31,6 +35,8 @@ folder = [
 [open]
 prepend_rules = [
     { url = "*.md", use = "markdown" },
+    { url = "*.mdx", use = ["code", "markdown"] },
+    { url = "*.html", use = ["code", "chrome"] },
     { url = "*.pdf", use = "pdf" },
     { url = "*.svg", use = "svg" },
     { url = "*/", use = "folder" },
