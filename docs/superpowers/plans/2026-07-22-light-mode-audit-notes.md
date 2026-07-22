@@ -89,3 +89,120 @@ GitHub
 ```
 
 Rendering shows light theme colors (RGB 51,51,51 for dark text; 24,54,145 for JSON keys; 0,134,179 for numbers). fzf file previews now display with light syntax colours on light terminal background.
+
+## Task 4 — spot-audit of the ANSI-clean tools
+
+macOS confirmed in light mode for this entire audit (`defaults read -g AppleInterfaceStyle` → unset/Light). Method note: Ghostty is the live terminal, but this session runs inside tmux (session `skillsight`); rendered-output checks used a scratch tmux window created for the check and killed immediately after (`tmux new-window` → `send-keys`/`capture-pane -e` → `tmux kill-window`), never touching Shane's existing windows/panes. One quirk: `tmux send-keys` only reaches a shell's key-table/zle bindings reliably when sent as a **named key** (`C-r`) or a **literal byte** (`-l $'\x12'`) to a pane that has fully finished shell init — chained prefix sequences (`C-a` then `C-n`) did **not** dispatch through tmux's prefix table when injected this way (the client-side key-table state isn't tracked for a non-attached scripted pane), so navi's `prefix Ctrl+N` binding was verified by running its underlying command (`navi --print`) directly instead.
+
+### starship — PASS
+`starship prompt` rendered in `~/.dotfiles` (a git repo):
+```
+%{^[[90m%}…%{^[[31m%} .dotfiles %{^[[0m%}…%{^[[38;2;208;215;222m%}…%{^[[48;2;208;215;222;38;2;36;41;47m%} … main %{^[[0m%}…%{^[[96m%}…%{^[[0m%}
+```
+- Directory: `ESC[31m` — ANSI red. ✓
+- Branch pill: raw RGB `208;215;222` (cap) / `48;2;208;215;222;38;2;36;41;47` (body) — matches the config's light-mode branch (`cd`/`gd` != Dark path), a legible light-silver chip with dark text. ✓
+- git_status: `96m` (bright cyan, untracked count) — legible on white. ✓
+
+### yazi — PASS
+Live-rendered via a scratch tmux window (`yazi` launched, pane captured, `q` + window killed):
+- Folder names/icons: `38;5;1` (ANSI red) throughout the listing and the `~/.dotfiles` breadcrumb at top. ✓
+- `border_style`/`[spot].border` use a hardcoded `#262626` (not ANSI) — confirmed legible: contrast **15.1:1** against white. Not mode-forked, but it's dark-grey-on-white in both directions of contrast so it isn't a light-mode regression (it would only be a *dark*-mode concern if it ever matches the dark bg, which is out of this task's scope).
+- No dark surfaces: selected-row highlight uses reverse-video (`7m`) against the terminal's own colours, not a hardcoded dark fill.
+
+### eza + completion — PASS
+```
+$ zsh -ic 'echo $EZA_COLORS'
+EZA_COLORS=di=1;31
+```
+`zsh/.zshrc:66`: `zstyle ':completion:*' list-colors "${(s.:.)${LS_COLORS/di=1;36/di=1;31}}"` — swaps completion-menu directory colour from cyan to red, same `1;31` as `EZA_COLORS`.
+Rendered proof (`ls -la /tmp`, eza aliased): directory entries show `ESC[1;31m` around the name. ✓
+(Aside, not a theming issue: `eza`/`ls` with no path argument returned 0 output in this sandboxed shell unless `COLUMNS` was set explicitly or a path was passed — an environment quirk of this harness, not a dotfiles config bug; confirmed by testing `eza -la .` and `eza -la /tmp` which both worked normally.)
+
+### fzf (both configs) — PASS
+- `zsh/.zshrc:196`: `FZF_DEFAULT_OPTS="--height 50% --layout=default --border --color=hl:1,hl+:1,bg:-1,preview-bg:-1"`
+- `tmux/.config/tmux/tmux.conf:116` (sesh picker): `--color 'hl:1,bg:-1,preview-bg:-1'`
+Both use ANSI index 1 (red) for the match highlight and `-1` (inherit) for bg/preview-bg — identical pattern, config-level confirmed identical to THEME.md.
+Rendered proof came via the navi test below (same `fzf` binary, same `$FZF_DEFAULT_OPTS`): typing a query produced `ESC[31m` around every matched substring, on the terminal's inherited (white) background — no `48;...` full-screen fill anywhere. Direct interactive capture of the zshrc `Ctrl+T` widget was attempted but proved unreliable to script (an orphaned `fzf` process was left behind by one attempt — a scripted-pane artifact of the tmux/pty test harness, not related to Shane's real usage; it was identified as not belonging to any live pane via `tmux list-panes -a` and killed). Given the identical `$FZF_DEFAULT_OPTS`/binary is proven live via navi, this is not treated as a gap — see checkpoint list.
+
+### navi — PASS
+Ran `navi --print` in a scratch tmux window, typed `git` as a query, captured pane:
+```
+…[48;5;236m▌[39m [31mgit[96m…   (repeated across ~44 matching rows)
+```
+- Matched substring "git" renders `ESC[31m` (ANSI red) — confirms `hl:1` from `$FZF_DEFAULT_OPTS` is honoured (no `navi/config.yaml` exists, so navi uses its default `fzf` finder, unmodified).
+- List background inherits the terminal (no full-screen `48;...` fill); selected-row marker `▌` uses `38;5;161` (pink-red) on a small `48;5;236` (dark-grey) highlight strip — a normal inverted-highlight-bar pattern (fzf's own default `bg+`, not overridden), legible and self-contained, not a "dark surface" bug.
+- Border/prompt/count chrome uses muted blue-grey (`38;5;59`) and blue (`38;5;110`) — legible on white.
+
+### atuin — PASS (see checkpoint)
+Confirmed `atuin/.config/atuin/config.toml` has `[theme]` fully commented out — no theme override, matching the brief's premise. `[tmux].enabled = true` is set (popup mode), but the live capture (see method note above) rendered atuin's UI **inline** in the scratch pane rather than as a tmux popup — worth Shane double-checking in a real popup context (checkpoint list).
+Rendered capture of `Ctrl+R` (`atuin-search` bound via `zsh/.zshrc:183`):
+- Header/help footer text uses ANSI **bright-black** (`38;5;8`) → Ghostty light palette index 8 = `#4b535d`, contrast **7.8:1** on white. ✓
+- Active "Search" tab label uses ANSI **bright-white** (`38;5;15`) → Ghostty light palette index 15 = `#88929d`, contrast **3.16:1** on white — passes WCAG for large/bold text, borderline for anything smaller. This is the single lightest-contrast element rendered; flagged for Shane's eyeball.
+- History rows: duration coloured green/red by speed (ANSI 2/1, ordinary "fast vs slow" semantics, both legible), timestamps blue (ANSI 4), selected row bold ANSI red (`1m` `38;5;1`). All ride the live Ghostty palette (ANSI 0–15 indices only — no raw RGB anywhere in atuin's own output), so this is architecturally identical to Starship/yazi/eza: fully ANSI-clean, ergo automatically light-mode-safe. No `[theme]` override needed.
+
+### session-list.sh + resurrect/sesh preview scripts — PASS
+`tmux/.config/tmux/session-list.sh` called live (`~/.config/tmux/session-list.sh "skillsight" "0"`) against the real running session list:
+```
+#[range=user|skillsight,fg=#0e1116,bold]…skillsight#[norange]#[fg=#d0d7de,none] … 
+```
+- Current session: `fg=#0e1116` (matches Ghostty light `foreground`), other sessions: `fg=#6e7781` (muted grey), separators: `fg=#d0d7de` (GitHub silver) — exactly the light branch in the script.
+- Prefix-active state verified by calling with `"1"`: current-session colour switches to `fg=red,bold`. ✓
+`sesh-preview.sh`, `resurrect-pick.sh`, `resurrect-preview.sh` — read in full: none emit ANSI colour codes at all (plain text only); all colouring comes from the fzf `--color` options at the call site (already verified above), so there is no separate light/dark logic needed and none to audit.
+
+### git / delta — FINDING (not fixed; STOP-and-report per brief)
+**Expected PASS per brief ("config already auto-detects, delta ≥ 0.18"); actual result contradicts that.**
+
+`git/.gitconfig`:
+```
+[core]
+	pager = delta
+[delta]
+	# dark/light auto-detected from the terminal background (delta >= 0.18)
+	syntax-theme = "Catppuccin Mocha"
+	navigate = true
+	side-by-side = true
+	line-numbers = true
+	hyperlinks = true
+```
+`syntax-theme` is pinned to a single, dark-only theme. Two problems compound:
+1. Delta's real terminal-background auto-detection (`--detect-dark-light`, default `auto`) is a *separate* flag from `syntax-theme` and isn't overridden here — but even when it fires, it only flips the `--light`/`--dark` decoration mode; it does **not** change `syntax-theme`, which stays pinned to Catppuccin Mocha regardless.
+2. `syntax-theme = "Catppuccin Mocha"` alone determines delta's code-token colours (pastel lavender/pink/teal/green, tuned for a dark background) independent of the `--light`/`--dark` flag.
+
+**Live proof (real tmux/Ghostty pane, light mode, not a piping artefact):**
+```
+$ git log -p -1 --color=never | delta --paging=never
+```
+→ added lines get background `48;2;0;40;0` (near-black dark green), removed lines `48;2;63;0;1` (near-black dark red/maroon), word-level emphasis `48;2;0;96;0` / `48;2;144;16;17` — a dark "card" sitting inside an all-white terminal, on every single diff. Confirmed both via direct piping and via a genuine tmux pane capture (same result both ways) — this is not a test-harness artefact.
+
+**Tried to reproduce the "textbook fix" and it makes things worse, not better:**
+```
+$ git log -p -1 --color=never | delta --light   # forces the decoration mode, theme still pinned
+```
+→ plus-line background flips to a pale `48;2;208;255;208`, but the syntax-highlighted text is still Catppuccin Mocha's pastel foreground colours (e.g. `205;214;244`, `243;139;168`) — measured contrast against that pale background: **1.3:1 to 2.1:1** (genuinely illegible; WCAG minimum is 4.5:1). So simply adding a light/dark fork to the existing config is **not** a trivial fix — the syntax-theme itself has to change too, or highlighting has to be dropped, per mode.
+
+**Confirmed via `--syntax-theme=none --light`:** decorations render correctly (pale green/red backgrounds, default terminal foreground for code, ANSI-coloured line-number/hunk-header chrome) — proving the fix is tractable, just not a one-line change.
+
+**Per the brief's STOP-and-report rule, not implemented. Options for Shane to choose from:**
+1. **Simplest:** drop `syntax-theme` entirely (rely on delta's default/no highlighting) and add `detect-dark-light = auto` (or `--light`/`--dark` via a wrapper) — loses Catppuccin Mocha code-token colouring in dark mode too.
+2. **Match bat's precedent (Task 3):** replace `core.pager = delta` with a tiny wrapper script that forks on `defaults read -g AppleInterfaceStyle` (same pattern as `BAT_THEME`/Starship's branch pill) and execs `delta --light --syntax-theme="GitHub"` vs `delta --dark --syntax-theme="Catppuccin Mocha"`. Keeps the nicer dark-mode theme; costs one new script file + one gitconfig line change.
+3. **Cheapest one-line change (but changes dark mode too):** set `syntax-theme = "GitHub"` unconditionally, matching bat's light choice — sacrifices the deliberately-chosen dark-mode Catppuccin Mocha rendering.
+
+Recommend option 2 to Shane (mirrors the already-established bat/starship/tmux/Claude-launcher per-mode-fork pattern in THEME.md), but this is his call.
+
+### GUI chrome (sketchybar / JankyBorders) — PASS, document-only
+```
+sketchybar/.config/sketchybar/plugins/borders.sh:7:  ACTIVE_TILED="0xFFC4262B"
+aerospace/.config/aerospace/aerospace.toml:6:  'exec-and-forget borders active_color=0xFFC4262B …'
+```
+Both still hardcode `0xFFC4262B` (`#c4262b`), matching THEME.md exactly — unaffected by this work, as expected (drawn by macOS, not the terminal palette). No config drift found. Visual confirmation is Shane's eyeball item only (see checkpoint).
+
+## checkpoint — Shane must eyeball
+
+Everything below is config-verified and/or rendered-in-a-scratch-pane, but only a real look at the actual apps (in a live Ghostty window, not a scripted capture) can close it out:
+
+1. **atuin `Ctrl+R`** — confirm it actually opens as a **tmux popup** (per `[tmux].enabled = true` in `atuin/.config/atuin/config.toml`) rather than inline, and that the popup's "Search" tab label (the lightest-contrast element found, `#88929d` on white, 3.16:1) reads comfortably at your normal font size.
+2. **git/delta — the FINDING above.** Run `git log -p` or `git diff` on something with real changes, directly in Ghostty (not piped), and confirm what you actually see: a dark green/red "card" behind every diff line (what the automated tests captured), or something else. Either way it needs one of the three fix options above — your call on which.
+3. **fzf `Ctrl+T`** (zshrc widget) — full-screen interactive check; scripted capture of this one specific path was unreliable (see method note above), though the identical config/binary was proven live via navi.
+4. **yazi** — a live look, since the rendered capture only proves the ANSI codes were emitted correctly, not the actual terminal glyph/box-drawing rendering (nerd-font glyphs, icon legibility).
+5. **sesh picker** (`prefix t`) and **navi** (`prefix Ctrl+N`) — the *tmux-bound* entry points specifically (this audit verified the underlying fzf/navi invocations directly, not the prefix key-chord launch path, since tmux prefix-chord dispatch couldn't be scripted reliably — see method note above).
+6. **GUI chrome** (sketchybar bar + JankyBorders window border) — config confirms `#c4262b` is untouched; a glance confirms it still reads correctly against both light desktop wallpaper and light-mode window chrome.
