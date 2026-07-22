@@ -24,6 +24,11 @@ onboarding = false
 # from the reported background, light mode swaps the BASE to catppuccin-latte
 # (neutral pale surfaces, close to the GitHub Light greys) while the custom
 # resets below keep text and panel background on the real terminal palette.
+# GOTCHA: picking any theme in herdr's IN-APP settings writes that choice
+# back into this file and force-writes `auto_switch = false` alongside it
+# (save_theme(), src/app/config_io.rs) — silently disabling the light/dark
+# split below. If the dark selection bar comes back, check this flag first
+# and avoid the in-app theme picker; theme changes belong in this file.
 name = "terminal"
 auto_switch = true
 dark_name = "terminal"

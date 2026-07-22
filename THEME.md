@@ -298,6 +298,14 @@ involved.
 - **Gotcha:** `[theme.custom]` values apply on top of *whichever* base
   `auto_switch` picked — every custom value must work on both backgrounds
   (named-ANSI or `reset` only; a hex would break one of the two modes).
+- **Gotcha:** opening herdr's in-app theme settings writes the picked theme
+  back into `config.toml` and force-writes `auto_switch = false` with it
+  (`save_theme()`, `src/app/config_io.rs`) — silently disabling the split.
+  If the dark selection bar returns, check that flag first. Theme changes
+  belong in the config file, not the in-app picker. Related trap: with no
+  detected terminal background, `auto_switch` assumes **dark**
+  (`appearance.unwrap_or(Dark)`, `src/app/mod.rs`), so a client that never
+  answered the OSC 11 query renders the dark base — reattach to fix.
 - herdr 0.7.4 ships as a single closed-file Rust binary with no on-disk theme
   assets. The canonical `[theme.custom]` token list (16 keys — `accent,
   panel_bg, surface0, surface1, surface_dim, overlay0, overlay1, text,
