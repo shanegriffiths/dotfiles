@@ -239,6 +239,17 @@ _fzf_comprun() {
 # Directories in red (ANSI 1;31) instead of the default cyan — overrides LS_COLORS
 # di for eza only. ANSI red adapts per theme: dark-red in light, Catppuccin red in dark.
 export EZA_COLORS="di=1;31"
+
+# bat: pick the syntax theme at shell init. bat 0.25+ auto-detects the
+# terminal background, but detection fails when piped (exactly what fzf
+# previews do) and falls back dark — so light-mode previews rendered dark.
+# Same per-launch appearance fork as the Claude Code launcher (THEME.md).
+if [ "$(defaults read -g AppleInterfaceStyle 2>/dev/null)" = "Dark" ]; then
+  export BAT_THEME="Monokai Extended"
+else
+  export BAT_THEME="GitHub"
+fi
+
 function ls() {
   eza --color=always --icons=always --all --grid --group-directories-first --width=$(( COLUMNS / 3 )) "$@"
 }

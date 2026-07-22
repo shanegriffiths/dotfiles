@@ -69,3 +69,23 @@ Additional chrome overrides (new or updated):
 - **@bar_bg**: already set to `#ffffff` (white for extra status rows)
 
 No latte value renders in light mode. @catppuccin_status_* module variables (battery, gitmux) still contain latte hexes (#7287fd, #179299) but are NOT rendered — status-right is overridden to white space.
+
+## bat
+
+bat 0.25+ auto-detects terminal background, but fails when content is piped (exact scenario for fzf previews). Falls back to dark theme, rendering light-mode previews with dark syntax colours on white backgrounds. Exported `BAT_THEME` at shell init to lock the theme per macOS appearance.
+
+**Themes chosen:**
+- Light: `GitHub` (light syntax colours, white-friendly contrast)
+- Dark: `Monokai Extended` (bat's previous default dark rendering; unchanged to preserve dark-mode UX)
+
+**Implementation:**
+Inserted theme fork in `~/.dotfiles/zsh/.zshrc` after `EZA_COLORS` block, using same `defaults read -g AppleInterfaceStyle` pattern as Claude Code launcher.
+
+**Verification (light mode):**
+```bash
+$ zsh -ic 'echo $BAT_THEME; echo "{\"a\": 1}" | bat --color=always -pl json'
+GitHub
+[38;2;51;51;51m{[0m[38;2;24;54;145m"[0m[38;2;24;54;145ma[0m[38;2;24;54;145m"[0m[38;2;51;51;51m:[0m[38;2;51;51;51m [0m[38;2;0;134;179m1[0m[38;2;51;51;51m}[0m
+```
+
+Rendering shows light theme colors (RGB 51,51,51 for dark text; 24,54,145 for JSON keys; 0,134,179 for numbers). fzf file previews now display with light syntax colours on light terminal background.
