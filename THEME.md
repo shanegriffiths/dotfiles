@@ -178,13 +178,16 @@ involved.
   (`show_file_or_dir_preview`, `zsh/.zshrc:214`) — and falls back to a **dark**
   theme, so light-mode previews rendered dark syntax colours on a white
   background.
-- Fixed by exporting `BAT_THEME` explicitly at shell init (`zsh/.zshrc:247-250`),
+- Fixed by exporting `BAT_THEME` explicitly at shell init (`zsh/.zshrc:247-252`),
   the same `AppleInterfaceStyle` fork already used by the Claude Code launcher:
   light → `GitHub`, dark → `Monokai Extended` (bat's previous default,
   unchanged, to preserve the existing dark-mode look).
 - **Gotcha:** this is a hard pin, not detection. If bat's own background
   auto-detect is ever fixed for piped output, this override would need
   revisiting so it doesn't fight a now-correct default.
+- **Gotcha:** the fork only runs at shell init, so an already-open shell keeps
+  whatever `BAT_THEME` it started with until a new shell starts — the same
+  "read once, not live" class as tmux's first-paint gotcha, below.
 
 ### git / delta — `git/.gitconfig`, `zsh/.zshrc`
 - delta does **not** auto-detect the way an earlier version of this doc
@@ -199,11 +202,16 @@ involved.
 - Fixed the same way as bat: a `[delta "github-light"]` feature block
   (`git/.gitconfig:18-20`, `light = true` + `syntax-theme = GitHub`) activated
   per-appearance by exporting `DELTA_FEATURES="+github-light"` in the light
-  branch of the same fork bat uses (`zsh/.zshrc:251-253`). Dark mode leaves
-  `DELTA_FEATURES` unset, so delta falls through to the base `[delta]` config
-  (pinned Mocha, unchanged).
+  branch of the same fork bat uses (`zsh/.zshrc:253-255`). Dark mode
+  explicitly `unset`s `DELTA_FEATURES` (`zsh/.zshrc:249-250`), so delta falls
+  through to the base `[delta]` config (pinned Mocha, unchanged) — the
+  explicit unset matters because a tmux server started in light mode can
+  otherwise leak `+github-light` into a pane that later flips to dark.
 - **Gotcha:** `syntax-theme` and `--detect-dark-light` are independent knobs —
   setting one does not cover the other.
+- **Gotcha:** already-open shells keep the old `DELTA_FEATURES` until a new
+  shell starts, for the same "read once, not live" reason as bat's gotcha
+  above and tmux's first-paint gotcha, below.
 
 ### tmux — `tmux/.config/tmux/`
 - `tmux.conf` — catppuccin/tmux flips mocha↔latte by `AppleInterfaceStyle`
@@ -362,11 +370,11 @@ file you can go read.
 | Ghostty dark theme | Ghostty-bundled `Catppuccin Mocha` (`/Applications/Ghostty.app/Contents/Resources/ghostty/themes/Catppuccin Mocha`) | `ghostty/.config/ghostty/themes/Catppuccin Mocha Custom:17` (`background`), `:19` (`cursor-color`) | `cp "/Applications/Ghostty.app/Contents/Resources/ghostty/themes/Catppuccin Mocha" "ghostty/.config/ghostty/themes/Catppuccin Mocha Custom"` |
 | Ghostty contrast floor | `minimum-contrast = 1` (Ghostty's own default — confirmed via `ghostty +show-config --default`) | `ghostty/.config/ghostty/config:16-19` | delete those 4 lines (comment + `minimum-contrast = 2`) |
 | tmux chrome | catppuccin/tmux plugin defaults (mocha/latte via `@catppuccin_flavor`, no forced surfaces) | `tmux/.config/tmux/theme-light.conf` (whole file), `theme-dark.conf` (whole file), `tmux.conf:199-220` (red-accent + border block), `:239-241` (the if-shell that sources the two `theme-*.conf` files) | delete both `theme-*.conf` files, remove the sourcing if-shell (`:239-241`) and the red-accent block (`:199-220`); `prefix r` to reload |
-| bat | bat's own background auto-detect (broken when output is piped) | `zsh/.zshrc:243-254` (the `AppleInterfaceStyle` fork wrapping `BAT_THEME`) | delete that block; `unset BAT_THEME` |
-| delta | delta's `--detect-dark-light auto` (flips decoration only, never `syntax-theme`) | `git/.gitconfig:9-20` (`[delta]` + `[delta "github-light"]`), `zsh/.zshrc:251-253` (`DELTA_FEATURES` export) | delete the `[delta "github-light"]` block and the `DELTA_FEATURES` export line; `syntax-theme` stays whatever `[delta]` says, unconditionally |
+| bat | bat's own background auto-detect (broken when output is piped) | `zsh/.zshrc:243-256` (the `AppleInterfaceStyle` fork wrapping `BAT_THEME`) | delete that block; `unset BAT_THEME` |
+| delta | delta's `--detect-dark-light auto` (flips decoration only, never `syntax-theme`) | `git/.gitconfig:9-20` (`[delta]` + `[delta "github-light"]`), `zsh/.zshrc:249-250` (dark-branch `unset DELTA_FEATURES`), `zsh/.zshrc:253-255` (`DELTA_FEATURES` export) | delete the `[delta "github-light"]` block, the `unset DELTA_FEATURES` line, and the `DELTA_FEATURES` export line; `syntax-theme` stays whatever `[delta]` says, unconditionally |
 | herdr | herdr's built-in `terminal` palette (`Palette::terminal()`, herdr 0.7.4 source) | `herdr/.config/herdr/config.toml:20-35` (`[theme.custom]`, `overlay1 = "gray"`) | delete the `[theme.custom]` block; `herdr server reload-config` |
 | nvim | catppuccin's own `flavour = 'auto'` (mocha/latte only, no GitHub theme) | `nvim/.config/nvim/init.lua:805-809` (`github-theme` lazy spec), `:829-844` (`pick_colorscheme` + `OptionSet` autocmd) | delete the `github-theme` spec block; replace the `pick_colorscheme`/autocmd pair with the bare `vim.cmd.colorscheme 'catppuccin'` call it replaced |
-| Claude Code themes | Claude Code's built-in themes (e.g. `light-ansi` / `dark-ansi`, or plain `light` / `dark`) | `claude/.claude/themes/studio-brio.json`, `studio-brio-dark.json` (whole files); `~/.claude/settings.json` `"theme"` key (**not** stow-managed — a real file outside `~/.dotfiles`); `zsh/.zshrc:260-267` (the `claude` launcher function) | `rm ~/.claude/themes/studio-brio*.json`; edit `"theme"` in `~/.claude/settings.json` back to a built-in name; delete the `claude` function override in `.zshrc` |
+| Claude Code themes | Claude Code's built-in themes (e.g. `light-ansi` / `dark-ansi`, or plain `light` / `dark`) | `claude/.claude/themes/studio-brio.json`, `studio-brio-dark.json` (whole files); `~/.claude/settings.json` `"theme"` key (**not** stow-managed — a real file outside `~/.dotfiles`); `zsh/.zshrc:262-269` (the `claude` launcher function) | `rm ~/.claude/themes/studio-brio*.json`; edit `"theme"` in `~/.claude/settings.json` back to a built-in name; delete the `claude` function override in `.zshrc` |
 
 ### Rebasing onto a new palette
 

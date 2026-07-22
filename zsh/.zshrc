@@ -246,6 +246,8 @@ export EZA_COLORS="di=1;31"
 # Same per-launch appearance fork as the Claude Code launcher (THEME.md).
 if [ "$(defaults read -g AppleInterfaceStyle 2>/dev/null)" = "Dark" ]; then
   export BAT_THEME="Monokai Extended"
+  # clear a light-mode value inherited via the tmux server environment
+  unset DELTA_FEATURES
 else
   export BAT_THEME="GitHub"
   # delta (git pager): activate the GitHub-light feature block
