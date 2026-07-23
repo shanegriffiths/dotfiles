@@ -18,7 +18,7 @@ onboarding = false
 # Light mode: the terminal theme's SURFACE tokens are hardcoded dark-first —
 # surface_dim = ANSI "bright black", a dark slate #4b535d in GitHub Light HC,
 # rendered as a dark bar behind the selected sidebar row (herdr 0.7.4
-# src/ui/sidebar.rs:784-791). GitHub Light HC has no pale ANSI slot (it's a
+# src/ui/sidebar.rs:784-791; verified unchanged in 0.7.5). GitHub Light HC has no pale ANSI slot (it's a
 # high-contrast palette: all 16 indices are dark), so NO single adaptive
 # override can fix a surface for both modes. Until upstream derives surfaces
 # from the reported background, light mode swaps the BASE to catppuccin-latte
@@ -75,6 +75,10 @@ accent = "red"
 # Order the agents panel by attention queue rather than grouping by space —
 # the agent that needs input surfaces first.
 agent_panel_sort = "priority"
+
+# Ask for a workspace name before creating one (0.7.5+), instead of naming
+# after the fact.
+prompt_new_workspace_name = true
 
 show_agent_labels_on_pane_borders = true
 [ui.toast]

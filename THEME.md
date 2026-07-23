@@ -306,8 +306,9 @@ involved.
   detected terminal background, `auto_switch` assumes **dark**
   (`appearance.unwrap_or(Dark)`, `src/app/mod.rs`), so a client that never
   answered the OSC 11 query renders the dark base — reattach to fix.
-- herdr 0.7.4 ships as a single closed-file Rust binary with no on-disk theme
-  assets. The canonical `[theme.custom]` token list (16 keys — `accent,
+- herdr ships as a single closed-file Rust binary with no on-disk theme
+  assets (analysis done on 0.7.4; terminal-theme palette verified unchanged
+  in 0.7.5). The canonical `[theme.custom]` token list (16 keys — `accent,
   panel_bg, surface0, surface1, surface_dim, overlay0, overlay1, text,
   subtext0, mauve, green, yellow, red, blue, teal, peach`) came from
   `https://herdr.dev/docs/config-reference/`, cross-checked directly against
