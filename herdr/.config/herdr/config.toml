@@ -90,8 +90,9 @@ command = "herdr plugin action invoke open-file-viewer-tab --plugin herdr-file-v
 # through the terminal's ANSI palette, so this tracks light/dark automatically.
 accent = "red"
 
-# Order the agents panel by attention queue rather than grouping by space —
-# the agent that needs input surfaces first.
+# Group the agents panel by space, so agents stay clustered with the workspace
+# they belong to. (The alternative, "priority", surfaces whichever agent needs
+# input first regardless of space.)
 agent_panel_sort = "spaces"
 
 # Ask for a workspace name before creating one (0.7.5+), instead of naming
