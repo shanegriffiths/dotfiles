@@ -67,6 +67,24 @@ panel_bg = "reset"
 # which keeps readline's beginning-of-line working inside a pane.
 prefix = "ctrl+a"
 
+# tmux-style arrow navigation, all off the prefix so nothing is intercepted
+# inside a pane. Tabs are horizontal (left/right); spaces are the vertical
+# sidebar list (up/down). These replace the prefix+p / prefix+n tab defaults.
+previous_tab = "prefix+left"        # tmux: prefix+p
+next_tab = "prefix+right"           # tmux: prefix+n
+previous_workspace = "prefix+up"    # space above in the sidebar (unbound by default)
+next_workspace = "prefix+down"      # space below in the sidebar (unbound by default)
+
+[[keys.command]]              # open in a split beside your work
+key = "prefix+f"
+type = "shell"
+command = "herdr plugin action invoke open-file-viewer --plugin herdr-file-viewer"
+
+[[keys.command]]              # …or in its own tab
+key = "prefix+shift+f"
+type = "shell"
+command = "herdr plugin action invoke open-file-viewer-tab --plugin herdr-file-viewer"
+
 [ui]
 # Red accent, consistent with the rest of the stack. Named colours resolve
 # through the terminal's ANSI palette, so this tracks light/dark automatically.
