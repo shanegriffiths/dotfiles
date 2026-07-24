@@ -92,17 +92,17 @@ accent = "red"
 
 # Order the agents panel by attention queue rather than grouping by space —
 # the agent that needs input surfaces first.
-agent_panel_sort = "priority"
+agent_panel_sort = "spaces"
 
 # Ask for a workspace name before creating one (0.7.5+), instead of naming
 # after the fact.
 prompt_new_workspace_name = true
 
-show_agent_labels_on_pane_borders = true
+show_agent_labels_on_pane_borders = false
 [ui.toast]
 # Herdr ships with notifications off, which hides the thing that makes an agent
 # multiplexer useful: knowing when a background agent finished or is blocked.
 # "system" asks the macOS notification service directly, so agent state changes
 # surface even when Ghostty isn't focused. Alternatives: "herdr" for in-app
 # toasts, "terminal" to ask Ghostty to raise them, "off" to disable.
-delivery = "system"
+delivery = "terminal"
