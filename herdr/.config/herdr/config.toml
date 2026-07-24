@@ -75,6 +75,13 @@ next_tab = "prefix+right"           # tmux: prefix+n
 previous_workspace = "prefix+up"    # space above in the sidebar (unbound by default)
 next_workspace = "prefix+down"      # space below in the sidebar (unbound by default)
 
+# Indexed jumps, tiered off the prefix+1..9 tab default (herdr's own suggested
+# bindings): shift = spaces, alt = agents. shift/alt+digit are terminal-reported
+# chords — Ghostty's Kitty keyboard protocol carries them in prefix mode; the
+# alt row also needs macos-option-as-alt if it doesn't register. Test after reload.
+switch_workspace = "prefix+shift+1..9"   # jump straight to space N
+focus_agent = "prefix+alt+1..9"          # focus agent row N in the agents panel
+
 [[keys.command]]              # open in a split beside your work
 key = "prefix+f"
 type = "shell"
