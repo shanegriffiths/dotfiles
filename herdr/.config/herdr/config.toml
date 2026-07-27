@@ -61,6 +61,20 @@ overlay1 = "gray"
 text = "reset"
 panel_bg = "reset"
 
+[ui.sidebar.agents]
+row_gap = 0
+rows = [
+  ["state_icon", "workspace", "tab"],
+  ["agent", "state_text"],
+]
+
+[ui.sidebar.spaces]
+row_gap = 0
+rows = [
+  ["state_icon", "workspace"],
+  ["branch", "git_status"],
+]
+
 [keys]
 # Matches the tmux prefix so there's one muscle memory across both.
 # Press it twice (ctrl+a ctrl+a) to send a literal ctrl+a to the shell,
@@ -92,7 +106,16 @@ key = "prefix+shift+f"
 type = "shell"
 command = "herdr plugin action invoke open-file-viewer-tab --plugin herdr-file-viewer"
 
+[[keys.command]]              # toggle the reviewr diff sidebar (open/close, same key)
+key = "prefix+d"
+type = "plugin_action"
+command = "persiyanov.reviewr.toggle"   # <plugin_id>.<action_id>, per reviewr README
+
 [ui]
+# Keep panes compact and borderless.
+pane_gaps = true
+pane_borders = true
+
 # Red accent, consistent with the rest of the stack. Named colours resolve
 # through the terminal's ANSI palette, so this tracks light/dark automatically.
 accent = "red"
@@ -106,7 +129,7 @@ agent_panel_sort = "spaces"
 # after the fact.
 prompt_new_workspace_name = true
 
-show_agent_labels_on_pane_borders = false
+show_agent_labels_on_pane_borders = true
 [ui.toast]
 # Herdr ships with notifications off, which hides the thing that makes an agent
 # multiplexer useful: knowing when a background agent finished or is blocked.
