@@ -116,6 +116,9 @@ command = "persiyanov.reviewr.toggle"   # <plugin_id>.<action_id>, per reviewr R
 pane_gaps = true
 pane_borders = true
 
+# Drop the pane scrollbars and reclaim the column they reserve (0.8.0+).
+pane_scrollbars = false
+
 # Red accent, consistent with the rest of the stack. Named colours resolve
 # through the terminal's ANSI palette, so this tracks light/dark automatically.
 accent = "red"
