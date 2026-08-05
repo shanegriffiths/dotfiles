@@ -61,18 +61,65 @@ overlay1 = "gray"
 text = "reset"
 panel_bg = "reset"
 
+# Agent rows. `workspace` has to stay: agent_panel_sort = "spaces" clusters
+# agents by space but draws no group header, so without it a row gives you no
+# idea which project it belongs to. `tab` earns its place only for the handful
+# of manually named tabs (herdr, costings, translator…) — herdr hides the
+# auto-numeric ones, so it renders empty on most rows rather than adding noise.
+# `agent` is omitted: a constant while everything here is Claude, and
+# rows_by_agent below covers the day it isn't.
+# terminal_title_stripped is the agent's own summary of what it's doing
+# ("Audit Sentry and Posthog error tracking overlap") minus the leading spinner
+# glyph, given its own line so it can use the full width. Dimmed rather than
+# coloured: token `fg` accepts hex ONLY (#RGB/#RRGGBB — "red" is a parse error),
+# and a hex would pin one appearance, breaking the light/dark split above.
+# `bold`/`dim` are palette-relative, so they stay adaptive.
 [ui.sidebar.agents]
 row_gap = 0
 rows = [
-  ["state_icon", "workspace", "tab"],
-  ["agent", "state_text"],
+  ["state_icon", "workspace", "tab", "state_text"],
+  [{ token = "terminal_title_stripped", dim = true }],
 ]
 
+# Per-agent overrides. Keys must be canonical agent ids — claude, codex, gemini,
+# cursor, devin, pi, agy, cline, opencode, copilot, droid, amp, hermes, omp.
+# (There is no spaces equivalent; ui.sidebar.spaces.rows_by_agent is ignored.)
+[ui.sidebar.agents.rows_by_agent]
+claude = [
+  ["state_icon", "workspace", "tab", "state_text"],
+  [{ token = "terminal_title_stripped", dim = true }],
+]
+
+# Two lines per space: identity on top, git state beneath, so a long branch name
+# can't crowd the workspace label. Branch dimmed so the name carries the row —
+# `dim` not a hex `fg`, which would pin one appearance and break the light/dark
+# split above. row_gap = 1 separates entries; the other spacer option is an empty
+# row `[]` inside `rows`, which belongs to the entry rather than sitting between
+# entries — so it also trails worktree children, where row_gap skips them.
+# Branch on its own dimmed line so a long name can't crowd or truncate the
+# workspace label, plus row_gap = 1 to separate entries — three lines per space.
+# Worktree children suppress the branch line and skip the gap, so nested groups
+# stay tight — but only `branch` is suppressed, not the row, so the $ tokens
+# below still render on them (verified on fet-42).
+# $pr is pushed by `herdr-git-tokens` (~/.local/bin, run every 3 minutes by
+# dev.shane.herdr-git-tokens.plist) and fills the gap left by git_status, which
+# reports ahead/behind but says nothing about whether the branch's PR has landed.
+# "#27 merged" is the close-worktree signal. It clears itself when there's no PR.
+# It sits on row 1 beside the label rather than on the branch line: worktree
+# children suppress `branch`, so down there it was forcing a second line for
+# nothing. Beside the label each child stays one line — four lines saved in the
+# Fettler group alone — and it still fits 36 columns at the worst case
+# ("snowbridgemarkets #123 merged").
+# The same script also pushes $dirty (uncommitted file count) and $stale (days
+# since last commit); both are deliberately left out of the row above as too
+# noisy, but each is one token away from coming back — no code change needed.
+# Metadata does NOT survive a herdr server restart; the timer re-pushes it.
+# Drop row_gap to 0 if the section scrolls too much.
 [ui.sidebar.spaces]
-row_gap = 0
+row_gap = 1
 rows = [
-  ["state_icon", "workspace"],
-  ["branch", "git_status"],
+  ["state_icon", "workspace", "$pr"],
+  [{ token = "branch", dim = true }, "git_status"],
 ]
 
 [keys]

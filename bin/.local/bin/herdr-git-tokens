@@ -1,0 +1,315 @@
+#!/usr/bin/env python3
+"""Push git and GitHub state into herdr's sidebar as custom metadata tokens.
+
+herdr's built-in `git_status` token reports ahead/behind only, so uncommitted
+work, stale checkouts and PR state are invisible in the spaces panel. This
+fills those gaps by pushing three tokens per workspace, consumed by
+`[ui.sidebar.spaces]`:
+
+    $dirty   "*3"        uncommitted files; cleared when the tree is clean
+    $stale   "5d"        age of last commit; cleared under STALE_DAYS
+    $pr      "#27 ✓"     PR for this branch and its check/merge state
+
+Tokens clear rather than blank when they don't apply, so the sidebar stays
+quiet for checkouts that are clean, current and unassociated with a PR.
+
+Only tokens in ENABLED_TOKENS are pushed, so unused ones cost nothing.
+
+Cost control matters more than it looks. Every report-metadata call writes a
+line to herdr-server.log, which has no rotation — pushing all tokens for all
+workspaces every run worked out at ~24k calls and ~4.7 MB of log per day. So
+pushes are diffed against the last-pushed value in the cache and only sent when
+something actually changed, which in steady state is almost never.
+
+The cache is keyed on the herdr socket's mtime, i.e. server start time. Metadata
+does not survive a server restart, so on restart the diff state is dropped and
+everything is re-pushed; otherwise change-detection would skip tokens herdr had
+silently forgotten.
+
+PR state needs the network, so `gh pr list` is called once per *repo* (it
+returns every branch's PR in one shot) and cached for PR_CACHE_SECONDS, letting
+the timer stay on a short interval without hammering the API.
+
+Run on an interval by ~/Library/LaunchAgents/dev.shane.herdr-git-tokens.plist.
+Safe to run when herdr is down, gh is unauthenticated, or the network is out:
+it degrades to whatever it can compute and exits quietly.
+"""
+
+import json
+import os
+import re
+import subprocess
+import sys
+import time
+
+SOURCE = "git-tokens"
+
+# Which tokens to push. $dirty and $stale are computed cheaply but were dropped
+# from the sidebar as too noisy; re-add the name here and the token to
+# [ui.sidebar.spaces] in config.toml to bring one back.
+ENABLED_TOKENS = {"pr"}
+
+STALE_DAYS = 3
+PR_CACHE_SECONDS = 600
+CACHE = os.path.expanduser("~/.cache/herdr-git-tokens/state.json")
+SOCKET = os.path.expanduser("~/.config/herdr/herdr.sock")
+TIMEOUT = 10
+GH_TIMEOUT = 20
+
+
+def run(cmd, cwd=None, timeout=TIMEOUT):
+    try:
+        out = subprocess.run(
+            cmd, cwd=cwd, capture_output=True, text=True, timeout=timeout
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        return None
+    return out.stdout if out.returncode == 0 else None
+
+
+def herdr(*args):
+    """Run a herdr CLI command, returning parsed `result` or None."""
+    out = run(["herdr", *args])
+    if not out or not out.strip():
+        return None
+    try:
+        payload = json.loads(out)
+    except json.JSONDecodeError:
+        return None
+    if "error" in payload:
+        return None
+    return payload.get("result")
+
+
+def git(cwd, *args):
+    return run(["git", "-C", cwd, *args])
+
+
+def workspace_paths():
+    """Map workspace_id -> checkout path.
+
+    Prefers the worktree block, which herdr populates for git-backed spaces.
+    It is absent on some workspaces even when they are real repos, so fall
+    back to the cwd of the workspace's first pane.
+    """
+    paths = {}
+
+    panes = herdr("pane", "list")
+    if panes:
+        for pane in panes.get("panes", []):
+            wid, cwd = pane.get("workspace_id"), pane.get("cwd")
+            if wid and cwd and wid not in paths:
+                paths[wid] = cwd
+
+    spaces = herdr("workspace", "list")
+    if spaces is None:
+        return None
+    for ws in spaces.get("workspaces", []):
+        checkout = (ws.get("worktree") or {}).get("checkout_path")
+        if checkout:
+            paths[ws["workspace_id"]] = checkout
+
+    return paths
+
+
+def git_state(cwd):
+    """Return (dirty_token, stale_token); either may be None to clear."""
+    porcelain = git(cwd, "status", "--porcelain")
+    if porcelain is None:  # not a repo, or git failed
+        return None, None
+
+    changed = len([ln for ln in porcelain.splitlines() if ln.strip()])
+    dirty = f"*{changed}" if changed else None
+
+    committed = git(cwd, "log", "-1", "--format=%ct")
+    stale = None
+    if committed and committed.strip():
+        days = (time.time() - int(committed.strip())) / 86400
+        if days >= STALE_DAYS:
+            stale = f"{int(days)}d"
+
+    return dirty, stale
+
+
+def repo_slug(cwd):
+    """owner/name for the origin remote, or None if it isn't a GitHub repo."""
+    url = git(cwd, "remote", "get-url", "origin")
+    if not url:
+        return None
+    match = re.search(r"github\.com[:/]([^/]+/[^/\s]+?)(?:\.git)?$", url.strip())
+    return match.group(1) if match else None
+
+
+def branch_of(cwd):
+    head = git(cwd, "rev-parse", "--abbrev-ref", "HEAD")
+    if not head:
+        return None
+    head = head.strip()
+    return head if head != "HEAD" else None  # detached
+
+
+def server_identity():
+    """The herdr socket's mtime, which changes when the server restarts."""
+    try:
+        return os.stat(SOCKET).st_mtime
+    except OSError:
+        return None
+
+
+def load_cache():
+    try:
+        with open(CACHE) as fh:
+            cache = json.load(fh)
+    except (OSError, json.JSONDecodeError):
+        cache = {}
+
+    cache.setdefault("repos", {})
+    cache.setdefault("pushed", {})
+
+    # A restarted server has forgotten every token it was given, so the
+    # diff state is meaningless and everything must be re-pushed.
+    identity = server_identity()
+    if cache.get("server") != identity:
+        cache["pushed"] = {}
+        cache["server"] = identity
+
+    return cache
+
+
+def save_cache(cache):
+    try:
+        os.makedirs(os.path.dirname(CACHE), exist_ok=True)
+        with open(CACHE, "w") as fh:
+            json.dump(cache, fh)
+    except OSError:
+        pass  # cache is an optimisation, not a requirement
+
+
+def fetch_prs(slug, cwd):
+    """All PRs for a repo, keyed by head branch. One API call covers every
+    worktree of that repo, which is why this is per-slug and not per-branch."""
+    out = run(
+        [
+            "gh", "pr", "list",
+            "--repo", slug,
+            "--state", "all",
+            "--limit", "100",
+            "--json", "number,headRefName,state,isDraft,statusCheckRollup",
+        ],
+        cwd=cwd,
+        timeout=GH_TIMEOUT,
+    )
+    if not out:
+        return None  # gh missing, unauthenticated, or offline
+    try:
+        prs = json.loads(out)
+    except json.JSONDecodeError:
+        return None
+
+    by_branch = {}
+    for pr in prs:
+        branch = pr.get("headRefName")
+        # `--state all` is newest-first; keep the first (most recent) per branch
+        # so a reopened or superseding PR wins over an older merged one.
+        if branch and branch not in by_branch:
+            by_branch[branch] = pr
+    return by_branch
+
+
+def pr_token(pr):
+    """Render a PR as a compact sidebar token."""
+    number = f"#{pr['number']}"
+    state = pr.get("state")
+
+    if state == "MERGED":
+        return f"{number} merged"  # worktree is finished; close-worktree it
+    if state == "CLOSED":
+        return f"{number} closed"
+    if pr.get("isDraft"):
+        return f"{number} draft"
+
+    checks = pr.get("statusCheckRollup") or []
+    results = [c.get("conclusion") or c.get("state") for c in checks]
+    if not results:
+        return number
+    if any(r in ("FAILURE", "ERROR", "TIMED_OUT", "CANCELLED") for r in results):
+        return f"{number} ✗"
+    if all(r == "SUCCESS" for r in results):
+        return f"{number} ✓"
+    return f"{number} ⋯"  # queued or in progress
+
+
+def pr_states(paths, cache):
+    """Map workspace_id -> pr token, refreshing the per-repo cache as needed."""
+    repos = cache["repos"]
+    now = time.time()
+    tokens = {}
+
+    # Group workspaces by repo so each slug costs one API call at most.
+    by_slug = {}
+    for workspace_id, cwd in paths.items():
+        slug, branch = repo_slug(cwd), branch_of(cwd)
+        if slug and branch:
+            by_slug.setdefault(slug, []).append((workspace_id, branch, cwd))
+
+    for slug, members in by_slug.items():
+        entry = repos.get(slug)
+        if not entry or now - entry.get("ts", 0) > PR_CACHE_SECONDS:
+            fetched = fetch_prs(slug, members[0][2])
+            if fetched is not None:
+                entry = {"ts": now, "prs": fetched}
+                repos[slug] = entry
+            # On failure fall through to the stale entry rather than clearing:
+            # a flapping network shouldn't blank the sidebar.
+        if not entry:
+            continue
+
+        for workspace_id, branch, _ in members:
+            pr = entry["prs"].get(branch)
+            tokens[workspace_id] = pr_token(pr) if pr else None
+
+    return tokens
+
+
+def push(cache, workspace_id, name, value):
+    """Send a token only if it differs from what herdr was last given.
+
+    Every call writes a line to the unrotated herdr-server.log, so pushing
+    unchanged values is pure log growth — the reason this diffs at all.
+    """
+    if name not in ENABLED_TOKENS:
+        return
+
+    state = cache["pushed"].setdefault(workspace_id, {})
+    if state.get(name) == value:
+        return
+
+    flag = ["--token", f"{name}={value}"] if value else ["--clear-token", name]
+    herdr("workspace", "report-metadata", workspace_id, "--source", SOURCE, *flag)
+    state[name] = value
+
+
+def main():
+    paths = workspace_paths()
+    if paths is None:  # server down; nothing to do
+        return 0
+
+    cache = load_cache()
+    prs = pr_states(paths, cache)
+
+    for workspace_id, cwd in paths.items():
+        if {"dirty", "stale"} & ENABLED_TOKENS:
+            dirty, stale = git_state(cwd)
+            push(cache, workspace_id, "dirty", dirty)
+            push(cache, workspace_id, "stale", stale)
+        push(cache, workspace_id, "pr", prs.get(workspace_id))
+
+    # Drop diff state for workspaces that have since closed.
+    cache["pushed"] = {k: v for k, v in cache["pushed"].items() if k in paths}
+    save_cache(cache)
+
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

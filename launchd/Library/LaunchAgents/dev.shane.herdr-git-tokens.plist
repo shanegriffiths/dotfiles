@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>dev.shane.herdr-git-tokens</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Users/shane/.local/bin/herdr-git-tokens</string>
+    </array>
+
+    <!-- herdr metadata is push-only and is lost on server restart, so this
+         re-pushes rather than relying on a one-shot. A full pass over ~17
+         checkouts takes about a second. -->
+    <key>StartInterval</key>
+    <integer>180</integer>
+
+    <key>RunAtLoad</key>
+    <true/>
+
+    <!-- git and herdr both live in Homebrew's prefix, which launchd does not
+         inherit. -->
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+    </dict>
+
+    <key>StandardErrorPath</key>
+    <string>/Users/shane/Library/Logs/herdr-git-tokens.log</string>
+
+    <key>ProcessType</key>
+    <string>Background</string>
+
+    <key>LowPriorityIO</key>
+    <true/>
+</dict>
+</plist>
