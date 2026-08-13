@@ -110,6 +110,17 @@ claude = [
 # nothing. Beside the label each child stays one line — four lines saved in the
 # Fettler group alone — and it still fits 36 columns at the worst case
 # ("snowbridgemarkets #123 merged").
+# $port (":3001", ":8288,8289") comes from the same script and answers "is this
+# thing already running, and on what?" without switching to the space to look.
+# It joins $pr on row 1 so everything describing the checkout's live state sits
+# on the identity line and row 2 stays purely git. That does blow the 36-column
+# worst case above: "snowbridgemarkets #123 merged :8288,8289" is ~40 plus the
+# icon, so a narrow sidebar truncates it. Both halves rarely coexist in practice
+# (a merged PR means the server is usually down), and the fix if it grates is to
+# return min(ports) from listening_ports() instead of the full list.
+# Only non-ephemeral ports (<49152) count, so a dev server shows but the random
+# high ports its tooling opens don't. Container-published ports are invisible —
+# they belong to the OrbStack process, whose cwd is outside any checkout.
 # The same script also pushes $dirty (uncommitted file count) and $stale (days
 # since last commit); both are deliberately left out of the row above as too
 # noisy, but each is one token away from coming back — no code change needed.
@@ -118,7 +129,7 @@ claude = [
 [ui.sidebar.spaces]
 row_gap = 1
 rows = [
-  ["state_icon", "workspace", "$pr"],
+  ["state_icon", "workspace", "$pr", "$port"],
   [{ token = "branch", dim = true }, "git_status"],
 ]
 
@@ -158,6 +169,21 @@ key = "prefix+d"
 type = "plugin_action"
 command = "persiyanov.reviewr.toggle"   # <plugin_id>.<action_id>, per reviewr README
 
+[[keys.command]]              # worktree switch/create picker — overrides Herdr's built-in new_worktree
+key = "prefix+shift+g"
+type = "shell"
+command = "herdr plugin action invoke open --plugin sbrio.worktrees"
+
+[[keys.command]]              # worktree remove picker (wt gates dirty/unmerged in-pane)
+key = "prefix+shift+e"
+type = "shell"
+command = "herdr plugin action invoke remove --plugin sbrio.worktrees"
+
+[[keys.command]]              # worktree prune — git prune + repo reconciler if it implements prune
+key = "prefix+shift+u"
+type = "shell"
+command = "herdr plugin action invoke prune --plugin sbrio.worktrees"
+
 [ui]
 # Keep panes compact and borderless.
 pane_gaps = true
@@ -173,7 +199,7 @@ accent = "red"
 # Group the agents panel by space, so agents stay clustered with the workspace
 # they belong to. (The alternative, "priority", surfaces whichever agent needs
 # input first regardless of space.)
-agent_panel_sort = "spaces"
+agent_panel_sort = "priority"
 
 # Ask for a workspace name before creating one (0.7.5+), instead of naming
 # after the fact.

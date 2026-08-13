@@ -12,9 +12,12 @@
 
     <!-- herdr metadata is push-only and is lost on server restart, so this
          re-pushes rather than relying on a one-shot. A full pass over ~17
-         checkouts takes about a second. -->
+         checkouts takes about a third of a second, lsof included.
+         60s not 180s because $port has to track a dev server you just started;
+         PR state is unaffected, being independently cached for 600s, and the
+         push diffing means the extra runs write nothing when nothing changed. -->
     <key>StartInterval</key>
-    <integer>180</integer>
+    <integer>60</integer>
 
     <key>RunAtLoad</key>
     <true/>

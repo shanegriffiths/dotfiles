@@ -1,17 +1,19 @@
 #!/usr/bin/env python3
-"""Push git and GitHub state into herdr's sidebar as custom metadata tokens.
+"""Push git, GitHub and dev-server state into herdr's sidebar as metadata tokens.
 
 herdr's built-in `git_status` token reports ahead/behind only, so uncommitted
-work, stale checkouts and PR state are invisible in the spaces panel. This
-fills those gaps by pushing three tokens per workspace, consumed by
+work, stale checkouts, PR state and running servers are invisible in the spaces
+panel. This fills those gaps by pushing four tokens per workspace, consumed by
 `[ui.sidebar.spaces]`:
 
-    $dirty   "*3"        uncommitted files; cleared when the tree is clean
-    $stale   "5d"        age of last commit; cleared under STALE_DAYS
-    $pr      "#27 ✓"     PR for this branch and its check/merge state
+    $dirty   "*3"          uncommitted files; cleared when the tree is clean
+    $stale   "5d"          age of last commit; cleared under STALE_DAYS
+    $pr      "#27 ✓"       PR for this branch and its check/merge state
+    $port    ":8288,8289"  TCP ports a server in this checkout is listening on
 
 Tokens clear rather than blank when they don't apply, so the sidebar stays
-quiet for checkouts that are clean, current and unassociated with a PR.
+quiet for checkouts that are clean, current, unassociated with a PR and not
+serving anything.
 
 Only tokens in ENABLED_TOKENS are pushed, so unused ones cost nothing.
 
@@ -30,6 +32,16 @@ PR state needs the network, so `gh pr list` is called once per *repo* (it
 returns every branch's PR in one shot) and cached for PR_CACHE_SECONDS, letting
 the timer stay on a short interval without hammering the API.
 
+Port state comes from two `lsof` calls covering the whole machine, not from
+herdr: `pane list` reports a pane's cwd but no pid, so there is no path from a
+workspace to its processes. Instead every TCP listener is attributed to the
+workspace whose checkout contains the *listening process's* cwd. That direction
+also catches servers started outside herdr, and it filters itself: daemons like
+ControlCenter, Chrome and OrbStack all report cwd `/`, which is under no
+checkout. The cost is that a server whose cwd isn't in the tree is invisible —
+notably anything in a container, since Docker/OrbStack publishes the port from
+the OrbStack process.
+
 Run on an interval by ~/Library/LaunchAgents/dev.shane.herdr-git-tokens.plist.
 Safe to run when herdr is down, gh is unauthenticated, or the network is out:
 it degrades to whatever it can compute and exits quietly.
@@ -47,7 +59,7 @@ SOURCE = "git-tokens"
 # Which tokens to push. $dirty and $stale are computed cheaply but were dropped
 # from the sidebar as too noisy; re-add the name here and the token to
 # [ui.sidebar.spaces] in config.toml to bring one back.
-ENABLED_TOKENS = {"pr"}
+ENABLED_TOKENS = {"pr", "port"}
 
 STALE_DAYS = 3
 PR_CACHE_SECONDS = 600
@@ -55,6 +67,12 @@ CACHE = os.path.expanduser("~/.cache/herdr-git-tokens/state.json")
 SOCKET = os.path.expanduser("~/.config/herdr/herdr.sock")
 TIMEOUT = 10
 GH_TIMEOUT = 20
+
+# Ports at or above this are the OS's ephemeral range (macOS:
+# net.inet.ip.portrange.first), i.e. outbound sockets and RPC helpers that
+# picked a number at random rather than something you'd type into a browser.
+# Filtering them is what turns inngest's eight listeners into ":8288,8289".
+EPHEMERAL_MIN = 49152
 
 
 def run(cmd, cwd=None, timeout=TIMEOUT):
@@ -129,6 +147,77 @@ def git_state(cwd):
             stale = f"{int(days)}d"
 
     return dirty, stale
+
+
+def lsof_fields(*args):
+    """Run lsof in field mode, returning pid -> [n-field values].
+
+    `-b -w` are load-bearing, not tidiness: plain lsof blocks indefinitely on
+    this machine while stat'ing a mount, and the launchd job would just pile up.
+    They restrict it to non-blocking kernel calls and mute the warnings that
+    causes. lsof emits an `f` field whether or not you ask for it, so parse by
+    tracking the last `p` seen rather than assuming a fixed record shape.
+    """
+    out = run(["lsof", "-b", "-w", "-nP", *args])
+    if not out:
+        return {}
+
+    fields, pid = {}, None
+    for line in out.splitlines():
+        if line.startswith("p"):
+            pid = line[1:]
+        elif line.startswith("n") and pid:
+            fields.setdefault(pid, []).append(line[1:])
+    return fields
+
+
+def contained_by(path, root):
+    """True if path is root or sits inside it, comparing whole components.
+
+    A plain startswith would file `<repo>.worktree/fet-76` under the `<repo>`
+    workspace, which is exactly wrong: worktrees are siblings of the checkout
+    they came from, and each is its own space in the sidebar.
+    """
+    return path == root or path.startswith(root.rstrip(os.sep) + os.sep)
+
+
+def listening_ports(paths):
+    """Map workspace_id -> port token, or None to clear.
+
+    Attribution runs listener -> process cwd -> workspace, and picks the
+    *longest* matching checkout so a worktree keeps its own ports instead of
+    losing them to a parent that happens to be a prefix.
+    """
+    listeners = lsof_fields("-iTCP", "-sTCP:LISTEN", "-Fpn")
+    if not listeners:
+        return {}
+
+    cwds = lsof_fields("-a", "-p", ",".join(listeners), "-d", "cwd", "-Fpn")
+
+    # Longest first, so the first containing checkout is the most specific one.
+    roots = sorted(paths.items(), key=lambda kv: len(kv[1]), reverse=True)
+
+    found = {}
+    for pid, names in listeners.items():
+        cwd = (cwds.get(pid) or [None])[0]
+        if not cwd:
+            continue
+
+        owner = next((wid for wid, root in roots if contained_by(cwd, root)), None)
+        if owner is None:
+            continue  # a daemon at `/`, or a checkout herdr isn't showing
+
+        for name in names:
+            match = re.search(r":(\d+)$", name)  # trailing port of *:3001, [::1]:3001
+            if match and int(match.group(1)) < EPHEMERAL_MIN:
+                found.setdefault(owner, set()).add(int(match.group(1)))
+
+    # Every port, comma-joined. Swap for `min(ports)` alone if a full stack
+    # (web + api + worker) ever makes the row too wide to read.
+    return {
+        wid: ":" + ",".join(str(p) for p in sorted(ports))
+        for wid, ports in found.items()
+    }
 
 
 def repo_slug(cwd):
@@ -296,6 +385,7 @@ def main():
 
     cache = load_cache()
     prs = pr_states(paths, cache)
+    ports = listening_ports(paths) if "port" in ENABLED_TOKENS else {}
 
     for workspace_id, cwd in paths.items():
         if {"dirty", "stale"} & ENABLED_TOKENS:
@@ -303,6 +393,7 @@ def main():
             push(cache, workspace_id, "dirty", dirty)
             push(cache, workspace_id, "stale", stale)
         push(cache, workspace_id, "pr", prs.get(workspace_id))
+        push(cache, workspace_id, "port", ports.get(workspace_id))
 
     # Drop diff state for workspaces that have since closed.
     cache["pushed"] = {k: v for k, v in cache["pushed"].items() if k in paths}
