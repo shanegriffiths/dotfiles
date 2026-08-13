@@ -268,6 +268,36 @@ function claude() {
   command claude --settings "{\"theme\":\"$t\"}" "$@"
 }
 
+# Bare worktree + Herdr sidebar registration, NO provisioning — no .env, no
+# install, no databases. (Provisioned worktrees: plain `wt switch --create`,
+# or herdr-flow for ticket work.) Teardown stays `wt remove <branch>`; add
+# --no-hooks there if the db hook objects to the missing .env — nothing was
+# provisioned, so nothing is lost.
+wtbare() {
+  [[ -z "$1" ]] && { echo "usage: wtbare <branch>" >&2; return 1; }
+  local root out checkout   # NB: never `local path` in zsh — it's tied to $PATH
+  root="$(git rev-parse --git-common-dir 2>/dev/null)" || { echo "wtbare: not inside a git repo" >&2; return 1; }
+  root="${root:A:h}"
+  git -C "$root" fetch origin || return 1
+  out="$(command wt -C "$root" switch --create "$1" --base origin/main --no-hooks --no-cd --format json)" || return 1
+  checkout="$(printf '%s\n' "$out" | grep -m1 '^{' | python3 -c 'import json,sys; print(json.load(sys.stdin)["path"])')" || return 1
+  if command -v herdr >/dev/null 2>&1; then
+    herdr worktree open --cwd "$root" --path "$checkout" --no-focus >/dev/null 2>&1 \
+      && echo "wtbare: registered with Herdr" \
+      || echo "wtbare: Herdr registration skipped (daemon not reachable)" >&2
+  fi
+  cd "$checkout"
+}
+
+# Provisioned worktrees by hand — the sbrio.worktrees Herdr plugin's scripts
+# (same pipeline as the prefix+shift+g/e/u keybinds: wt hooks, Herdr workspace
+# registration). Run from a pane inside the target repo's Herdr workspace;
+# a plain terminal has no Herdr context to register against.
+_wtp="$HOME/Developer/Projects/Herdr Worktrees/herdr-worktrees"
+wtpick()  { bash "$_wtp/create.sh" "$@"; }   # wtpick · wtpick <name> · wtpick <name> --base main
+wtrm()    { bash "$_wtp/remove.sh" "$@"; }   # wtrm · wtrm <name>
+wtprune() { bash "$_wtp/prune.sh"; }
+
 # Suffix Aliases — type a filename to open it with the right tool
 alias -s md='open -a MarkEdit'
 alias -s pdf='open -a "PDF Expert"'
@@ -363,3 +393,7 @@ esac
 # pnpm end
 
 if command -v wt >/dev/null 2>&1; then eval "$(command wt config shell init zsh)"; fi
+
+# >>> localcan >>>
+export PATH="/Users/shane/.localcan/bin:$PATH"
+# <<< localcan <<<
