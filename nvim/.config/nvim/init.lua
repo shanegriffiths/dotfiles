@@ -187,7 +187,15 @@ vim.diagnostic.config {
   virtual_lines = false, -- Text shows up underneath the line, with virtual lines
 
   -- Auto open the float, so you can easily read the errors when jumping with `[d` and `]d`
-  jump = { float = true },
+  jump = {
+    on_jump = function(_, bufnr)
+      vim.diagnostic.open_float {
+        bufnr = bufnr,
+        scope = 'cursor',
+        focus = false,
+      }
+    end,
+  },
 }
 
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
@@ -210,9 +218,11 @@ vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' }
 --  Use CTRL+<hjkl> to switch between windows
 --
 --  See `:help wincmd` for a list of all window commands
--- NOTE: <C-hjkl> window navigation is provided by the vim-tmux-navigator plugin
--- (configured in the plugin list below). The same keys move between Neovim splits
--- AND cross seamlessly into adjacent tmux panes at the edges.
+vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
+vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
+vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
+vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
+vim.keymap.set('n', '<C-\\>', '<C-w>p', { desc = 'Move focus to the previous window' })
 
 -- NOTE: Some terminals have colliding keymaps or are not able to send distinct keycodes
 -- vim.keymap.set("n", "<C-S-h>", "<C-w>H", { desc = "Move window to the left" })
@@ -615,7 +625,6 @@ require('lazy').setup({
 
         cssls = {}, -- CSS/SCSS/Less intellisense
         tailwindcss = {}, -- Tailwind CSS class autocomplete
-        stylua = {}, -- Used to format Lua code
 
         -- Special Lua Config, as recommended by neovim help docs
         lua_ls = {
@@ -656,7 +665,8 @@ require('lazy').setup({
       -- You can press `g?` for help in this menu.
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
-        -- You can add other tools here that you want Mason to install
+        -- Tools that aren't language servers, so they don't belong in `servers` above
+        'stylua', -- Used to format Lua code
       })
 
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
@@ -937,19 +947,6 @@ require('lazy').setup({
 
   -- Toggle comments with gcc (line) or gc (selection)
   { 'numToStr/Comment.nvim', opts = {} },
-
-  { -- Seamless <C-hjkl> navigation between Neovim splits and tmux panes
-    -- Pairs with the christoomey/vim-tmux-navigator tmux plugin (already in tmux.conf).
-    'christoomey/vim-tmux-navigator',
-    cmd = { 'TmuxNavigateLeft', 'TmuxNavigateDown', 'TmuxNavigateUp', 'TmuxNavigateRight', 'TmuxNavigatePrevious' },
-    keys = {
-      { '<C-h>', '<cmd>TmuxNavigateLeft<cr>', desc = 'Navigate left (split / tmux pane)' },
-      { '<C-j>', '<cmd>TmuxNavigateDown<cr>', desc = 'Navigate down (split / tmux pane)' },
-      { '<C-k>', '<cmd>TmuxNavigateUp<cr>', desc = 'Navigate up (split / tmux pane)' },
-      { '<C-l>', '<cmd>TmuxNavigateRight<cr>', desc = 'Navigate right (split / tmux pane)' },
-      { '<C-\\>', '<cmd>TmuxNavigatePrevious<cr>', desc = 'Navigate to previous (split / tmux pane)' },
-    },
-  },
 
   -- Yazi file manager integration
   {
