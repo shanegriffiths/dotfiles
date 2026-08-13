@@ -1,0 +1,55 @@
+#!/bin/sh
+# pass-env — run a command with secrets from `pass` exported as environment vars.
+#
+#   pass-env VAR=path/in/store [VAR=path ...] -- command [args...]
+#
+# Example:
+#   pass-env XERO_CLIENT_ID=financeos/xero-studio-brio-client-id \
+#            XERO_CLIENT_SECRET=financeos/xero-studio-brio-client-secret \
+#            -- npx -y @xeroapi/xero-mcp-server@0.0.16
+#
+# Written for MCP servers spawned non-interactively by Claude Code, which do not
+# inherit an interactive shell's PATH. Arguments carry store *paths*, never
+# secret values, so nothing sensitive appears in `ps`.
+#
+# Exit codes: 64 = usage error, 65 = secret could not be read.
+
+set -eu
+
+# Do not trust the caller's PATH — ~/.local/bin and /opt/homebrew/bin are added
+# in .zshrc, which never runs for a process spawned by Claude Code.
+PATH="/opt/homebrew/bin:/usr/bin:/bin"
+export PATH
+
+while [ "${1:-}" != "--" ]; do
+  if [ $# -eq 0 ]; then
+    echo "pass-env: argument list missing '--' separator" >&2
+    exit 64
+  fi
+
+  var=${1%%=*}
+  ref=${1#*=}
+
+  if [ "$var" = "$1" ] || [ -z "$var" ]; then
+    echo "pass-env: expected VAR=path/in/store, got '$1'" >&2
+    exit 64
+  fi
+
+  # stderr is deliberately not suppressed: a gpg/pinentry failure explains
+  # itself far better than any message this script could invent.
+  if ! val=$(pass show "$ref"); then
+    echo "pass-env: cannot read '$ref' from password store" >&2
+    exit 65
+  fi
+
+  export "$var=$val"
+  shift
+done
+shift
+
+if [ $# -eq 0 ]; then
+  echo "pass-env: no command given after '--'" >&2
+  exit 64
+fi
+
+exec "$@"
