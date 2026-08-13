@@ -19,7 +19,7 @@ theme = light:GitHub Light HC Red,dark:Catppuccin Mocha Custom
 minimum-contrast = 2
 
 # --- Window and Appearance ---
-background-opacity = 1
+background-opacity = 0.95
 background-blur-radius = 20
 macos-titlebar-style = transparent
 macos-option-as-alt = true
