@@ -26,10 +26,12 @@ videos = [
     { run = 'open -a IINA "$@"' }
 ]
 code = [
-    { run = '$EDITOR "$@"', block = true, desc = "Editor" }
+    { run = '$EDITOR "$@"', block = true, desc = "Editor" },
+    { run = 'open -a "Visual Studio Code" "$@"', desc = "VS Code" },
 ]
 folder = [
-    { run = 'open -a Bloom "$@"', desc = "Bloom" }
+    { run = 'open -a Bloom "$@"', desc = "Bloom" },
+    { run = 'open -a "Visual Studio Code" "$@"', desc = "VS Code" },
 ]
 
 [open]
