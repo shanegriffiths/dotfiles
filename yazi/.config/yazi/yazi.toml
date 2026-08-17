@@ -5,37 +5,43 @@ linemode = "size"
 sort_by = "natural"
 scrolloff = 0
 
+# `%s` = paths of all selected files. Replaced the old `"$@"` syntax, which
+# yazi deprecated in v25.12.29 in favour of its own shell formatting. Yazi
+# quotes the expansion itself, so no surrounding quotes.
 [opener]
 markdown = [
-    { run = 'open -a "Markdown Preview" "$@"', desc = "Markdown Preview" },
-    { run = 'open -a "Visual Studio Code" "$@"', desc = "VS Code" },
+    { run = 'open -a "Markdown Preview" %s', desc = "Markdown Preview" },
+    { run = 'open -a "Visual Studio Code" %s', desc = "VS Code" },
 ]
 chrome = [
-    { run = 'open -a "Google Chrome" "$@"', desc = "Chrome" }
+    { run = 'open -a "Google Chrome" %s', desc = "Chrome" }
 ]
 pdf = [
-    { run = 'open -a "PDF Expert" "$@"' }
+    { run = 'open -a "PDF Expert" %s' }
 ]
 svg = [
-    { run = 'open -a Gapplin "$@"' }
+    { run = 'open -a Gapplin %s' }
 ]
 images = [
-    { run = 'open -a Preview "$@"' }
+    { run = 'open -a Preview %s' }
 ]
 videos = [
-    { run = 'open -a IINA "$@"' }
+    { run = 'open -a IINA %s' }
 ]
 code = [
-    { run = '$EDITOR "$@"', block = true, desc = "Editor" },
-    { run = 'open -a "Visual Studio Code" "$@"', desc = "VS Code" },
+    { run = '${EDITOR:-vi} %s', block = true, desc = "Editor" },
+    { run = 'open -a "Visual Studio Code" %s', desc = "VS Code" },
 ]
 folder = [
-    { run = 'open -a Bloom "$@"', desc = "Bloom" },
-    { run = 'open -a "Visual Studio Code" "$@"', desc = "VS Code" },
+    { run = 'open -a Bloom %s', desc = "Bloom" },
+    { run = 'open -a "Visual Studio Code" %s', desc = "VS Code" },
 ]
 
 [open]
 prepend_rules = [
+    # Trash bin (v26.8.15) is a VFS whose entries are directories, so this must
+    # sit above the `*/` folder rule or `g t` items would open in Bloom.
+    { mime = "trash/**", use = ["open", "trash"] },
     { url = "*.md", use = "markdown" },
     { url = "*.mdx", use = ["code", "markdown"] },
     { url = "*.html", use = ["code", "chrome"] },
