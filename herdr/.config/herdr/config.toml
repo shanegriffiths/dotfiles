@@ -154,21 +154,6 @@ next_workspace = "prefix+down"      # space below in the sidebar (unbound by def
 switch_workspace = "prefix+shift+1..9"   # jump straight to space N
 focus_agent = "prefix+alt+1..9"          # focus agent row N in the agents panel
 
-[[keys.command]]              # open in a split beside your work
-key = "prefix+f"
-type = "shell"
-command = "herdr plugin action invoke open-file-viewer --plugin herdr-file-viewer"
-
-[[keys.command]]              # …or in its own tab
-key = "prefix+shift+f"
-type = "shell"
-command = "herdr plugin action invoke open-file-viewer-tab --plugin herdr-file-viewer"
-
-[[keys.command]]              # toggle the reviewr diff sidebar (open/close, same key)
-key = "prefix+d"
-type = "plugin_action"
-command = "persiyanov.reviewr.toggle"   # <plugin_id>.<action_id>, per reviewr README
-
 [[keys.command]]              # worktree switch/create picker — overrides Herdr's built-in new_worktree
 key = "prefix+shift+g"
 type = "shell"
