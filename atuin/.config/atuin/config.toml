@@ -43,8 +43,10 @@
 # sync_frequency = "5m"
 
 ## which search mode to use
-## possible values: prefix, fulltext, fuzzy, skim
-# search_mode = "fuzzy"
+## possible values: prefix, fulltext, fuzzy, daemon-fuzzy
+## ("skim" was removed in 18.19; fuzzy now uses the frizbee engine)
+## daemon-fuzzy uses the daemon's hot in-memory index — faster, better ranking
+search_mode = "daemon-fuzzy"
 
 ## which filter mode to use by default
 ## possible values: "global", "host", "session", "session-preload", "directory", "workspace"
@@ -272,11 +274,11 @@ enabled = true
 
 [daemon]
 ## Enables using the daemon to sync.
-# enabled = false
+enabled = true
 
 ## Automatically start and manage the daemon when needed.
 ## Not compatible with `systemd_socket = true`.
-# autostart = false
+autostart = true
 
 ## How often the daemon should sync in seconds
 # sync_frequency = 300
@@ -326,6 +328,10 @@ filters = ["workspace", "global", "host", "session", "session-preload", "directo
 ## Set to false to disable the popup.
 ## This can also be controlled with the ATUIN_TMUX_POPUP environment variable.
 ## Note: The tmux popup is currently supported in zsh, bash, and fish shells. This currently doesn't work with iTerm native tmux integration.
+##
+## NOTE: inert under Herdr. This only fires when $TMUX is set, and Herdr is its
+## own multiplexer (sets HERDR_ENV, not TMUX). Left on for the rare plain-tmux
+## session. For a popup under Herdr, see `atuin pty-proxy init zsh`.
 enabled = true
 
 ## Width of the tmux popup window
@@ -359,6 +365,13 @@ enabled = true
 ##
 ## Default:
 # columns = ["duration", "time", "command"]
+##
+## Active: host shown because history is synced across this Mac, agent-server
+## (kitvoss) and the mini. Width 12 fits "agent-server" exactly; the long
+## Mac hostnames truncate, which is fine — they're all this machine.
+## When other accounts land on agent-server, add the user column too:
+##   columns = ["duration", "time", { type = "host", width = 12 }, { type = "user", width = 8 }, "command"]
+columns = ["duration", "time", { type = "host", width = 12 }, "command"]
 ##
 ## Examples:
 ##
