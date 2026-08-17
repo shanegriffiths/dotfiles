@@ -192,7 +192,6 @@ eval "$(navi widget zsh)"
 # -- Use fd instead of fzf --
 
 export FZF_DEFAULT_OPTS="--height 50% --layout=default --border --color=hl:1,hl+:1,bg:-1,preview-bg:-1"
-export FZF_TMUX_OPTS="-p90%,70%"
 export FZF_DEFAULT_COMMAND="fd --hidden --strip-cwd-prefix --exclude .git"
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_ALT_C_COMMAND="fd --type=d --hidden --strip-cwd-prefix --exclude .git"
@@ -318,10 +317,9 @@ if [[ $- == *i* ]]; then
   eval "$(zoxide init zsh --cmd cd)"
 fi
 
-# NVM (Node Version Manager)
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+# fnm (Fast Node Manager) — replaced nvm 2026-08-17; nvm cost ~320ms per shell.
+# --use-on-cd auto-switches on .nvmrc / .node-version like nvm did.
+eval "$(fnm env --use-on-cd --shell zsh)"
 
 # ---------------------------------------------------------------------------
 # QUALITY OF LIFE ALIASES

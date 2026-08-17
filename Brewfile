@@ -26,7 +26,7 @@
 # Taps
 # ============================================================================
 
-tap "felixkratz/formulae"           # sketchybar, borders
+tap "felixkratz/formulae"           # sketchybar
 tap "nikitabobko/tap"               # aerospace
 tap "supabase/tap"                  # supabase cli
 tap "shaunsingh/sfmono-nerd-font-ligaturized"
@@ -50,10 +50,8 @@ brew "fd"                           # fast find alternative
 brew "fzf"                          # fuzzy finder
 brew "navi"                         # interactive cheatsheets (Ctrl+G)
 brew "ripgrep"                      # fast grep (rg)
-brew "sesh"                         # tmux session manager
 brew "starship"                     # cross-shell prompt
 brew "stow"                         # dotfiles symlink manager
-brew "tmux"                         # terminal multiplexer
 brew "tree"                         # directory tree view
 brew "zoxide"                       # smart cd (z)
 
@@ -99,7 +97,7 @@ brew "neovim"                       # the one true editor
 # ============================================================================
 
 brew "deno"                         # Deno runtime
-brew "nvm"                          # Node version manager (provides nvm shell function)
+brew "fnm"                          # Fast Node Manager (replaced nvm 2026-08-17)
 brew "python@3.13"                  # Python 3.13
 brew "uv"                           # fast Python package installer and resolver
 
@@ -140,7 +138,6 @@ brew "typst"                        # modern markup-based typesetting
 # Window Management & Status Bar
 # ============================================================================
 
-brew "felixkratz/formulae/borders"      # window borders
 brew "felixkratz/formulae/sketchybar"   # custom macOS menu bar
 
 # ============================================================================
