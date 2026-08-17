@@ -3,7 +3,6 @@
 
 # Startup commands
 after-startup-command = [
-	'exec-and-forget borders active_color=0xFFC4262B inactive_color=0xff494d64 width=8.0 hidpi=true style=round blacklist="Sleeve"',
 	'exec-and-forget sketchybar',
 	'mode desktop',
 ]
@@ -13,11 +12,6 @@ exec-on-workspace-change = [
 	'/bin/bash',
 	'-c',
 	'sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE',
-]
-
-# Update border color based on floating state
-on-focus-changed = [
-	'exec-and-forget $HOME/.config/sketchybar/plugins/borders.sh',
 ]
 
 # Start AeroSpace at login
@@ -223,10 +217,7 @@ alt-ctrl-cmd-shift-tab = 'move-workspace-to-monitor --wrap-around next'
 
 # Window management
 alt-ctrl-f = 'fullscreen'
-alt-ctrl-t = [
-	'layout floating tiling',
-	'exec-and-forget $HOME/.config/sketchybar/plugins/borders.sh',
-]
+alt-ctrl-t = 'layout floating tiling'
 
 # Join with adjacent windows
 cmd-alt-ctrl-left = 'join-with left'
@@ -295,10 +286,7 @@ alt-ctrl-cmd-shift-tab = 'move-workspace-to-monitor --wrap-around next'
 
 # Window management
 alt-ctrl-f = 'fullscreen'
-alt-ctrl-t = [
-	'layout floating tiling',
-	'exec-and-forget $HOME/.config/sketchybar/plugins/borders.sh',
-]
+alt-ctrl-t = 'layout floating tiling'
 
 # Join with adjacent windows
 cmd-alt-ctrl-left = 'join-with left'
