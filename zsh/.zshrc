@@ -32,6 +32,9 @@ export ZSH="$HOME/.oh-my-zsh"
 # Disable Oh My Zsh's theme engine to use Starship.
 ZSH_THEME=""
 
+# Skip compaudit's per-shell scan of completion dirs (brew-managed, safe).
+ZSH_DISABLE_COMPFIX=true
+
 # Oh My Zsh plugins. Use a lighter set over SSH to prevent input lag.
 if [[ -n "$IS_SSH_SESSION" ]]; then
   plugins=(
