@@ -126,10 +126,8 @@ setopt hist_find_no_dups      # No duplicates when searching history.
 setopt hist_verify            # Don't execute history expansions immediately.
 setopt hist_reduce_blanks     # Normalize whitespace in history entries.
 
-# Auto-list directory contents on cd.
-chpwd() {
-  ls
-}
+# No chpwd auto-ls hook. Removed 2026-08-17: running `ls` from chpwd deadlocked
+# `cd` in non-interactive shells whenever the same command also had a heredoc.
 
 # Shell options for navigation and safety.
 setopt auto_cd              # Type directory name to cd into it.
