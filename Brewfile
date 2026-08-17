@@ -76,13 +76,11 @@ brew "glow"                         # render markdown in terminal
 brew "hyperfine"                    # command benchmarking
 brew "jq"                           # JSON processor
 brew "lazygit"                      # terminal UI for git
-brew "mactop"                       # Apple Silicon monitor
 brew "mas"                          # Mac App Store CLI
 brew "mole"                         # macOS deep clean
 brew "pandoc"                       # document format converter
 brew "sd"                           # modern sed
 brew "sevenzip"                     # 7-Zip archiver
-brew "tlrc"                         # tldr pages client (Rust)
 brew "yazi"                         # terminal file manager
 brew "yt-dlp"                       # audio/video downloader
 
@@ -109,12 +107,11 @@ brew "uv"                           # fast Python package installer and resolver
 # Databases
 # ============================================================================
 
-brew "neonctl"                      # Neon serverless Postgres CLI
+# neonctl + repomix: npm globals under fnm since 2026-08-17 (dropped brew node)
 brew "postgresql@17"                # PostgreSQL 17
 brew "supabase/tap/supabase"        # Supabase CLI
 
 # REVIEW: do you still need PostgreSQL 14 on the new machine?
-brew "postgresql@14"
 
 # ============================================================================
 # Secrets & GPG
