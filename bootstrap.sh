@@ -9,11 +9,10 @@
 #   4.  Brew Bundle (formulae, casks, fonts, MAS apps, VS Code extensions)
 #   5.  Oh My Zsh
 #   6.  Oh My Zsh custom plugins (fzf-tab, autosuggestions, syntax-highlighting)
-#   7.  tmux Plugin Manager (tpm)
-#   8.  NVM + Node LTS + pnpm (via corepack)
-#   9.  Bun
-#   10. macOS system preferences (macos.sh)
-#   11. Post-install checklist
+#   7.  fnm + Node LTS + pnpm (via corepack)
+#   8.  Bun
+#   9.  macOS system preferences (macos.sh)
+#   10. Post-install checklist
 #
 # Usage — on a fresh Mac (requires SSH key for git clone):
 #   bash <(curl -sL https://raw.githubusercontent.com/shanegriffiths/dotfiles/main/bootstrap.sh)
@@ -88,7 +87,7 @@ fi
 # ============================================================================
 # Uses GNU Stow to symlink config files from ~/.dotfiles into $HOME.
 # Each subdirectory (zsh/, ghostty/, nvim/, etc.) is a "package" that mirrors
-# the home directory structure. `stow */` creates all symlinks at once.
+# the home directory structure. Only STOW_PACKAGES below are linked.
 
 if [ ! -d "$DOTFILES_DIR/.git" ]; then
     info "Cloning dotfiles..."
@@ -101,21 +100,25 @@ fi
 info "Stowing dotfiles..."
 cd "$DOTFILES_DIR"
 
+# Laptop packages — deliberately NOT */: tmux lives in the repo solely for
+# agent-server (kitvoss phone-SSH sessions) and must not be stowed here.
+STOW_PACKAGES=(aerospace atuin bin claude direnv ghostty git gnupg herdr launchd navi nvim sketchybar starship yazi zsh)
+
 # Dry run to detect conflicts
-if ! stow -n */ 2>/dev/null; then
+if ! stow -n "${STOW_PACKAGES[@]}" 2>/dev/null; then
     warn "Conflicts detected — backing up originals to $BACKUP_DIR"
 
     # --adopt moves each conflicting $HOME file into the repo working tree,
     # where it shows up as a modification. Copy those originals into the
     # backup dir, then restore the repo's versions.
-    stow --adopt */
+    stow --adopt "${STOW_PACKAGES[@]}"
     git diff --name-only | while IFS= read -r f; do
         mkdir -p "$BACKUP_DIR/$(dirname "$f")"
         cp -a "$f" "$BACKUP_DIR/$f"
     done
     git checkout .
 else
-    stow */
+    stow "${STOW_PACKAGES[@]}"
 fi
 
 ok "Dotfiles stowed"
@@ -175,47 +178,27 @@ for plugin in "${!plugins[@]}"; do
 done
 
 # ============================================================================
-# 7. tmux Plugin Manager (tpm)
+# 7. fnm + Node LTS + pnpm
 # ============================================================================
-# After installation, open tmux and press `prefix + I` to install plugins
-# defined in .tmux.conf.
+# fnm (Fast Node Manager) replaced nvm 2026-08-17 — nvm cost ~320ms per shell.
+# Installed by Homebrew (step 4); .zshrc guards its init for machines without it.
 
-TPM_DIR="$HOME/.config/tmux/plugins/tpm"
-
-if [ ! -d "$TPM_DIR" ]; then
-    info "Installing tmux Plugin Manager..."
-    git clone https://github.com/tmux-plugins/tpm "$TPM_DIR"
-else
-    ok "tpm already installed"
-fi
-
-# ============================================================================
-# 8. NVM + Node LTS + pnpm
-# ============================================================================
-# NVM is installed by Homebrew (step 4) but works as a shell function, not a
-# binary. We source it here to make it available, then install Node LTS and
-# enable pnpm via corepack.
-
-export NVM_DIR="$HOME/.nvm"
-
-# Source nvm shell function (Homebrew installs the script, not a binary)
-[ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && source "/opt/homebrew/opt/nvm/nvm.sh"
-
-if command -v nvm &>/dev/null; then
-    info "Installing Node.js LTS via nvm..."
-    nvm install --lts
-    nvm alias default lts/*
+if command -v fnm &>/dev/null; then
+    info "Installing Node.js LTS via fnm..."
+    eval "$(fnm env)"
+    fnm install --lts
+    fnm default lts-latest
 
     # Enable pnpm via corepack (ships with Node 16.9+)
     info "Enabling pnpm via corepack..."
     corepack enable
     corepack prepare pnpm@latest --activate
 else
-    warn "nvm not found — install Node manually after fixing PATH"
+    warn "fnm not found — install Node manually after fixing PATH"
 fi
 
 # ============================================================================
-# 9. Bun
+# 8. Bun
 # ============================================================================
 # Fast JavaScript runtime and package manager. Installed via its own script
 # rather than Homebrew for easier version management.
@@ -228,7 +211,7 @@ else
 fi
 
 # ============================================================================
-# 10. macOS Defaults
+# 9. macOS Defaults
 # ============================================================================
 # Applies system preferences (Dock, Finder, keyboard, trackpad, etc.)
 # See macos.sh for full documentation of each setting.
@@ -243,7 +226,7 @@ else
 fi
 
 # ============================================================================
-# 11. Post-Install Checklist
+# 10. Post-Install Checklist
 # ============================================================================
 
 echo ""
@@ -260,15 +243,14 @@ echo "     brew bundle --file=~/.dotfiles/Brewfile"
 echo "  4. Import Raycast settings (from backup/sync)"
 echo "  5. Open Ghostty — config is already in ~/.config/ghostty/"
 echo "  6. Open neovim — plugins will auto-install on first launch"
-echo "  7. In tmux, press prefix + I to install plugins"
-echo "  8. Set up SSH keys (or restore from 1Password SSH agent)"
-echo "  9. Review commented casks in Brewfile — uncomment any you want"
-echo " 10. Install apps not available via Homebrew/MAS:"
+echo "  7. Set up SSH keys (or restore from 1Password SSH agent)"
+echo "  8. Review commented casks in Brewfile — uncomment any you want"
+echo "  9. Install apps not available via Homebrew/MAS:"
 echo "     1Setter, Affinity, Blackmagic Cam, Cavalry, CleanShot X,"
 echo "     DitherBoy, Eagle, Focusrite Control 2, Insta360 Link Controller,"
-echo "     Logitech Options+, Mockuuups Studio, Port Menu, Rize,"
-echo "     RODE Central, Sleeve, Supercharge, Supercut, Synology Image"
-echo "     Assistant, TinkerTool, Topaz Gigapixel, Umbra, Wispr Flow,"
+echo "     Logitech Options+, Mockuuups Studio, Port Menu,"
+echo "     RODE Central, Sleeve, Supercharge, Supercut,"
+echo "     TinkerTool, Topaz Gigapixel, Umbra, Wispr Flow,"
 echo "     XPPen drivers"
 echo ""
 echo "  Restart your Mac to apply all changes."
