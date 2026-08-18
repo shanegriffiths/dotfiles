@@ -9,3 +9,10 @@ case ":$PATH:" in
   *":/opt/homebrew/bin:"*) ;;
   *) export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH" ;;
 esac
+
+# ~/.local/bin too — Claude Code's native installer lives there; without this,
+# `ssh host "claude"` fails with command-not-found (same .zshenv-only rule).
+case ":$PATH:" in
+  *":$HOME/.local/bin:"*) ;;
+  *) export PATH="$HOME/.local/bin:$PATH" ;;
+esac
