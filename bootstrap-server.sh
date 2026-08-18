@@ -1,12 +1,16 @@
 #!/usr/bin/env bash
 # ~/.dotfiles/bootstrap-server.sh
-# Provision the Mac Mini (agent-server) — headless setup for OpenClaw,
-# Claude Code, and background tasks.
+# Provision a profile on the Mac Mini (agent-server) — headless shell setup
+# for its tenants: kitvoss (Hermes), forge (cloud dev agent), jess (planned).
+#
+# Landlord model (2026-08-18): /opt/homebrew is owned by kitvoss alone.
+# Other profiles CONSUME installed tools but cannot manage brew — this script
+# detects that and skips the brew steps gracefully instead of dying.
 #
 # Usage (if repo is already cloned):
 #   bash ~/.dotfiles/bootstrap-server.sh
 #
-# Or from a fresh machine (requires SSH key for git clone):
+# Or from a fresh profile (repo is public — https clone, no key needed):
 #   bash <(curl -sL https://raw.githubusercontent.com/shanegriffiths/dotfiles/main/bootstrap-server.sh)
 #
 # The script is idempotent — safe to re-run.
@@ -53,12 +57,25 @@ else
     ok "Homebrew already installed"
 fi
 
-brew update
+# Landlord check: can this profile manage the shared brew?
+BREW_WRITABLE=false
+if [ -w "$(brew --prefix)/bin" ]; then
+    BREW_WRITABLE=true
+    brew update
+else
+    warn "Homebrew is owned by another profile (landlord model) — skipping all brew steps."
+    warn "New tools are installed from the kitvoss account: ssh agent-server 'brew install <tool>'"
+fi
 
 # Install stow early — needed to symlink dotfiles
 if ! command -v stow &>/dev/null; then
-    info "Installing GNU Stow..."
-    brew install stow
+    if $BREW_WRITABLE; then
+        info "Installing GNU Stow..."
+        brew install stow
+    else
+        echo "FATAL: stow is not installed and this profile cannot install it — ask the brew landlord (kitvoss)." >&2
+        exit 1
+    fi
 else
     ok "GNU Stow already installed"
 fi
@@ -102,7 +119,9 @@ ok "Dotfiles stowed"
 
 BREWFILE="$DOTFILES_DIR/Brewfile.server"
 
-if [ -f "$BREWFILE" ]; then
+if ! $BREW_WRITABLE; then
+    warn "Skipping brew bundle (landlord model) — tools come pre-installed machine-wide"
+elif [ -f "$BREWFILE" ]; then
     info "Installing Homebrew packages..."
     brew bundle --file="$BREWFILE" --no-upgrade
 else
@@ -156,22 +175,15 @@ else
 fi
 
 # ============================================================================
-# 8. NVM + Node LTS + pnpm
+# 8. Node
 # ============================================================================
+# The server runs plain brew node, machine-wide — no version manager.
+# (The laptop uses fnm; .zshrc guards its init so this file works everywhere.)
 
-export NVM_DIR="$HOME/.nvm"
-[ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && source "/opt/homebrew/opt/nvm/nvm.sh"
-
-if command -v nvm &>/dev/null; then
-    info "Installing Node.js LTS via nvm..."
-    nvm install --lts
-    nvm alias default lts/*
-
-    info "Enabling pnpm via corepack..."
-    corepack enable
-    corepack prepare pnpm@latest --activate
+if command -v node &>/dev/null; then
+    ok "Node present ($(node -v)) — shared machine-wide via Homebrew"
 else
-    warn "nvm not found — install Node manually after fixing PATH"
+    warn "Node not found — the brew landlord (kitvoss) should: brew install node"
 fi
 
 # ============================================================================
