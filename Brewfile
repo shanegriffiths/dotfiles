@@ -148,6 +148,37 @@ brew "gromgit/brewtils/taproom"     # interactive Homebrew TUI
 #                                   # exists; the installed keg is orphaned
 
 # ============================================================================
+# Added 2026-08-18 — tools installed since the March capture. A
+# `brew bundle cleanup --force` removed them because they were missing here.
+# Keep this file in sync with the machine to avoid a repeat.
+# ============================================================================
+
+tap "steipete/tap"                  # remindctl
+tap "rjyo/moshi"                    # moshi-hook
+tap "vjeantet/tap"                  # alerter
+
+brew "git"                          # newer git than Apple's
+brew "gum"                          # shell script UI helpers
+brew "herdr"                        # terminal session harness (replaced tmux)
+brew "himalaya"                     # CLI for personal iCloud email
+brew "hunk"                         # interactive diff/stage TUI
+brew "mosh"                         # mobile shell (Moshi iOS SSH setup)
+brew "worktrunk"                    # git worktree manager
+brew "steipete/tap/remindctl"       # Apple Reminders CLI
+brew "rjyo/moshi/moshi-hook"        # Moshi pairing hook
+brew "vjeantet/tap/alerter"         # macOS notification CLI
+brew "go"                           # Go language
+brew "rust"                         # Rust language
+brew "mkcert"                       # local HTTPS certificates
+brew "vhs"                          # terminal GIF recorder
+brew "esbuild"                      # JS bundler
+brew "actionlint"                   # GitHub Actions linter
+brew "ntfy"                         # push notification CLI
+
+cask "font-fira-code-nerd-font"     # Fira Code Nerd Font
+cask "vorssaint"                    # Vorssaint
+
+# ============================================================================
 # Casks — GUI Apps (already managed by Homebrew)
 # ============================================================================
 # These are already installed via Homebrew on the source machine and will
@@ -198,12 +229,15 @@ cask "warp"                         # Warp terminal
 # cask "legcord"                    # Legcord (lightweight Discord client)
 # cask "mimestream"                 # Mimestream native Gmail client
 # cask "signal"                     # Signal private messenger
+# cask "telegram"                   # Telegram
 # cask "whatsapp"                   # WhatsApp
 # cask "zoom"                       # Zoom
 
 # --- Development ---
+# cask "bruno"                      # Bruno API client
 # cask "cursor"                     # Cursor AI editor
 # cask "github"                     # GitHub Desktop
+# cask "gitkraken"                  # GitKraken Git client
 # cask "orbstack"                   # OrbStack (Docker/Linux on Mac)
 # cask "postman"                    # Postman API client
 # cask "tableplus"                  # TablePlus database GUI
@@ -226,11 +260,18 @@ cask "warp"                         # Warp terminal
 # cask "screen-studio"              # Screen Studio screen recorder
 # cask "clop"                       # Clop image/video optimizer
 # cask "downie"                     # Downie video downloader
+# cask "affinity"                   # Affinity (unified Designer/Photo/Publisher)
+# cask "cavalry"                    # Cavalry motion graphics
+# cask "cleanshot"                  # CleanShot X screenshots
+# cask "ogdesign-eagle"             # Eagle asset manager (eagle.cool)
+# cask "mockuuups-studio"           # Mockuuups Studio device mockups
+# cask "rotato"                     # Rotato 3D device mockups
+# cask "topaz-gigapixel"            # Topaz Gigapixel AI upscaling
 
 # --- Productivity & Utilities ---
 # cask "antinote"                   # Antinote floating notes
 # cask "blip"                       # Blip
-# cask "bloom"                      # Bloom focus timer
+# cask "bloom"                      # Bloom file manager
 # cask "displaybuddy"               # DisplayBuddy external monitor control
 # cask "ghostty"                    # Ghostty terminal emulator
 # cask "kaleidoscope"               # Kaleidoscope diff/merge tool
@@ -243,6 +284,19 @@ cask "warp"                         # Warp terminal
 # cask "pearcleaner"                # Pearcleaner app uninstaller
 # cask "powerphotos"                # PowerPhotos photo library manager
 # cask "synology-drive"             # Synology Drive client
+# cask "markdown-preview"           # Markdown Preview (system .md handler, mdp alias)
+# cask "raindropio"                 # Raindrop.io bookmarks
+# cask "tablepro"                   # TablePro (tablepro.app)
+# cask "tailscale-app"              # Tailscale
+# cask "transmit"                   # Transmit file transfer
+# cask "whatcable"                  # WhatCable USB cable info
+
+# --- Hardware & drivers ---
+# cask "focusrite-control-2"        # Focusrite Control 2 audio interface
+# cask "insta360-link-controller"   # Insta360 Link webcam controller
+# cask "logi-options+"              # Logitech Options+ peripheral drivers
+# cask "rode-central"               # RODE Central audio hardware
+# cask "xppen-pentablet"            # XPPen tablet drivers
 
 # ============================================================================
 # Casks — Fonts

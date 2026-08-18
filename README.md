@@ -204,36 +204,73 @@ Per-user CLIs (Claude Code) install via their own installers afterwards.
 
 Tested on macOS Sequoia 15.x. Run standalone with `bash ~/.dotfiles/macos.sh`.
 
+## Installed Brew Packages
+
+Quick-reference snapshot of what Homebrew manages on this machine
+*(taken 2026-08-18)*. The Brewfile is the source of truth for rebuilds —
+keep it in sync with the machine, or `brew bundle cleanup` will remove
+whatever it doesn't know about. Regenerate this list with:
+
+```sh
+brew leaves        # explicitly installed formulae (no dependencies)
+brew list --cask   # casks
+```
+
+<details>
+<summary><strong>Formulae — 61 explicitly installed</strong></summary>
+
+actionlint, atuin, bat, btop, chafa, coreutils, csvlens, direnv, duf, dust,
+duti, esbuild, eza, fastfetch, fd, fnm, gh, git, git-delta, glow, go, gum,
+herdr, himalaya, hunk, hyperfine, imagemagick-full, jq, lazygit, llmfit,
+mas, mkcert, mole, mosh, navi, neovim, ntfy, ocrmypdf, pandoc, pass,
+pinentry-mac, poppler, postgresql@17, python@3.13, resvg, ripgrep,
+rjyo/moshi/moshi-hook, rust, sd, sevenzip, starship,
+steipete/tap/remindctl, stow, typst, uv, vhs, vjeantet/tap/alerter,
+worktrunk, yazi, yt-dlp, zoxide
+
+Plus Brewfile entries that `brew leaves` hides because something depends
+on them: deno, ffmpeg, fzf, sketchybar, supabase, taproom, tree.
+
+</details>
+
+<details>
+<summary><strong>Casks — 26 installed</strong></summary>
+
+1password-cli@beta, aerospace, alt-tab, basictex, bezel, codex,
+font-fira-code-nerd-font, font-geist, font-geist-mono, font-hack-nerd-font,
+font-jetbrains-mono-nerd-font, font-sf-mono-nerd-font-ligaturized,
+font-sf-pro, font-symbols-only-nerd-font, google-drive, jordanbaird-ice,
+localcan, markedit, menubarusb, microsoft-teams, onyx, sf-symbols, stats,
+updatest@beta, visual-studio-code, vorssaint
+
+Note: `warp` is in the Brewfile but not currently installed.
+
+</details>
+
 ## Manual Install Apps
 
 Not available via Homebrew or the Mac App Store — download and install
-manually. *(List pruned 2026-08-18: Rize and Synology Image Assistant removed
-after uninstall; a fuller review of this list is pending.)*
+manually. *(Full review 2026-08-18, cross-checked against the machine.
+Removed as uninstalled: 1Setter, Supercharge, Supercut, Umbra, Wispr Flow.
+Moved to the Brewfile review section because casks now exist: Affinity,
+Cavalry, CleanShot X, Eagle, Focusrite Control 2, Insta360 Link Controller,
+Logitech Options+, Markdown Preview, Mockuuups Studio, RODE Central,
+Topaz Gigapixel, XPPen drivers.)*
 
 | App | Source | Category |
 |-----|--------|----------|
-| 1Setter | 1Password utility | Utility |
-| Affinity (Designer, Photo, Publisher) | affinity.serif.com | Design |
 | Blackmagic Cam | blackmagicdesign.com | Video |
-| Cavalry | cavalry.scenegroup.co | Motion graphics |
-| CleanShot X | cleanshot.com | Screenshots |
+| Chops | chops.md | Guitar practice |
 | DitherBoy | ditherboy.com | Design |
-| Eagle | eagle.cool | Asset management |
-| Focusrite Control 2 | focusrite.com | Audio hardware |
-| Insta360 Link Controller | insta360.com | Camera hardware |
-| Logitech Options+ | logitech.com | Peripheral drivers |
-| Markdown Preview | — | Markdown viewer (system `.md` handler, `mdp` alias) |
-| Mockuuups Studio | mockuuups.studio | Design mockups |
-| Port Menu | — | Network utility |
-| RODE Central | rode.com | Audio hardware |
+| GatherOS | — (beta, v0.8.1) | Meeting capture |
+| Hermes | personal build | AI agent client |
+| Mectrics | github.com/farukkamcici/mectrics | Menu bar system monitor |
+| Open Timer | opentimer.vercel.app | Freelance time tracker |
+| Port Menu | portmenu.dev | Dev server monitor |
+| Readout | readout.org | Dev environment dashboard |
 | Sleeve | replay.software/sleeve | Music widget |
-| Supercharge | supercharge.app | Utility |
-| Supercut | — | Video editing |
 | TinkerTool | bresink.com/osx/TinkerTool | System utility |
-| Topaz Gigapixel | topazlabs.com | AI upscaling |
-| Umbra | — | Dark mode utility |
-| Wispr Flow | wispr.com | Voice dictation |
-| XPPen drivers | xppen.com | Tablet drivers |
+| tldraw offline | personal build | Infinite canvas |
 
 ## Post-Install Checklist
 
