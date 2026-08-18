@@ -219,29 +219,108 @@ brew list --cask   # casks
 <details>
 <summary><strong>Formulae — 61 explicitly installed</strong></summary>
 
-actionlint, atuin, bat, btop, chafa, coreutils, csvlens, direnv, duf, dust,
-duti, esbuild, eza, fastfetch, fd, fnm, gh, git, git-delta, glow, go, gum,
-herdr, himalaya, hunk, hyperfine, imagemagick-full, jq, lazygit, llmfit,
-mas, mkcert, mole, mosh, navi, neovim, ntfy, ocrmypdf, pandoc, pass,
-pinentry-mac, poppler, postgresql@17, python@3.13, resvg, ripgrep,
-rjyo/moshi/moshi-hook, rust, sd, sevenzip, starship,
-steipete/tap/remindctl, stow, typst, uv, vhs, vjeantet/tap/alerter,
-worktrunk, yazi, yt-dlp, zoxide
+| Formula | What it does |
+|---------|--------------|
+| actionlint | GitHub Actions linter |
+| atuin | shell history search/sync |
+| bat | `cat` with syntax highlighting |
+| btop | resource monitor |
+| chafa | images in the terminal |
+| coreutils | GNU core utilities |
+| csvlens | CSV viewer in terminal |
+| direnv | per-directory environments |
+| duf | modern `df` (disk free) |
+| dust | modern `du` (disk usage) |
+| duti | set default apps for file types |
+| esbuild | JS bundler |
+| eza | modern `ls` |
+| fastfetch | system info |
+| fd | fast `find` |
+| fnm | Fast Node Manager |
+| gh | GitHub CLI |
+| git | newer git than Apple's |
+| git-delta | better git diffs |
+| glow | markdown in terminal |
+| go | Go language |
+| gum | shell script UI helpers |
+| herdr | terminal session harness |
+| himalaya | email CLI (personal iCloud) |
+| hunk | interactive diff/stage TUI |
+| hyperfine | command benchmarking |
+| imagemagick-full | image manipulation |
+| jq | JSON processor |
+| lazygit | terminal UI for git |
+| llmfit | find AI models for your hardware |
+| mas | Mac App Store CLI |
+| mkcert | local HTTPS certificates |
+| mole | macOS deep clean |
+| mosh | mobile shell (Moshi iOS SSH) |
+| navi | interactive cheatsheets |
+| neovim | the one true editor |
+| ntfy | push notification CLI |
+| ocrmypdf | OCR for scanned PDFs |
+| pandoc | document converter |
+| pass | GPG password store |
+| pinentry-mac | GPG passphrase prompt |
+| poppler | PDF rendering |
+| postgresql@17 | PostgreSQL 17 |
+| python@3.13 | Python 3.13 |
+| resvg | SVG rendering |
+| ripgrep | fast grep (`rg`) |
+| rjyo/moshi/moshi-hook | Moshi pairing hook |
+| rust | Rust language |
+| sd | modern `sed` |
+| sevenzip | 7-Zip archiver |
+| starship | shell prompt |
+| steipete/tap/remindctl | Apple Reminders CLI |
+| stow | dotfiles symlink manager |
+| typst | markup typesetting |
+| uv | fast Python package installer |
+| vhs | terminal GIF recorder |
+| vjeantet/tap/alerter | macOS notification CLI |
+| worktrunk | git worktree manager |
+| yazi | terminal file manager |
+| yt-dlp | audio/video downloader |
+| zoxide | smart `cd` (`z`) |
 
-Plus Brewfile entries that `brew leaves` hides because something depends
-on them: deno, ffmpeg, fzf, sketchybar, supabase, taproom, tree.
+Brewfile entries that `brew leaves` hides because something depends on them:
+
+| Formula | What it does |
+|---------|--------------|
+| deno | Deno runtime |
+| ffmpeg | audio/video Swiss army knife |
+| fzf | fuzzy finder |
+| sketchybar | custom macOS menu bar |
+| supabase | Supabase CLI |
+| taproom | interactive Homebrew TUI |
+| tree | directory tree view |
 
 </details>
 
 <details>
 <summary><strong>Casks — 26 installed</strong></summary>
 
-1password-cli@beta, aerospace, alt-tab, basictex, bezel, codex,
-font-fira-code-nerd-font, font-geist, font-geist-mono, font-hack-nerd-font,
-font-jetbrains-mono-nerd-font, font-sf-mono-nerd-font-ligaturized,
-font-sf-pro, font-symbols-only-nerd-font, google-drive, jordanbaird-ice,
-localcan, markedit, menubarusb, microsoft-teams, onyx, sf-symbols, stats,
-updatest@beta, visual-studio-code, vorssaint
+| Cask | What it is |
+|------|------------|
+| 1password-cli@beta | 1Password CLI (`op`) |
+| aerospace | i3-like tiling window manager |
+| alt-tab | Windows-style app switcher |
+| basictex | minimal TeX distribution |
+| bezel | iOS screen mirroring |
+| codex | OpenAI Codex CLI |
+| font-* (8 fonts) | Fira Code NF, Geist, Geist Mono, Hack NF, JetBrains Mono NF, SF Mono NF Ligaturized, SF Pro, Symbols NF |
+| google-drive | Google Drive sync |
+| jordanbaird-ice | menu bar manager |
+| localcan | local dev domains and tunnels |
+| markedit | markdown editor |
+| menubarusb | USB device menu bar monitor |
+| microsoft-teams | Microsoft Teams |
+| onyx | system maintenance |
+| sf-symbols | Apple SF Symbols browser |
+| stats | menu bar system monitor |
+| updatest@beta | app updater |
+| visual-studio-code | VS Code |
+| vorssaint | Vorssaint |
 
 Note: `warp` is in the Brewfile but not currently installed.
 
