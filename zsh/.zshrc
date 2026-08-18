@@ -322,7 +322,10 @@ fi
 
 # fnm (Fast Node Manager) — replaced nvm 2026-08-17; nvm cost ~320ms per shell.
 # --use-on-cd auto-switches on .nvmrc / .node-version like nvm did.
-eval "$(fnm env --use-on-cd --shell zsh)"
+# Guarded: agent-server has no fnm (plain brew node) and shares this file.
+if command -v fnm >/dev/null 2>&1; then
+  eval "$(fnm env --use-on-cd --shell zsh)"
+fi
 
 # ---------------------------------------------------------------------------
 # QUALITY OF LIFE ALIASES
