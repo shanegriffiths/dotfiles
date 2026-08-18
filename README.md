@@ -291,7 +291,6 @@ Brewfile entries that `brew leaves` hides because something depends on them:
 | ffmpeg | audio/video Swiss army knife |
 | fzf | fuzzy finder |
 | sketchybar | custom macOS menu bar |
-| supabase | Supabase CLI |
 | taproom | interactive Homebrew TUI |
 | tree | directory tree view |
 

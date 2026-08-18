@@ -28,7 +28,6 @@
 
 tap "felixkratz/formulae"           # sketchybar
 tap "nikitabobko/tap"               # aerospace
-tap "supabase/tap"                  # supabase cli
 tap "shaunsingh/sfmono-nerd-font-ligaturized"
 
 # REVIEW: experimental/less common taps — remove if not needed on new machine
@@ -109,7 +108,6 @@ brew "uv"                           # fast Python package installer and resolver
 
 # neonctl + repomix: npm globals under fnm since 2026-08-17 (dropped brew node)
 brew "postgresql@17"                # PostgreSQL 17
-brew "supabase/tap/supabase"        # Supabase CLI
 
 # REVIEW: do you still need PostgreSQL 14 on the new machine?
 
