@@ -2,8 +2,12 @@
 # https://nikitabobko.github.io/AeroSpace/guide
 
 # Startup commands
+# NB: AeroSpace 0.21.x runs exec commands with a bare PATH (/usr/bin:/bin) —
+# Homebrew tools must be called by absolute path or they silently fail.
+# sketchybar is owned by its brew service (homebrew.mxcl.sketchybar) — do NOT
+# also start it here: the double-start race leaves whichever copy wins with
+# broken event wiring (no workspace highlight, stale icons). Seen 2026-08-18.
 after-startup-command = [
-	'exec-and-forget sketchybar',
 	'mode desktop',
 ]
 
@@ -11,7 +15,13 @@ after-startup-command = [
 exec-on-workspace-change = [
 	'/bin/bash',
 	'-c',
-	'sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE',
+	'/opt/homebrew/bin/sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE',
+]
+
+# Refresh workspace icons + focused highlight on any focus change (fires when
+# a window is moved to another workspace, which exec-on-workspace-change misses).
+on-focus-changed = [
+	'exec-and-forget /bin/bash -c "/opt/homebrew/bin/sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$(/opt/homebrew/bin/aerospace list-workspaces --focused)"',
 ]
 
 # Start AeroSpace at login
