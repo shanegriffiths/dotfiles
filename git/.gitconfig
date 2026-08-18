@@ -34,5 +34,10 @@
 	helper = 
 	helper = !/opt/homebrew/bin/gh auth git-credential
 [credential "https://gist.github.com"]
-	helper = 
+	helper =
 	helper = !/opt/homebrew/bin/gh auth git-credential
+[include]
+	# Per-machine overrides (git identity etc). Last include wins, so a
+	# profile like kitvoss sets its own user.name/email in ~/.gitconfig.local
+	# instead of editing this stowed file (which creates permanent repo drift).
+	path = ~/.gitconfig.local
