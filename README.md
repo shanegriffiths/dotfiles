@@ -8,7 +8,7 @@ machine types: the core MacBook, and profiles on the Mac mini agent-server.
 | Machine | Script | Profiles | Notes |
 |---------|--------|----------|-------|
 | MacBook (core) | `bootstrap.sh` | shane | Full rebuild: GUI apps, fonts, macOS defaults, window management |
-| Mac mini (agent-server) | `bootstrap-server.sh` | `kitvoss` (Hermes/Kit), `forge` (cloud dev agent), `jess` (planned) | Headless shell setup per profile |
+| Mac mini (agent-server) | `bootstrap-server.sh` | `kitvoss` (Hermes/Kit), `forge` (cloud dev agent), `jess` | Headless shell setup per profile |
 
 **Landlord model (agent-server):** `/opt/homebrew` is shared machine-wide but
 owned by `kitvoss` alone. Other profiles consume installed tools; they cannot
