@@ -58,8 +58,10 @@ else
 fi
 
 # Landlord check: can this profile manage the shared brew?
+# NB: plain path test — asking `brew --prefix` as a non-owner makes brew
+# itself error out and abort the script before the check can run.
 BREW_WRITABLE=false
-if [ -w "$(brew --prefix)/bin" ]; then
+if [ -w /opt/homebrew/bin ]; then
     BREW_WRITABLE=true
     brew update
 else
