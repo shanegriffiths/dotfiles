@@ -57,11 +57,13 @@ else
     ok "Homebrew already installed"
 fi
 
-# Landlord check: can this profile manage the shared brew?
-# NB: plain path test — asking `brew --prefix` as a non-owner makes brew
-# itself error out and abort the script before the check can run.
+# Landlord check: does this profile OWN the shared brew?
+# NB1: don't ask `brew --prefix` — as a non-owner, brew errors out and kills
+#      the script before the check runs.
+# NB2: don't test writability — admin-group members pass on /opt/homebrew/bin
+#      yet still fail on kitvoss-owned internals (jess's maiden run, twice).
 BREW_WRITABLE=false
-if [ -w /opt/homebrew/bin ]; then
+if [ "$(stat -f %u /opt/homebrew 2>/dev/null || echo -1)" = "$(id -u)" ]; then
     BREW_WRITABLE=true
     brew update
 else
